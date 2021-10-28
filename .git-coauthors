@@ -1,0 +1,20 @@
+{
+  "coauthors": {
+    "s": {
+      "name": "Stephanie Cunnane",
+      "email": "stephanie.cunnane@gmail.com"
+    },
+    "m": {
+      "name": "Minh Vu",
+      "email": "minhphanh.vu@gmail.com"
+    },
+    "a": {
+      "name": "Alex Drover",
+      "email": "alexfdrover@gmail.com"
+    },
+    "r": {
+      "name": "Raúl de Hevia",
+      "email": "raul.dehevia@gmail.com"
+    }
+  }
+}
