@@ -26,16 +26,9 @@ async function fetchScript() { //To be done once we have an S3 bucket
 // fetch script and save in folder
 }
 
-async function fetchConfig() { /To be done once we have an S3 bucket
+async function fetchConfig() { //To be done once we have an S3 bucket
   // fetch config and save in folder
 }
-
-(async () => {
-  const script = await fetchScript();
-  const config = await fetchConfig();
-  // save to folder
-})();
-
 
 const executeCommand = (cmd, successCallback, errorCallback) => {
   exec(cmd, (error, stdout, stderr) => {
@@ -73,4 +66,11 @@ const startProcess = (numberOfUsers=5, success, error) => {
   );
 }; 
 
-startProcess();
+(async () => {
+  const scriptFile = await fetchScript();
+  const configFile = await fetchConfig();
+  // save to folder
+  startProcess();
+})();
+
+
