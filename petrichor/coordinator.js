@@ -12,14 +12,6 @@ START_RAIN or START_STORM - Petrichor
   - Gets Origin Timestamp from location (S3 prod, local file test)
   - Gets number of users from location (S3 prod, local file test)
   - Start X instances of runner and 1 instance of normalizer
-
-const option1 = {
-  stepName: "Load Main Page",
-  userId: "34f3n98",
-  stepStartTime: 134,
-  responseTime: 900,
-};
-
 */
 
 async function fetchScript() { //To be done once we have an S3 bucket
