@@ -64,7 +64,6 @@ class WeatherStation {
   userId: string;
   stepName: string;
   stepStartTime: number;
-  // markStart: { timeOrigin: number; relativeTimeStamp: number };
   metrics: {
     responseTime: number;
   };
@@ -75,27 +74,66 @@ class WeatherStation {
     this.stepName = "";
     this.stepStartTime = NaN;
     this.metrics = { responseTime: NaN };
-    // this.markStart = { timeOrigin: NaN, relativeTimeStamp: NaN };
   }
-  async startStep(stepName: string) {
+  public async startStep(stepName: string) {
     this.stepName = stepName;
 
-    this.stepStartTime = await this.page.evaluate(() => {
-      const relativeTimeStamp = window.performance.now();
-      const timeOrigin = window.performance.timeOrigin;
-      return timeOrigin + relativeTimeStamp;
-    });
+    this.stepStartTime = Math.round(
+      await this.page.evaluate(() => {
+        const relativeTimeStamp = window.performance.now();
+        const timeOrigin = window.performance.timeOrigin;
+        return timeOrigin + relativeTimeStamp;
+      })
+    );
   }
-  async endStep(stepName: string, delay?: number) {
-    const stepEndTime = await this.page.evaluate(() => {
-      const relativeTimeStamp = window.performance.now();
-      const timeOrigin = window.performance.timeOrigin;
-      return timeOrigin + relativeTimeStamp;
-    });
+  public async endStep(stepName: string, delay: number = 0) {
+    const stepEndTime = Math.round(
+      await this.page.evaluate(() => {
+        const relativeTimeStamp = window.performance.now();
+        const timeOrigin = window.performance.timeOrigin;
+        return timeOrigin + relativeTimeStamp;
+      })
+    );
 
     this.metrics.responseTime = stepEndTime - this.stepStartTime;
-    // use responseTime to format a data object and send it to local FS
+    this.writePointToFS();
+    this.resetObserver();
+    if (delay) {
+      this.sleep(delay);
+    }
   }
+
+  private resetObserver() {
+    this.stepName = "";
+    this.stepStartTime = NaN;
+    this.metrics = { responseTime: NaN };
+  }
+
+  private writePointToFS() {
+    const json = JSON.stringify({
+      userId: this.userId,
+      stepStartTime: this.stepStartTime,
+      metrics: {
+        responseTime: this.metrics.responseTime,
+      },
+    });
+
+    const fileName = `${this.userId}-${this.stepName}-${this.stepStartTime}.json`;
+    const directoryName = "results";
+    if (!fs.existsSync(directoryName)) {
+      fs.mkdirSync("results");
+    }
+    fs.writeFile(`./results/${fileName}`, json, (err) => {
+      if (err) throw err;
+      console.log(`${fileName} has been saved`);
+    });
+  }
+
+  private sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  public endTest() {}
 }
 
 export = WeatherStation;

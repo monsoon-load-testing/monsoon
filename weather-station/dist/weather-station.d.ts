@@ -13,5 +13,9 @@ declare class WeatherStation {
     constructor(browser: browser, page: page, userId: string);
     startStep(stepName: string): Promise<void>;
     endStep(stepName: string, delay?: number): Promise<void>;
+    private resetObserver;
+    private writePointToFS;
+    private sleep;
+    endTest(): void;
 }
 export = WeatherStation;
