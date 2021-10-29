@@ -22,12 +22,12 @@ const option1 = {
 
 */
 
-async function fetchScript() {
-
+async function fetchScript() { //To be done once we have an S3 bucket
+// fetch script and save in folder
 }
 
-async function fetchConfig() {
-  return 
+async function fetchConfig() { /To be done once we have an S3 bucket
+  // fetch config and save in folder
 }
 
 (async () => {
