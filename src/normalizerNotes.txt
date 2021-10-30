@@ -111,7 +111,7 @@ let buckets = {
           let normalizedTimestamp = normalizedTimestamps[idx - 1];
           buckets[normalizedTimestamp].push(fileContents);
         } 
-      }
+      } - DONE
 
 let buckets = {
   16578756863472000: [{userId: "77hg43",
@@ -121,6 +121,7 @@ let buckets = {
                            responseTime: 600,
                        },]
 }
+
 
 PROCESSING BEFORE SENDING TO S3 BUCKET
 iterate through normalizedTimestamps:

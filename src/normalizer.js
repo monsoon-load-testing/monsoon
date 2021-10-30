@@ -20,33 +20,110 @@ normalizedTimestamps.forEach((normalizedTimestamp) => {
   buckets[normalizedTimestamp] = [];
 });
 
-fs.readdir("./results", (err, filenames) => {
+// fs.readdir returns undefined
+// fs.readdir works with an asynchronous callback
+// fs.readdir("./results", (err, filenames) => {
+//   try {
+//     filenames.forEach((filename) => {
+//       const stepName = filename.split("-")[1];
+
+//       fs.readFile(`./results/${filename}`, "utf-8", (err, fileContents) => {
+//         // NOTE: fileContents is initially a STRING
+//         fileContents = JSON.parse(fileContents);
+//         fileContents.stepName = stepName;
+//         for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
+//           if (
+//             fileContents.stepStartTime >= normalizedTimestamps[idx - 1] &&
+//             fileContents.stepStartTime < normalizedTimestamps[idx]
+//           ) {
+//             let normalizedTimestamp = normalizedTimestamps[idx - 1];
+//             buckets[normalizedTimestamp].push(fileContents);
+//           }
+//         }
+//       });
+//     });
+//     // do the downsampling
+//     // downsample();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
+(async () => {
   try {
-    filenames.forEach((filename) => {
+    const filenames = await fs.promises.readdir("./results");
+    filenames.forEach(async (filename) => {
       const stepName = filename.split("-")[1];
 
-      fs.readFile(`./results/${filename}`, "utf-8", (err, fileContents) => {
-        // NOTE: fileContents is initially a STRING
-        fileContents = JSON.parse(fileContents);
-        fileContents.stepName = stepName;
-        for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
-          if (
-            fileContents.stepStartTime >= normalizedTimestamps[idx - 1] &&
-            fileContents.stepStartTime < normalizedTimestamps[idx]
-          ) {
-            let normalizedTimestamp = normalizedTimestamps[idx - 1];
-            // console.log(normalizedTimestamp);
-            buckets[normalizedTimestamp].push(fileContents);
-          }
-        }
-        // console.log(buckets);
+      let fileContents = await fs.promises.readFile(`./results/${filename}`, {
+        encoding: "utf-8",
       });
+      fileContents = JSON.parse(fileContents);
+      fileContents.stepName = stepName;
+      for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
+        if (
+          fileContents.stepStartTime >= normalizedTimestamps[idx - 1] &&
+          fileContents.stepStartTime < normalizedTimestamps[idx]
+        ) {
+          let normalizedTimestamp = normalizedTimestamps[idx - 1];
+          buckets[normalizedTimestamp].push(fileContents);
+        }
+      }
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error(err);
   }
-});
+})();
 
 setTimeout(() => {
-  console.log(buckets);
-}, 2000);
+  downsample();
+  // console.log(buckets);
+  /*
+    iterate through normalizedTimestamps:
+   - break down buckets[current normalizedTimestamp] BY STEP
+     - for each time-window in buckets -> filter based on same user && same step
+        - loop through each object of the bucket[normalizedTimestamp]
+        - bucket2 = {}
+        - check if the key=userId-stepName-normalizedTimestamp exists in bucket2
+          - if not, bucket2[userId-stepName-normalizedTimestamp] = [currentObject]
+          - if yes, bucket2[userId-stepname-normalizedTimestamp].push(currentObject)
+        - bucket2[userId-stepName-normalizedTimestamp]
+   - do averaging calculation for each step of each user in that time-window
+     
+   - make a new JSON with ALL users at that stepName/normalizedTimestamp combination
+   - data structure:
+      - stepName-normalizedTimestamp:
+      - examples:
+      - LoadMainPage-15.json -> {
+        34f3n98: {
+          stepName: "Load Main Page",
+          userId: "34f3n98",
+          stepStartTime: 17,
+          metrics: {
+            normalizedResponseTime: 900, // calculated average responseTime
+          },
+        },
+        ...other users...
+      }
+  */
+}, 3000);
+
+const downsample = () => {
+  const filteredBucket = {}; // based on same userId - same stepName
+  normalizedTimestamps.forEach((normalizedTimestamp) => {
+    if (buckets[normalizedTimestamp].length === 0) {
+      filteredBucket[normalizedTimestamp] = [];
+    }
+    buckets[normalizedTimestamp].forEach((dataPoint) => {
+      const key = `${dataPoint.userId}-${dataPoint.stepName}-${String(
+        normalizedTimestamp
+      )}`;
+      if (filteredBucket[key]) {
+        filteredBucket.push(dataPoint);
+      } else {
+        filteredBucket[key] = [dataPoint];
+      }
+    });
+  });
+  console.log(filteredBucket);
+};
