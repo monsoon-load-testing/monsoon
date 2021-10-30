@@ -103,15 +103,15 @@ let buckets = {
 [15, 30, 45, 60]
 1) make the empty buckets obj - DONE
 2) Iterate through each file in dummyResults
-      -get at both filename AND contents
+      -get at both filename AND contents - DONE
 3) Put that .json file into the correct bucket:
-     add in the stepName (grab this from the filename)
-     for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
-        if .json's real timestamp < normalizedTimestamps[idx] {
-           let normalizedTimestamp = normalizedTimestamps[idx - 1];
-           buckets[normalizedTimestamp].push(.json file data);
+      add in the stepName (grab this from the filename) - DONE
+      for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
+        if (fileContents.stepStartTime < normalizedTimestamps[idx]) {
+          let normalizedTimestamp = normalizedTimestamps[idx - 1];
+          buckets[normalizedTimestamp].push(fileContents);
         } 
-     }
+      }
 
 let buckets = {
   16578756863472000: [{userId: "77hg43",

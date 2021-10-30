@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const originTimestamp = 1635530769000; // hard-coded for dummyResults
 
-// window is 2 seconds
+// window is 2 seconds, testDuration is 10s
 // need another algorithm to calculate the normalizedTimestamps array
 // from time-window, originTimestamp, and testDuration constants
 const normalizedTimestamps = [
@@ -11,6 +11,7 @@ const normalizedTimestamps = [
   originTimestamp + 4000,
   originTimestamp + 6000,
   originTimestamp + 8000,
+  originTimestamp + 10000,
 ];
 
 // make the buckets object
@@ -19,11 +20,33 @@ normalizedTimestamps.forEach((normalizedTimestamp) => {
   buckets[normalizedTimestamp] = [];
 });
 
-let files;
+fs.readdir("./results", (err, filenames) => {
+  try {
+    filenames.forEach((filename) => {
+      const stepName = filename.split("-")[1];
 
-// we need both the filename AND the file contents
-(async () => {
-  console.log("inside iffe");
-  files = await fs.promises.readdir("./results");
-  console.log(files);
-})();
+      fs.readFile(`./results/${filename}`, "utf-8", (err, fileContents) => {
+        // NOTE: fileContents is initially a STRING
+        fileContents = JSON.parse(fileContents);
+        fileContents.stepName = stepName;
+        for (let idx = 1; idx < normalizedTimestamps.length; idx++) {
+          if (
+            fileContents.stepStartTime >= normalizedTimestamps[idx - 1] &&
+            fileContents.stepStartTime < normalizedTimestamps[idx]
+          ) {
+            let normalizedTimestamp = normalizedTimestamps[idx - 1];
+            // console.log(normalizedTimestamp);
+            buckets[normalizedTimestamp].push(fileContents);
+          }
+        }
+        // console.log(buckets);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+setTimeout(() => {
+  console.log(buckets);
+}, 2000);

@@ -1,11 +1,13 @@
 const fs = require("fs");
 
-async function ls(path) {
-  const dir = await fs.promises.opendir(path);
-  console.log(dir);
-  //for await (const dirent of dir) {
-  //  console.log(dirent.name);
-  //}
-}
-
-ls(".").catch(console.error);
+fs.readdir("./results", (err, filenames) => {
+  try {
+    filenames.forEach((filename) => {
+      fs.readFile(`./results/${filename}`, "utf-8", (err, fileContents) => {
+        console.log(filename, fileContents);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
