@@ -3,16 +3,47 @@ const fs = require("fs");
 const originTimestamp = 1635530769000; // hard-coded for dummyResults
 
 // window is 2 seconds, testDuration is 10s
-// need another algorithm to calculate the normalizedTimestamps array
-// from time-window, originTimestamp, and testDuration constants
-const normalizedTimestamps = [
-  originTimestamp,
-  originTimestamp + 2000, // ms
-  originTimestamp + 4000,
-  originTimestamp + 6000,
-  originTimestamp + 8000,
-  originTimestamp + 10000,
-];
+const timeWindow = 2000; // 2s
+const testDuration = 10_000; // 10s
+
+// Intialize timestamps array
+/*
+  - initialize normalizedTimestamps array
+  - start from originTimestamp
+  - currentTime = originTimestamp
+  - while currentTime < testDuration
+    - normalizedTimestamps.push(currentTime)
+    - increment the currentTime by timeWindow amount
+  - return normalizedTimestamps
+*/
+
+const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
+  let currentTime = originTimestamp;
+  const normalizedTimestamps = [];
+  const finalTimestamp = originTimestamp + testDuration;
+  while (currentTime < finalTimestamp) {
+    normalizedTimestamps.push(currentTime);
+    currentTime += timeWindow;
+  }
+  normalizedTimestamps.push(finalTimestamp);
+  return normalizedTimestamps;
+};
+
+const normalizedTimestamps = initializeTimestamps(
+  timeWindow,
+  testDuration,
+  originTimestamp
+);
+console.log(normalizedTimestamps);
+
+// const normalizedTimestamps = [
+//   originTimestamp,
+//   originTimestamp + 2000, // ms
+//   originTimestamp + 4000,
+//   originTimestamp + 6000,
+//   originTimestamp + 8000,
+//   originTimestamp + 10000,
+// ];
 
 // make the buckets object
 let buckets = {};
