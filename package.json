@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/monsoon-load-testing/monsoon#readme",
   "dependencies": {
+    "aws-sdk": "^2.1019.0",
     "puppeteer": "^10.4.0"
   }
 }
