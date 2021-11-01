@@ -1,0 +1,26 @@
+{
+  "name": "monsoon",
+  "version": "1.0.0",
+  "description": "Monsoon Load Testing Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monsoon-load-testing/monsoon.git"
+  },
+  "keywords": [
+    "load-testing"
+  ],
+  "author": "Alex Drover, Raul de Hevia, Minh Vu, Stephanie Cunnane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/monsoon-load-testing/monsoon/issues"
+  },
+  "homepage": "https://github.com/monsoon-load-testing/monsoon#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1019.0",
+    "puppeteer": "^10.4.0"
+  }
+}
