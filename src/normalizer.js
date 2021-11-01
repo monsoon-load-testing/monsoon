@@ -130,26 +130,12 @@ const AWS = require("aws-sdk");
 
   const writeToS3 = () => {
     const BUCKET_NAME = "monsoon-load-testing-bucket";
-    // write to local dummyS3
-    /*
-    for (let filename in finalBucket) {
-      path = `./dummyS3/${filename}.json`;
-      fs.writeFile(
-        path,
-        JSON.stringify(finalBucket[filename]),
-        { encoding: "utf-8" },
-        (err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(`bucket ${filename} is stored.`);
-          }
-        }
-      );
-    }
-    */
-    // Access to s3 bucket from BUCKET_NAME
-    // from AWS credentials, we retrieve the existing s3 bucket inside the s3 object
+    AWS.config.update({
+      accessKeyId: process.env.AWS_ACC_KEY,
+      secretAccessKey: process.env.AWS_SECRET_KEY,
+    });
+
+    const s3 = new AWS.S3();
     for (let filename in finalBucket) {
       const params = {
         Bucket: BUCKET_NAME,
@@ -158,7 +144,7 @@ const AWS = require("aws-sdk");
       };
       s3.upload(params, function (err, data) {
         if (err) {
-          throw err;
+          console.log(err);
         }
         console.log(`File uploaded successfully. ${data.Location}`);
       });

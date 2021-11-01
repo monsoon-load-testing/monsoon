@@ -158,3 +158,8 @@ When to normalize?
 How does normalizer.js get at the stopTime variable?
   - node environmentime
   - call the normalizer inside the runner.js (export normalizer as a module)
+
+ Todos:
+
+ - comments to document the 
+ data structure flow 
