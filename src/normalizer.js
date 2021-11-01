@@ -154,6 +154,6 @@ const AWS = require("aws-sdk");
   (async () => {
     await sleep(2999); // blocking sleep function
     downsample();
-    writeToS3();
+    // writeToS3();
   })();
 })();
