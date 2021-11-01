@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const WeatherStation = require("monsoon-weather-station");
+const WeatherStation = require("../../../weather-station/dist/weather-station");
 
 Observer.configTest(1, 100, 0.5);
 
