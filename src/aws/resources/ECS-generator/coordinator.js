@@ -1,4 +1,8 @@
 const { exec } = require('child_process');
+const fs = require('fs');
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+
 /*
 MENTAL MODEL:
  - coordinator tells config.js to fetch script and config from s3 bucket
@@ -14,12 +18,19 @@ START_RAIN or START_STORM - Petrichor
   - Start X instances of runner and 1 instance of normalizer
 */
 
-async function fetchScript() { //To be done once we have an S3 bucket
-// fetch script and save in folder
-}
 
-async function fetchConfig() { //To be done once we have an S3 bucket
-  // fetch config and save in folder
+async function fetchFile(fileName) {
+  const paramsObj = {
+    Bucket: "monsoon-load-testing-bucket",
+    Key: fileName,
+  };
+
+  try {
+    const obj = await s3.getObject(paramsObj).promise();
+    fs.writeFileSync(`./load-generation/petrichor/${fileName}`, obj.Body)    
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 const executeCommand = (cmd, successCallback, errorCallback) => {
@@ -59,10 +70,7 @@ const startProcess = (numberOfUsers=5, success, error) => {
 }; 
 
 (async () => {
-  const scriptFile = await fetchScript();
-  const configFile = await fetchConfig();
-  // save to folder
-  startProcess();
+  await fetchFile("test_script.js");
+  await fetchFile("config.json");
+  // startProcess();
 })();
-
-
