@@ -72,5 +72,5 @@ const startProcess = (numberOfUsers=5, success, error) => {
 (async () => {
   await fetchFile("test_script.js");
   await fetchFile("config.json");
-  // startProcess();
+  startProcess();
 })();
