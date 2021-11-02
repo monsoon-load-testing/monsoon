@@ -21,14 +21,14 @@ const s3 = new AWS.S3({});
 const Bucket = "monsoon-load-testing-bucket";
 const aggregateAllContents = async (event) => {
   // repeatedly calling AWS list objects because it only returns 1000 objects
-  const data = {
-    totalResponseTime: 0,
+  const accumulator = {
+    responseTimeSum: 0,
     countUsers: 0,
   };
 
   const results = {
     averageResponseTime: 0,
-    concurrentUsers: data.countUsers,
+    concurrentUsers: 0,
   };
 
   let shouldContinue = true;
@@ -49,11 +49,19 @@ const aggregateAllContents = async (event) => {
       return file;
     });
     let finishedPromises = await Promise.allSettled(promises);
-    console.log(finishedPromises.map((data) => JSON.parse(data.value.Body)));
-    // finishedPromises.forEach((obj) => {
-    //   console.log(obj);
-    //   // modify data based on obj from S3
-    // });
+    // console.log(finishedPromises.map((data) => JSON.parse(data.value.Body)));
+    // {
+    //   "a": { "metrics": { "normalizedResponseTime": 461 } },
+    //   "b": { "metrics": { "normalizedResponseTime": 200 } }
+    // }
+
+    finishedPromises.forEach((item) => {
+      const obj = JSON.parse(item.value.Body);
+      Object.values(obj).forEach((user) => {
+        accumulator.responseTimeSum += user.metrics.normalizedResponseTime;
+        accumulator.countUsers += 1;
+      });
+    });
 
     if (!res.IsTruncated) {
       shouldContinue = false;
@@ -64,8 +72,10 @@ const aggregateAllContents = async (event) => {
   }
 
   results.averageResponseTime = Math.round(
-    data.totalResponseTime / data.countUsers
+    accumulator.responseTimeSum / accumulator.countUsers
   );
+
+  results.concurrentUsers = accumulator.countUsers;
 
   return results;
 };
