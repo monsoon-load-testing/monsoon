@@ -1,0 +1,132 @@
+Scenario: one user, timeWindow of 2s, testDuration of 10s, originTimestamp = 1635530769000
+
+BUCKETS OBJECT: 
+    - key is the normalizedTimestamp
+    - value is an array of all data points during that normalizedTimestamp
+
+Example:
+{
+  '1635530769000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530769571,
+      metrics: [Object], // Object has the form of { responseTime: 108 }
+      stepName: 'Go to bin'
+    },
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530769069,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  '1635530771000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530771903,
+      metrics: [Object],
+      stepName: 'Go to bin'
+    },
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530771384,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  '1635530773000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530773830,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  '1635530775000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530774358,
+      metrics: [Object],
+      stepName: 'Go to bin'
+    }
+  ],
+  '1635530777000': [],
+  '1635530779000': []
+}
+
+FILTERED BUCKET OBJECT: 
+    - key is userId-stepName-normalizedTimestamp
+    - value is an array of data point(s) that belong to userId at that stepName during that normalizedTimestamp
+
+Example:
+{
+  'dn34u94-Go to bin-1635530769000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530769571,
+      metrics: [Object],  // Object has the form of { responseTime: 108 } - not normalized
+      stepName: 'Go to bin'
+    }
+  ],
+  'dn34u94-Load main page-1635530769000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530769069,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  'dn34u94-Go to bin-1635530771000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530771903,
+      metrics: [Object],
+      stepName: 'Go to bin'
+    }
+  ],
+  'dn34u94-Load main page-1635530771000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530771384,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  'dn34u94-Load main page-1635530773000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530773830,
+      metrics: [Object],
+      stepName: 'Load main page'
+    }
+  ],
+  'dn34u94-Go to bin-1635530775000': [
+    {
+      userId: 'dn34u94',
+      stepStartTime: 1635530774358,
+      metrics: [Object],
+      stepName: 'Go to bin'
+    }
+  ],
+  '1635530777000': [],
+  '1635530779000': []
+}
+
+FINAL BUCKET OBJECT:
+  - key: stepName-normalizedTimestamp
+  - value is an object. Inside the object, property is unique userId with their normalized metrics
+  - value: an object with 1 or more userIds as keys:
+                value: { metrics: { 
+                    normalizedResponseTime: 108
+                }}
+Example:
+{
+  'Go to bin-1635530769000': { dn34u94: { metrics: [Object] } },
+  'Load main page-1635530769000': { dn34u94: { metrics: [Object] } },
+  'Go to bin-1635530771000': { dn34u94: { metrics: [Object] } },
+  'Load main page-1635530771000': { dn34u94: { metrics: [Object] } },
+  'Load main page-1635530773000': { dn34u94: { metrics: [Object] } },
+  'Go to bin-1635530775000': { dn34u94: { metrics: [Object] } },
+  '1635530777000': {},
+  '1635530779000': {}
+}
