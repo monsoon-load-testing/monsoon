@@ -1,5 +1,6 @@
 const fs = require("fs");
 const AWS = require("aws-sdk");
+const { nanoid } = require("nanoid");
 
 (async () => {
   // Faking the polling logic where we reach out to the results folder
@@ -137,9 +138,15 @@ const AWS = require("aws-sdk");
 
     const s3 = new AWS.S3();
     for (let filename in finalBucket) {
+      // stepName-normalizedTimestamp
+      // if there is no data in the time window -> normalizedTimestamp
+      let [stepName, normalizedTimestamp] = filename.split("-");
+      if (!normalizedTimestamp) {
+        normalizedTimestamp = "noDataPointsForThisTimeWindow(s)";
+      }
       const params = {
         Bucket: BUCKET_NAME,
-        Key: `${filename}.json`, // File name you want to save as in S3
+        Key: `${normalizedTimestamp}/${stepName}/${nanoid(7)}.json`, // File name you want to save as in S3
         Body: JSON.stringify(finalBucket[filename]),
       };
       s3.upload(params, function (err, data) {
@@ -154,6 +161,11 @@ const AWS = require("aws-sdk");
   (async () => {
     await sleep(2999); // blocking sleep function
     downsample();
-    // writeToS3();
+    writeToS3();
   })();
 })();
+
+/*
+  - fix the final name of the json file: randomHash.json
+  - when sending to s3 bucket -> send in prefixes: normalizedTimestamp/stepName/randomHash.json
+*/
