@@ -1,5 +1,5 @@
-const { exec } = require('child_process');
-const fs = require('fs');
+const { exec } = require("child_process");
+const fs = require("fs");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
@@ -18,7 +18,6 @@ START_RAIN or START_STORM - Petrichor
   - Start X instances of runner and 1 instance of normalizer
 */
 
-
 async function fetchFile(fileName) {
   const paramsObj = {
     Bucket: "monsoon-load-testing-bucket",
@@ -27,7 +26,7 @@ async function fetchFile(fileName) {
 
   try {
     const obj = await s3.getObject(paramsObj).promise();
-    fs.writeFileSync(`./load-generation/petrichor/${fileName}`, obj.Body)    
+    fs.writeFileSync(`./load-generation/petrichor/${fileName}`, obj.Body);
   } catch (e) {
     console.log(e);
   }
@@ -36,7 +35,7 @@ async function fetchFile(fileName) {
 const executeCommand = (cmd, successCallback, errorCallback) => {
   exec(cmd, (error, stdout, stderr) => {
     if (error) {
-     // console.log(`error: ${error.message}`);
+      // console.log(`error: ${error.message}`);
       if (errorCallback) {
         errorCallback(error.message);
       }
@@ -56,7 +55,7 @@ const executeCommand = (cmd, successCallback, errorCallback) => {
   });
 };
 
-const startProcess = (numberOfUsers=5, success, error) => {
+const startProcess = (numberOfUsers = 5, success, error) => {
   let command = "";
   for (let i = 0; i < numberOfUsers; i++) {
     command = command + "node runner.js & ";
@@ -64,10 +63,10 @@ const startProcess = (numberOfUsers=5, success, error) => {
   command += "node normalizer.js";
   executeCommand(
     command,
-    branch => success(branch),
-    errormsg => error(errormsg)
+    (branch) => success(branch),
+    (errormsg) => error(errormsg)
   );
-}; 
+};
 
 (async () => {
   await fetchFile("test_script.js");

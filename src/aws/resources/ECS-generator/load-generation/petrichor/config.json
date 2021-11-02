@@ -1,0 +1,6 @@
+{
+  "TEST_LENGTH": 120000,
+  "TEST_UNIT": "milliseconds",
+  "ORIGIN_TIMESTAMP": 0,
+  "NUMBER_OF_USERS": 10
+}
