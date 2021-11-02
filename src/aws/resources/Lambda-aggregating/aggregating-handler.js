@@ -42,9 +42,19 @@ const aggregateAllContents = async (event) => {
 
   while (shouldContinue) {
     let res = await s3.listObjectsV2(params).promise();
-    // iterate across the 1000 objects in res and update data
-    // res.Data.forEach(item => reduce(item))
-    console.log(res);
+    let contents = res.Contents; // this is a list of up to 1000 S3 resources
+    let promises = contents.map((entry) => {
+      const Key = entry.Key; // access a property on entry and assign it to Key
+      const file = s3.getObject({ Bucket, Key }).promise();
+      return file;
+    });
+    let finishedPromises = await Promise.allSettled(promises);
+    console.log(finishedPromises.map((data) => JSON.parse(data.value.Body)));
+    // finishedPromises.forEach((obj) => {
+    //   console.log(obj);
+    //   // modify data based on obj from S3
+    // });
+
     if (!res.IsTruncated) {
       shouldContinue = false;
       nextContinuationToken = null;
@@ -60,38 +70,8 @@ const aggregateAllContents = async (event) => {
   return results;
 };
 
-/*
-// exports.handler = async (event, context) => {
-//   // TODO implement
-//   console.log(event);
-//   const bucket = event.Records[0].s3.bucket.name;
-//   console.log("bucket object:", event.Records[0].s3.bucket);
-//   console.log("bucket", bucket);
-//   const key = decodeURIComponent(
-//     event.Records[0].s3.object.key.replace(/\+/g, " ")
-//   );
-//   const params = {
-//     Bucket: bucket,
-//     Key: key,
-//   };
-//   const paramsList = {
-//     Bucket: bucket,
-//     Prefix: "raw/",
-//   };
-//   console.log(params);
-
-//   try {
-//     const { ContentType } = await s3.getObject(params).promise();
-//     const objectsInRaw = await s3.listObjectsV2(paramsList).promise();
-//     console.log("objectsInRaw:", objectsInRaw);
-//     console.log("content type:", ContentType);
-//     return ContentType;
-//   } catch (err) {
-//     console.log(err);
-//     const message = `Error getting object ${key} from bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
-//     console.log(message);
-//     throw new Error(message);
-//   }
-// };
-*/
+// AmazonS3FullAccess
+// CloudWatchFullAccess
+// CloudWatchLogsFullAccess
+// CloudWatchLambdaInsightsExecutionRolePolicy
 exports.handler = aggregateAllContents;
