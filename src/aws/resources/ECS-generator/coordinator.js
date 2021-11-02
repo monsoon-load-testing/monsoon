@@ -58,9 +58,9 @@ const executeCommand = (cmd, successCallback, errorCallback) => {
 const startProcess = (numberOfUsers = 5, success, error) => {
   let command = "";
   for (let i = 0; i < numberOfUsers; i++) {
-    command = command + "node runner.js & ";
+    command = command + "node ./load-generation/runner.js & ";
   }
-  command += "node normalizer.js";
+  command += "node ./normalization/normalizer.js";
   executeCommand(
     command,
     (branch) => success(branch),
@@ -70,6 +70,19 @@ const startProcess = (numberOfUsers = 5, success, error) => {
 
 (async () => {
   await fetchFile("test_script.js");
-  await fetchFile("config.json");
+  // await fetchFile("config.json");
+  const tempConfig = {
+    TEST_LENGTH: 120000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: 15_000,
+    ORIGIN_TIMESTAMP: Date.now(),
+    NUMBER_OF_USERS: 10,
+  };
+
+  fs.writeFileSync(
+    `./load-generation/petrichor/config.json`,
+    JSON.stringify(tempConfig)
+  );
+
   startProcess();
 })();

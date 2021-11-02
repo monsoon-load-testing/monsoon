@@ -1,7 +1,5 @@
 const puppeteer = require("puppeteer");
-const WeatherStation = require("../../../weather-station/dist/weather-station");
-
-Observer.configTest(1, 100, 0.5);
+const WeatherStation = require("../../weather-station/dist/weather-station");
 
 async function testScript(browser, page) {
   const weatherStation = new WeatherStation(browser, page, 123);
@@ -23,5 +21,5 @@ async function testScript(browser, page) {
 }
 
 module.exports = {
-  testScript
+  testScript,
 };

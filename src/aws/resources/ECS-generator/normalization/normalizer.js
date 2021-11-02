@@ -1,6 +1,9 @@
 const fs = require("fs");
 const AWS = require("aws-sdk");
 const { nanoid } = require("nanoid");
+const config = JSON.parse(
+  fs.readFileSync("../load-generation/petrichor/config.json", "utf-8")
+);
 
 (async () => {
   // Faking the polling logic where we reach out to the results folder
@@ -10,11 +13,10 @@ const { nanoid } = require("nanoid");
 
   await sleep(5_000);
 
-  const originTimestamp = 1635530769000; // hard-coded for dummyResults
-
-  // window is 2 seconds, testDuration is 10s
-  const timeWindow = 2000;
-  const testDuration = 10_000;
+  // constants
+  const originTimestamp = config.ORIGIN_TIMESTAMP;
+  const timeWindow = config.TIME_WINDOW;
+  const testDuration = config.TEST_LENGTH;
 
   const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
     let currentTime = originTimestamp;
@@ -42,13 +44,16 @@ const { nanoid } = require("nanoid");
 
   (async () => {
     try {
-      const filenames = await fs.promises.readdir("./results");
+      const filenames = await fs.promises.readdir("../load-generation/results");
       filenames.forEach(async (filename) => {
         const stepName = filename.split("-")[1];
 
-        let fileContents = await fs.promises.readFile(`./results/${filename}`, {
-          encoding: "utf-8",
-        });
+        let fileContents = await fs.promises.readFile(
+          `../load-generation/results/${filename}`,
+          {
+            encoding: "utf-8",
+          }
+        );
         fileContents = JSON.parse(fileContents);
         fileContents.stepName = stepName;
         for (let idx = 0; idx < normalizedTimestamps.length; idx++) {

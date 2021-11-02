@@ -47,11 +47,11 @@ class WeatherStation {
             },
         });
         const fileName = `${this.userId}-${this.stepName}-${this.stepStartTime}.json`;
-        const directoryName = "results";
+        const directoryName = "../results";
         if (!fs_1.default.existsSync(directoryName)) {
-            fs_1.default.mkdirSync("results");
+            fs_1.default.mkdirSync(directoryName);
         }
-        fs_1.default.writeFile(`./results/${fileName}`, json, (err) => {
+        fs_1.default.writeFile(`../results/${fileName}`, json, (err) => {
             if (err)
                 throw err;
             console.log(`${fileName} has been saved`);
