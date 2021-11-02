@@ -16,6 +16,7 @@ aggregate(event) void {}
 // {"dn34u94":{"metrics":{"normalizedResponseTime":108}}}
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({});
+const timestreamwrite = new AWS.TimestreamWrite({ region: "us-east-1" });
 
 // const Prefix = "130/Go to Main Page";
 const Bucket = "monsoon-load-testing-bucket";
@@ -38,7 +39,6 @@ const aggregateAllContents = async (event) => {
     Prefix: event.Prefix,
     ContinuationToken: nextContinuationToken || undefined,
   };
-  console.log(params);
 
   while (shouldContinue) {
     let res = await s3.listObjectsV2(params).promise();
@@ -49,11 +49,7 @@ const aggregateAllContents = async (event) => {
       return file;
     });
     let finishedPromises = await Promise.allSettled(promises);
-    // console.log(finishedPromises.map((data) => JSON.parse(data.value.Body)));
-    // {
-    //   "a": { "metrics": { "normalizedResponseTime": 461 } },
-    //   "b": { "metrics": { "normalizedResponseTime": 200 } }
-    // }
+
 
     finishedPromises.forEach((item) => {
       const obj = JSON.parse(item.value.Body);
@@ -77,11 +73,46 @@ const aggregateAllContents = async (event) => {
 
   results.concurrentUsers = accumulator.countUsers;
 
+  
+  // write to db example
+  const currentTime = Date.now().toString(); // Unix time in milliseconds
+  const [normalizedTimestamp, stepName] = event.Prefix.split("/");
+  
+  const dimensions = [
+    { Name: "stepName", Value: `${stepName}`}
+  ]
+
+
+  const responseTime = {
+    Dimensions: dimensions,
+    MeasureName: "response_time",
+    MeasureValue: results.averageResponseTime.toString(),
+    MeasureValueType: "DOUBLE",
+    Time: normalizedTimestamp
+  }
+  
+  const concurrentUsers = {
+    Dimensions: dimensions,
+    MeasureName: "concurrent_users",
+    MeasureValue: results.concurrentUsers.toString(),
+    MeasureValueType: "DOUBLE",
+    Time: normalizedTimestamp
+  }
+
+
+  const records = [responseTime, concurrentUsers];
+
+  const paramsWrite = {
+    DatabaseName: "monsoon",
+    TableName: "test1",
+    Records: records,
+  };
+
+  
+  const res = await timestreamwrite.writeRecords(paramsWrite).promise();
+  console.log(res);
+
   return results;
 };
 
-// AmazonS3FullAccess
-// CloudWatchFullAccess
-// CloudWatchLogsFullAccess
-// CloudWatchLambdaInsightsExecutionRolePolicy
 exports.handler = aggregateAllContents;
