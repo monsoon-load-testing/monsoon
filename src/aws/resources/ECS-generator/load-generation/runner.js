@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const { nanoid } = require("nanoid");
 const { testScript } = require("./petrichor/test_script");
 
 const config = JSON.parse(fs.readFileSync("./petrichor/config.json", "utf-8"));
@@ -14,11 +15,12 @@ async function runTest() {
   console.log("Headless chrome loaded. Starting the test:");
 
   const stopTime = ORIGIN_TIMESTAMP + TEST_LENGTH;
+  const userId = nanoid(6);
 
   while (Date.now() < stopTime) {
     await page.setCacheEnabled(false);
 
-    await testScript(browser, page);
+    await testScript(browser, page, userId);
 
     // delete local Storage
     await page.evaluate(() => {

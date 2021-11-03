@@ -92,7 +92,7 @@ const config = JSON.parse(
           normalizedTimestamp
         )}`;
         if (filteredBucket[key]) {
-          filteredBucket.push(dataPoint);
+          filteredBucket[key].push(dataPoint);
         } else {
           filteredBucket[key] = [dataPoint];
         }
@@ -169,8 +169,3 @@ const config = JSON.parse(
     writeToS3();
   })();
 })();
-
-/*
-  - fix the final name of the json file: randomHash.json
-  - when sending to s3 bucket -> send in prefixes: normalizedTimestamp/stepName/randomHash.json
-*/

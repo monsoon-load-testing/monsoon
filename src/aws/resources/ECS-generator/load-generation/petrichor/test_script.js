@@ -1,8 +1,8 @@
 const puppeteer = require("puppeteer");
 const WeatherStation = require("../../weather-station/dist/weather-station");
 
-async function testScript(browser, page) {
-  const weatherStation = new WeatherStation(browser, page, 123);
+async function testScript(browser, page, userId) {
+  const weatherStation = new WeatherStation(browser, page, userId);
 
   await weatherStation.startStep("Load main page");
   await page.goto("https://requestbin.rauldehevia.com");

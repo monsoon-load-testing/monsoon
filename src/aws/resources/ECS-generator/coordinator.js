@@ -56,23 +56,50 @@ const executeCommand = (cmd, successCallback, errorCallback) => {
 };
 
 const startProcess = (numberOfUsers = 5, success, error) => {
-  let command = "";
-  for (let i = 0; i < numberOfUsers; i++) {
-    command = command + "node ./load-generation/runner.js & ";
+  let commandRunner = "node runner.js";
+  for (let i = 0; i < numberOfUsers - 1; i++) {
+    commandRunner = commandRunner + " & node runner.js";
   }
-  command += "node ./normalization/normalizer.js";
+  let commandNormalizer = "node normalizer.js";
+  console.log(commandRunner);
+  console.log(commandNormalizer);
+
   executeCommand(
-    command,
+    "echo hi",
+    (branch) => success(branch),
+    (errormsg) => error(errormsg)
+  );
+  executeCommand(
+    "cd load-generation",
+    (branch) => success(branch),
+    (errormsg) => error(errormsg)
+  );
+
+  console.log(__dirname);
+  // /home/stephanie/monsoon/src/aws/resources/ECS-generator
+  // /home/stephanie/monsoon/src/aws/resources/ECS-generator/load-generation
+  executeCommand(
+    commandRunner,
+    (branch) => success(branch),
+    (errormsg) => error(errormsg)
+  );
+  executeCommand(
+    "cd ../normalization",
+    (branch) => success(branch),
+    (errormsg) => error(errormsg)
+  );
+  executeCommand(
+    commandNormalizer,
     (branch) => success(branch),
     (errormsg) => error(errormsg)
   );
 };
 
 (async () => {
-  await fetchFile("test_script.js");
+  // await fetchFile("test_script.js");
   // await fetchFile("config.json");
   const tempConfig = {
-    TEST_LENGTH: 120000,
+    TEST_LENGTH: 1200000,
     TEST_UNIT: "milliseconds",
     TIME_WINDOW: 15_000,
     ORIGIN_TIMESTAMP: Date.now(),
@@ -84,5 +111,9 @@ const startProcess = (numberOfUsers = 5, success, error) => {
     JSON.stringify(tempConfig)
   );
 
-  startProcess();
+  startProcess(
+    1,
+    () => {},
+    () => {}
+  );
 })();
