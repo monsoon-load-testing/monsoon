@@ -103,20 +103,19 @@ const handler = async (event) => {
 
   expiredTimestamps.forEach((timestamp) => {
     stepNames.forEach((stepName) => {
-      // invoke aggregatingLambda({ Prefix: `${timestamp}/${stepName}`})
       const Prefix = `${timestamp}/${stepName}`;
       const lambdaParams = {
         FunctionName: "Aggregating-Lambda",
-        InvocationType: "RequestResponse",
-        LogType: "Tail",
+        InvocationType: "Event",
+        LogType: "None",
         Payload: JSON.stringify({ Prefix }),
       };
-      lambda.invokeAsync(lambdaParams);
+      lambda.invoke(lambdaParams);
     });
   });
 
-  const newData = { timestamps: nonExpiredTimestamps, stepNames: stepNames };
-  const uploadParams = Object.assign({}, params, { Body: newData });
+  const body = JSON.stringify({ timestamps: nonExpiredTimestamps, stepNames: stepNames });
+  const uploadParams = {...params, Body: body};
   s3.upload(uploadParams, (err, data) => {
     if (err) {
       console.log("Error: ", err);
