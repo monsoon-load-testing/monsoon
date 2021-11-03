@@ -56,38 +56,20 @@ const executeCommand = (cmd, successCallback, errorCallback) => {
 };
 
 const startProcess = (numberOfUsers = 5, success, error) => {
-  let commandRunner = "node runner.js";
+  let commandRunner = "cd load-generation; node runner.js";
   for (let i = 0; i < numberOfUsers - 1; i++) {
     commandRunner = commandRunner + " & node runner.js";
   }
-  let commandNormalizer = "node normalizer.js";
+  let commandNormalizer = "cd normalization; node normalizer.js";
   console.log(commandRunner);
   console.log(commandNormalizer);
 
-  executeCommand(
-    "echo hi",
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
-  executeCommand(
-    "cd load-generation",
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
-
-  console.log(__dirname);
-  // /home/stephanie/monsoon/src/aws/resources/ECS-generator
-  // /home/stephanie/monsoon/src/aws/resources/ECS-generator/load-generation
   executeCommand(
     commandRunner,
     (branch) => success(branch),
     (errormsg) => error(errormsg)
   );
-  executeCommand(
-    "cd ../normalization",
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
+
   executeCommand(
     commandNormalizer,
     (branch) => success(branch),
@@ -96,8 +78,6 @@ const startProcess = (numberOfUsers = 5, success, error) => {
 };
 
 (async () => {
-  // await fetchFile("test_script.js");
-  // await fetchFile("config.json");
   const tempConfig = {
     TEST_LENGTH: 1200000,
     TEST_UNIT: "milliseconds",
@@ -113,7 +93,7 @@ const startProcess = (numberOfUsers = 5, success, error) => {
 
   startProcess(
     1,
-    () => {},
-    () => {}
+    (message) => console.log(message),
+    (error) => console.log(error)
   );
 })();

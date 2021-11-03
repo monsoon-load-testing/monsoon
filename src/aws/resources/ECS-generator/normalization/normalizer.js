@@ -112,7 +112,7 @@ const config = JSON.parse(
       const newKey = `${stepName}-${normalizedTimestamp}`;
 
       if (filteredBucket[key].length === 0) {
-        finalBucket[key] = {};
+        // finalBucket[key] = {};
       } else if (finalBucket[newKey]) {
         // if newKey already exists
         finalBucket[newKey][userId] = {
@@ -164,7 +164,7 @@ const config = JSON.parse(
   };
 
   (async () => {
-    await sleep(2999); // blocking sleep function
+    await sleep(60_000); // blocking sleep function
     downsample();
     writeToS3();
   })();
