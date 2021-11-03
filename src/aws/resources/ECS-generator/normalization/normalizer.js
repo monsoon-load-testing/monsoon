@@ -67,7 +67,7 @@ const buildFinalBucket = (filteredBucket) => {
     filteredBucket[key].forEach((dataPoint) => {
       sum += dataPoint.metrics.responseTime;
     });
-    const normalizedResponseTime = sum / filteredBucket[key].length;
+    const normalizedResponseTime = Math.round(sum / filteredBucket[key].length);
     const [userId, stepName, normalizedTimestamp] = key.split("-");
     const newKey = `${stepName}-${normalizedTimestamp}`;
 
