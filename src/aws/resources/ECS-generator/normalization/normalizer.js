@@ -11,7 +11,7 @@ const config = JSON.parse(
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
-  await sleep(5_000);
+  await sleep(65_000); // assume the test runs for 1 min, and normalizer only run once after the test finishes
 
   // constants
   const originTimestamp = config.ORIGIN_TIMESTAMP;
@@ -164,7 +164,7 @@ const config = JSON.parse(
   };
 
   (async () => {
-    await sleep(60_000); // blocking sleep function
+    await sleep(5000); // sleep for 5s so that the intermediate bucket can extract the data
     downsample();
     writeToS3();
   })();
