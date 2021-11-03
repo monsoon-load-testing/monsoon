@@ -136,10 +136,10 @@ const config = JSON.parse(
 
   const writeToS3 = () => {
     const BUCKET_NAME = "monsoon-load-testing-bucket";
-    AWS.config.update({
-      accessKeyId: process.env.AWS_ACC_KEY,
-      secretAccessKey: process.env.AWS_SECRET_KEY,
-    });
+    // AWS.config.update({
+    //   accessKeyId: process.env.AWS_ACC_KEY,
+    //   secretAccessKey: process.env.AWS_SECRET_KEY,
+    // });
 
     const s3 = new AWS.S3();
     for (let filename in finalBucket) {
