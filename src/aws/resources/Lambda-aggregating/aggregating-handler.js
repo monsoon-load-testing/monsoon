@@ -43,6 +43,9 @@ const aggregateAllContents = async (event) => {
   while (shouldContinue) {
     let res = await s3.listObjectsV2(params).promise();
     let contents = res.Contents; // this is a list of up to 1000 S3 resources
+    if (contents.length === 0) {
+      return "contents are empty";  
+    }
     let promises = contents.map((entry) => {
       const Key = entry.Key; // access a property on entry and assign it to Key
       const file = s3.getObject({ Bucket, Key }).promise();
