@@ -70,3 +70,60 @@ ALGO:
 
     S3.put(nonExpiredTimestamps)
 */
+
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3({});
+const lambda = new AWS.Lambda();
+
+// const Prefix = "130/Go to Main Page";
+
+const handler = async (event) => {
+  const EXPIRATION_TIME = 2 * 60_000;
+  const currentTime = Date.now();
+  const expirationTimestamp = currentTime - EXPIRATION_TIME;
+
+  const params = {
+    Bucket: "monsoon-load-testing-bucket",
+    Key: "timestamps.json",
+  };
+  const timestampsFile = await s3.getObject(params).promise();
+  const { timestamps, stepNames } = JSON.parse(timestampsFile.value.Body);
+
+  const expiredTimestamps = [];
+  let nonExpiredTimestamps = [];
+
+  for (let i = 0; i < timestamps.length; i++) {
+    if (timestamps[i] <= expirationTimestamp) {
+      expiredTimestamps.push(timestamps[i]);
+    } else {
+      nonExpiredTimestamps = timestamps.slice(i);
+      break;
+    }
+  }
+
+  expiredTimestamps.forEach((timestamp) => {
+    stepNames.forEach((stepName) => {
+      // invoke aggregatingLambda({ Prefix: `${timestamp}/${stepName}`})
+      const Prefix = `${timestamp}/${stepName}`;
+      const lambdaParams = {
+        FunctionName: "Aggregating-Lambda",
+        InvocationType: "RequestResponse",
+        LogType: "Tail",
+        Payload: JSON.stringify({ Prefix }),
+      };
+      lambda.invokeAsync(lambdaParams);
+    });
+  });
+
+  const newData = { timestamps: nonExpiredTimestamps, stepNames: stepNames };
+  const uploadParams = Object.assign({}, params, { Body: newData });
+  s3.upload(uploadParams, (err, data) => {
+    if (err) {
+      console.log("Error: ", err);
+    } else {
+      console.log("timestamps.json re-upload success.", data.location);
+    }
+  });
+};
+
+exports.handler = handler;
