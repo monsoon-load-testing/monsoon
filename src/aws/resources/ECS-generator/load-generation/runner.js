@@ -10,7 +10,13 @@ const ORIGIN_TIMESTAMP = config.ORIGIN_TIMESTAMP;
 
 async function runTest() {
   console.log("Loading headless chrome...");
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+    ],
+  });
   const page = await browser.newPage();
   console.log("Headless chrome loaded. Starting the test:");
 
