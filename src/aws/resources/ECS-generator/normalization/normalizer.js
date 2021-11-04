@@ -123,6 +123,37 @@ const writeToS3 = () => {
   }
 };
 
+const writeToLocal = () => {
+  for (let filename in finalBucket) {
+    // stepName-normalizedTimestamp
+    // if there is no data in the time window -> normalizedTimestamp
+    let [stepName, normalizedTimestamp] = filename.split("-");
+    if (!normalizedTimestamp) {
+      normalizedTimestamp = "noDataPointsForThisTimeWindow(s)";
+    }
+    const outPutFileName = `${normalizedTimestamp}-${stepName}-${nanoid(
+      7
+    )}.json`;
+    const directoryName = "./output";
+    if (!fs.existsSync(directoryName)) {
+      fs.mkdirSync(directoryName);
+    }
+
+    const json = JSON.stringify(finalBucket[filename]);
+    console.log(json);
+    fs.writeFile(`${directoryName}/${outPutFileName}`, json, (err) => {
+      // if (err) throw err;
+      if (err)
+        throw new Error(
+          `${normalizedTimestamp}, ${stepName}, ${outPutFileName}`
+        );
+      console.log(`${outPutFileName} has been saved`);
+    });
+  }
+  // buckets = {};
+  // finalBucket = {};
+};
+
 async function doNormalization() {
   await sleep(15_000); // initial offset
 
@@ -167,7 +198,8 @@ async function doNormalization() {
 
     await sleep(5000); // sleep for 5s so that the intermediate bucket can extract the data
     downsample();
-    writeToS3();
+    // writeToS3();
+    writeToLocal();
   }
 }
 

@@ -93,7 +93,7 @@ const startProcess = (numberOfUsers = 5, success, error) => {
   // await fetchFile("test_script.js");
 
   startProcess(
-    1,
+    5,
     (message) => console.log(message),
     (error) => console.log(error)
   );

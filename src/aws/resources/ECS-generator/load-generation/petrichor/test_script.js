@@ -6,7 +6,7 @@ async function testScript(browser, page, userId) {
 
   await weatherStation.startStep("Load main page");
   await page.goto("https://requestbin.rauldehevia.com");
-  await weatherStation.endStep("Load main page");
+  await weatherStation.endStep("Load main page", 5_000);
 
   await page.type("input", "p9c-yf");
 
@@ -15,7 +15,7 @@ async function testScript(browser, page, userId) {
     page.waitForNavigation(),
     page.click("button[class*=green]"),
   ]);
-  await weatherStation.endStep("Go to bin");
+  await weatherStation.endStep("Go to bin", 5_000);
   await page.click("button[class*=green]");
   weatherStation.endTest();
 }
