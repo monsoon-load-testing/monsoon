@@ -85,12 +85,12 @@ const startProcess = (numberOfUsers = 5, success, error) => {
     ORIGIN_TIMESTAMP: Date.now(),
     NUMBER_OF_USERS: 10,
   };
-  // await fetchFile("config.json");
-  // await fetchFile("test_script.js");
   fs.writeFileSync(
     `./load-generation/petrichor/config.json`,
     JSON.stringify(tempConfig)
   );
+  // await fetchFile("config.json");
+  // await fetchFile("test_script.js");
 
   startProcess(
     1,
