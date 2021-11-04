@@ -30,7 +30,7 @@ class WeatherStation {
         this.writePointToFS();
         this.resetObserver();
         if (delay) {
-            this.sleep(delay);
+            await this.sleep(delay);
         }
     }
     resetObserver() {
