@@ -3,5 +3,4 @@ Dockerfile
 test-jest
 results
 node_modules
-.dockerignore
 package-lock.json
