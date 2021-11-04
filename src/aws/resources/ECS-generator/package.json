@@ -11,6 +11,6 @@
   "dependencies": {
     "aws-sdk": "^2.1019.0",
     "nanoid": "^3.1.30",
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^10.0.0"
   }
 }
