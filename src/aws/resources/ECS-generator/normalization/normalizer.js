@@ -198,8 +198,8 @@ async function doNormalization() {
 
     await sleep(5000); // sleep for 5s so that the intermediate bucket can extract the data
     downsample();
-    // writeToS3();
-    writeToLocal();
+    writeToS3();
+    // writeToLocal();
   }
 }
 
