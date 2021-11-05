@@ -70,16 +70,16 @@ const startProcess = (numberOfUsers = 5, success, error) => {
     (errormsg) => error(errormsg)
   );
 
-  executeCommand(
-    commandNormalizer,
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
+  // executeCommand(
+  //   commandNormalizer,
+  //   (branch) => success(branch),
+  //   (errormsg) => error(errormsg)
+  // );
 };
 
 (async () => {
   const tempConfig = {
-    TEST_LENGTH: 1200000,
+    TEST_LENGTH: 1 * 60 * 60 * 1000,
     TEST_UNIT: "milliseconds",
     TIME_WINDOW: 15_000,
     ORIGIN_TIMESTAMP: Date.now(),
@@ -93,7 +93,7 @@ const startProcess = (numberOfUsers = 5, success, error) => {
   // await fetchFile("test_script.js");
 
   startProcess(
-    5,
+    2,
     (message) => console.log(message),
     (error) => console.log(error)
   );
