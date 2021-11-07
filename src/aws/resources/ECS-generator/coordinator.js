@@ -2,21 +2,8 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
-
-/*
-MENTAL MODEL:
- - coordinator tells config.js to fetch script and config from s3 bucket
- - Start X instances of runner and 1 instance of normalizer
-*/
-
-/*
-START_RAIN or START_STORM - Petrichor
-  - Gets test script from location (S3 prod, local file test)
-  - Gets total test length from location (S3 prod, local file test)
-  - Gets Origin Timestamp from location (S3 prod, local file test)
-  - Gets number of users from location (S3 prod, local file test)
-  - Start X instances of runner and 1 instance of normalizer
-*/
+const pm2 = require('pm2')
+const { cwd } = require("process")
 
 async function fetchFile(fileName) {
   const paramsObj = {
@@ -55,35 +42,40 @@ const executeCommand = (cmd, successCallback, errorCallback) => {
   });
 };
 
-const startProcess = (numberOfUsers = 5, success, error) => {
-  let commandRunner = "cd load-generation; node runner.js";
-  for (let i = 0; i < numberOfUsers - 1; i++) {
-    commandRunner = commandRunner + " & node runner.js";
-  }
-  let commandNormalizer = "cd normalization; node normalizer.js";
-  console.log(commandRunner);
-  console.log(commandNormalizer);
+const startProcess = (success, error) => {
+  pm2.connect(function(err) {
+    if (err) {
+      console.error(err)
+      process.exit(2)
+    }
+  
+    pm2.start({
+      cwd: `${cwd()}/load-generation`,
+      script: 'runner.js',
+      autorestart: false,
+      max_memory_restart: "350M"
+      }, (err, apps) => {
+        if (err) { throw err }
+      })
+    });
 
-  executeCommand(
-    commandRunner,
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
+  // const commandNormalizer = "cd normalization; node normalizer.js";
 
-  executeCommand(
-    commandNormalizer,
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
+  // executeCommand(
+  //   commandNormalizer,
+  //   (branch) => success(branch),
+  //   (errormsg) => error(errormsg)
+  // );
 };
 
 (async () => {
   const tempConfig = {
-    TEST_LENGTH: 1 * 60 * 60 * 1000,
+    TEST_LENGTH: 1 * 1 * 15 * 1000,
     TEST_UNIT: "milliseconds",
     TIME_WINDOW: 15_000,
     ORIGIN_TIMESTAMP: Date.now(),
     NUMBER_OF_USERS: 10,
+    STEP_GRACE_PERIOD: 30 * 1000
   };
   fs.writeFileSync(
     `./load-generation/petrichor/config.json`,
@@ -93,8 +85,10 @@ const startProcess = (numberOfUsers = 5, success, error) => {
   // await fetchFile("test_script.js");
 
   startProcess(
-    5,
     (message) => console.log(message),
     (error) => console.log(error)
   );
+  setTimeout(() => {
+    pm2.delete("runner", (err, apps) => pm2.disconnect());
+  }, tempConfig.TEST_LENGTH + tempConfig.STEP_GRACE_PERIOD)
 })();

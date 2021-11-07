@@ -1,8 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
-const { nanoid } = require("nanoid");
-const { testScript } = require("./petrichor/test_script");
-
+// const { nanoid } = require("nanoid");
+const { testScript } = require("./petrichor/test_script.js");
 const config = JSON.parse(fs.readFileSync("./petrichor/config.json", "utf-8"));
 
 const TEST_LENGTH = config.TEST_LENGTH;
@@ -14,29 +13,6 @@ function promiseMapper(userId, promise) {
     promise.finally(() => resolve(userId));
   });
 }
-
-/*
-
-- runTest rename to runMultipleTest(numberOfUsers=5)
-- runTest (browser, userId)
-ALGO runMultipleTest:
- - if Date.now() >  stopTime -> return;
- - const browser=....
- - const promisesMap = {}
- - add 5 promises to promisesMap (key is the userId)
- - while promisesMap is not empty
-  - userId = await Promise.race(...)
-  - delete promisesMap[userId]
-  - if (Date.now() <  stopTime)
-    - add the promise to promisesMap
- - browser.close()
-ALGO runTest(browser, userId)
-  const incognito = ...
-  const page = ...
-  await testScript(incognito, page, userId)
-  await page.close
-  await incognito.close
-*/
 
 async function runMultipleTest(numberOfUsers = 5) {
   if (Date.now() > STOP_TIME) return;
@@ -74,38 +50,5 @@ async function runTest(browser, userId) {
   await page.close();
   await incognito.close();
 }
-
-// async function runMultipleTestSS(numberOfUsers = 5) {
-//   console.log("Loading headless chrome...");
-//   const browser = await puppeteer.launch({
-//     args: [
-//       "--no-sandbox",
-//       "--disable-setuid-sandbox",
-//       "--disable-dev-shm-usage",
-//     ],
-//   });
-//   const page = await browser.newPage();
-//   console.log("Headless chrome loaded. Starting the test:");
-
-//   const stopTime = ORIGIN_TIMESTAMP + TEST_LENGTH;
-//   const userId = nanoid(6);
-
-//   while (Date.now() < stopTime) {
-//     await page.setCacheEnabled(false);
-
-//     await testScript(browser, page, userId);
-
-//     // delete local Storage
-//     await page.evaluate(() => {
-//       localStorage.clear();
-//     });
-
-//     // delete cookies
-//     const client = await page.target().createCDPSession();
-//     await client.send("Network.clearBrowserCookies");
-//   }
-
-//   await browser.close();
-// }
 
 runMultipleTest();
