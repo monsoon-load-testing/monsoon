@@ -78,19 +78,19 @@ const startProcess = (numberOfUsers = 5, success, error) => {
 };
 
 (async () => {
-  // const tempConfig = {
-  //   TEST_LENGTH: 1 * 60 * 60 * 1000,
-  //   TEST_UNIT: "milliseconds",
-  //   TIME_WINDOW: 15_000,
-  //   ORIGIN_TIMESTAMP: Date.now(),
-  //   NUMBER_OF_USERS: 10,
-  // };
-  // fs.writeFileSync(
-  //   `./load-generation/petrichor/config.json`,
-  //   JSON.stringify(tempConfig)
-  // );
-  await fetchFile("config.json");
-  await fetchFile("test_script.js");
+  const tempConfig = {
+    TEST_LENGTH: 1 * 60 * 60 * 1000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: 15_000,
+    ORIGIN_TIMESTAMP: Date.now(),
+    NUMBER_OF_USERS: 10,
+  };
+  fs.writeFileSync(
+    `./load-generation/petrichor/config.json`,
+    JSON.stringify(tempConfig)
+  );
+  // await fetchFile("config.json");
+  // await fetchFile("test_script.js");
 
   startProcess(
     5,
