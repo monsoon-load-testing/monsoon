@@ -71,13 +71,14 @@ async function fetchFile(fileName) {
   }
 }
 
-let timestampsObj;
-let normalizedTimestamps;
+// Uncomment for prototype
+// let timestampsObj;
+// let normalizedTimestamps;
 
-(async () => {
-  timestampsObj = await fetchFile("timestamps.json");
-  normalizedTimestamps = timstampsObj.timestamps;
-})(); // The fetching should be finished before the normalizedTimestamps is used again.
+// (async () => {
+//   timestampsObj = await fetchFile("timestamps.json");
+//   normalizedTimestamps = timestampsObj.timestamps;
+// })(); // The fetching should be finished before the normalizedTimestamps is used.
 
 const originTimestamp = config.ORIGIN_TIMESTAMP;
 const timeWindow = config.TIME_WINDOW;
@@ -106,6 +107,24 @@ const writeToS3 = async (finalBucket) => {
 };
 
 // for excel testing
+const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
+  let currentTime = originTimestamp;
+  const normalizedTimestamps = [];
+  const finalTimestamp = originTimestamp + testDuration;
+  while (currentTime < finalTimestamp) {
+    normalizedTimestamps.push(currentTime);
+    currentTime += timeWindow;
+  }
+  normalizedTimestamps.push(finalTimestamp);
+  return normalizedTimestamps;
+};
+
+const normalizedTimestamps = initializeTimestamps(
+  timeWindow,
+  testDuration,
+  originTimestamp
+);
+
 const writeToLocal = async (finalBucket) => {
   for (let filename in finalBucket) {
     let [stepName, normalizedTimestamp] = filename.split("-");
@@ -127,7 +146,6 @@ const writeToLocal = async (finalBucket) => {
 async function doNormalization() {
   await sleep(initialOffset);
 
-  let count = 0;
   let shouldRunningNormalization = true;
   while (shouldRunningNormalization) {
     await sleep(pollingTime); // polling
@@ -157,14 +175,11 @@ async function doNormalization() {
       }
 
       if (shouldProcess) {
-        // loop through again filenames -> fileContents
-        // process data (while also deleting those files)
-        // if fileContents.stepStartTime >= lowerBound && fileContents.stepStartTime < upperBound
         let buckets = {};
         let filteredBucket = {};
         let finalBucket = {};
         buckets[normalizedTimestamps[0]] = [];
-        // filename = userId-stepName-stepStartTime - refactor to one function
+        // filename: userId-stepName-stepStartTime - refactor to one function
         for (let filename of filenames) {
           let fileContents = await fs.promises.readFile(
             `../load-generation/results/${filename}`,
