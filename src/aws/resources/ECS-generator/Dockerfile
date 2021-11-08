@@ -30,5 +30,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /home/app
 COPY . .
 # RUN npm config set unsafe-perm true
+RUN npm install -g pm2
 RUN npm install
 CMD ["node", "coordinator.js"]
