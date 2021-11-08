@@ -86,6 +86,7 @@ const testDuration = config.TEST_LENGTH;
 const initialOffset = 15_000; // should cover the case where average response time of a request is 3s
 const pollingTime = 15_000; // our use case
 
+// function definitions
 const writeToS3 = async (finalBucket) => {
   const BUCKET_NAME = "monsoon-load-testing-bucket";
 
@@ -104,6 +105,25 @@ const writeToS3 = async (finalBucket) => {
   }
 };
 
+// for excel testing
+const writeToLocal = async (finalBucket) => {
+  for (let filename in finalBucket) {
+    let [stepName, normalizedTimestamp] = filename.split("-");
+    const outPutFileName = `${normalizedTimestamp}-${stepName}-${nanoid(
+      7
+    )}.json`;
+    const directoryName = "./output";
+    if (!fs.existsSync(directoryName)) {
+      fs.mkdirSync(directoryName);
+    }
+
+    const json = JSON.stringify(finalBucket[filename]);
+    console.log(json);
+    await fs.promises.writeFile(`${directoryName}/${outPutFileName}`, json);
+  }
+};
+
+// main logic
 async function doNormalization() {
   await sleep(initialOffset);
 
@@ -206,7 +226,8 @@ async function doNormalization() {
           }
         });
         // send to S3 bucket
-        await writeToS3(finalBucket);
+        // await writeToS3(finalBucket);
+        await writeToLocal(finalBucket);
         normalizedTimestamps.shift();
       }
     } catch (err) {
