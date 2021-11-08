@@ -79,7 +79,7 @@ const startProcess = (numberOfUsers = 5, success, error) => {
 
 (async () => {
   // const tempConfig = {
-  //   TEST_LENGTH: 1 * 60 * 60 * 1000,
+  //   TEST_LENGTH: 60 * 1000,
   //   TEST_UNIT: "milliseconds",
   //   TIME_WINDOW: 15_000,
   //   ORIGIN_TIMESTAMP: Date.now(),
