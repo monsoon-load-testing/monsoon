@@ -84,6 +84,7 @@ const startProcess = (success, error) => {
   // await fetchFile("config.json");
   // await fetchFile("test_script.js");
 
+
   startProcess(
     (message) => console.log(message),
     (error) => console.log(error)
