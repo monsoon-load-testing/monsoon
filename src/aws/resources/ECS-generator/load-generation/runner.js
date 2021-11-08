@@ -15,7 +15,7 @@ function promiseMapper(userId, promise) {
 }
 
 async function runMultipleTest(numberOfUsers = 5) {
-  if (Date.now() > STOP_TIME) return;
+  if (Date.now() >= STOP_TIME) return;
 
   const browser = await puppeteer.launch({
     args: [
@@ -33,7 +33,7 @@ async function runMultipleTest(numberOfUsers = 5) {
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
     delete concurrentTestPromisesMap[userId];
-    if (Date.now() <= STOP_TIME) {
+    if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
         userId,
         runTest(browser, userId)

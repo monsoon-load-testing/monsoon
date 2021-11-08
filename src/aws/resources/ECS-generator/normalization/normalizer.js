@@ -147,11 +147,13 @@ async function doNormalization() {
   await sleep(initialOffset);
 
   let shouldRunningNormalization = true;
+
   while (shouldRunningNormalization) {
     await sleep(pollingTime); // polling
     let shouldProcess = false;
-    if (normalizedTimestamps.length === 0) {
-      shouldRunningNormalization = false;
+    if (normalizedTimestamps.length === 1) {
+      shouldRunningNormaliation = false;
+      shouldProcess = false;
       break;
     }
     const [lowerBound, upperBound] = [
@@ -228,6 +230,7 @@ async function doNormalization() {
               metrics: {
                 normalizedResponseTime,
               },
+              sampleCount: filteredBucket[key].length,
             };
           } else {
             // newKey doesn't exist yet
@@ -236,6 +239,7 @@ async function doNormalization() {
                 metrics: {
                   normalizedResponseTime,
                 },
+                sampleCount: filteredBucket[key].length,
               },
             };
           }
@@ -249,6 +253,80 @@ async function doNormalization() {
       await fs.promises.writeFile(`./log/error.json`, JSON.stringify(err));
     }
   }
-}
 
+  await sleep(60_000); // sleep for 1 min before processing the last batch
+  const filenames = await fs.promises.readdir("../load-generation/results");
+  const [lowerBound, upperBound] = [
+    normalizedTimestamps[0] - timeWindow / 2,
+    normalizedTimestamps[0] + timeWindow / 2,
+  ];
+  let buckets = {};
+  let filteredBucket = {};
+  let finalBucket = {};
+  buckets[normalizedTimestamps[0]] = [];
+  // filename: userId-stepName-stepStartTime - refactor to one function
+  for (let filename of filenames) {
+    let fileContents = await fs.promises.readFile(
+      `../load-generation/results/${filename}`,
+      { encoding: "utf-8" }
+    );
+    fileContents = JSON.parse(fileContents);
+
+    if (
+      fileContents.stepStartTime >= lowerBound &&
+      fileContents.stepStartTime < upperBound
+    ) {
+      // delete the current file
+      // future work: the deletion process doesnt have to be await -> make it background job
+      await fs.promises.unlink(`../load-generation/results/${filename}`);
+      const stepName = filename.split("-")[1];
+      fileContents.stepName = stepName;
+      buckets[normalizedTimestamps[0]].push(fileContents);
+    }
+  }
+  // filteredBucket -> just the normalizedTimestamps[0] batch - reactor to one function
+  buckets[normalizedTimestamps[0]].forEach((dataPoint) => {
+    const key = `${dataPoint.userId}-${dataPoint.stepName}-${normalizedTimestamps[0]}`;
+    if (filteredBucket[key]) {
+      filteredBucket[key].push(dataPoint);
+    } else {
+      filteredBucket[key] = [dataPoint];
+    }
+  });
+
+  // // build finalBucket -> just the nromalizedTiemstamps[0] batch - refactor to one function
+  Object.keys(filteredBucket).forEach((key) => {
+    let sum = 0;
+    filteredBucket[key].forEach((dataPoint) => {
+      sum += dataPoint.metrics.responseTime;
+    });
+    const normalizedResponseTime = Math.round(sum / filteredBucket[key].length);
+    const [userId, stepName, normalizedTimestamp] = key.split("-");
+    const newKey = `${stepName}-${normalizedTimestamp}`;
+
+    if (finalBucket[newKey]) {
+      // if newKey already exists
+      finalBucket[newKey][userId] = {
+        metrics: {
+          normalizedResponseTime,
+        },
+        ampleCount: filteredBucket[key].length,
+      };
+    } else {
+      // newKey doesn't exist yet
+      finalBucket[newKey] = {
+        [userId]: {
+          metrics: {
+            normalizedResponseTime,
+          },
+          ampleCount: filteredBucket[key].length,
+        },
+      };
+    }
+  });
+  // send to S3 bucket
+  // await writeToS3(finalBucket);
+  await writeToLocal(finalBucket);
+  normalizedTimestamps.shift();
+}
 doNormalization();
