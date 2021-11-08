@@ -47,7 +47,9 @@ const setMetronomeLambdaPermissions = async () => {
     Action: "lambda:InvokeFunction",
     FunctionName: "Metronome-Lambda",
     Principal: "events.amazonaws.com",
-    StatementId: `invoke_metronome_lambda_every_1_${Math.random()}`,
+    StatementId: `invoke_metronome_lambda_every_1_${Math.random()
+      .toString()
+      .slice(2)}`,
     SourceArn:
       "arn:aws:events:us-east-1:270778738836:rule/invoke-metronome-lambda-rule",
   };
@@ -61,7 +63,9 @@ const setDummyMetronomeLambdaPermissions = async () => {
     Action: "lambda:InvokeFunction",
     FunctionName: "dummyMetronomeLambda",
     Principal: "events.amazonaws.com",
-    StatementId: "invoke_metronome_lambda_every_1_min",
+    StatementId: `invoke_metronome_lambda_every_1_${Math.random()
+      .toString()
+      .slice(2)}`,
     SourceArn:
       "arn:aws:events:us-east-1:270778738836:rule/invoke-metronome-lambda-rule",
   };
