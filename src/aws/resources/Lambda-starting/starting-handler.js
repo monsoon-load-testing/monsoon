@@ -207,11 +207,11 @@ exports.handler = async (event) => {
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
-            value: "AKIAT6C5LVCKDAWUGB5I",
+            value: "KEY-xxxxxx", // replace this on private startingLambda
           },
           {
             name: "AWS_SECRET_ACCESS_KEY",
-            value: "IY8+/9xYMJ+rfI8gdJhDWF/YEevKp8gwq3JFVo/a",
+            value: "KEY-xxxxxx", // replace this on private startingLambda
           },
         ],
       },
