@@ -1,7 +1,13 @@
 const { parse } = require("json2csv");
 const fs = require("fs");
 
-const fields = ["userId", "stepName", "stepStartTime", "responseTime"];
+const fields = [
+  "userId",
+  "stepName",
+  "stepStartTime",
+  "responseTime",
+  "sampleCount",
+];
 (async () => {
   // const data = [];
   const promises = [];
@@ -19,17 +25,23 @@ const fields = ["userId", "stepName", "stepStartTime", "responseTime"];
     stepStartTimes.push(stepStartTime);
     stepNames.push(stepName);
   });
-  const data = (await Promise.all(promises)).map((json, idx) => {
-    const { userId, stepStartTime, metrics } = JSON.parse(json);
-    const stepName = stepNames[idx];
-    const stepStartTime = stepStartTimes[idx];
-    return {
-      userId,
-      stepName,
-      stepStartTime,
-      responseTime: metrics.normalizedResponseTime,
-    };
+
+  const data = (await Promise.all(promises)).flatMap((json, idx) => {
+    const obj = JSON.parse(json);
+    const entries = [];
+    Object.keys(obj).forEach((userId) => {
+      const { metrics, sampleCount } = obj[userId];
+      entries.push({
+        userId,
+        stepName: stepNames[idx],
+        stepStartTime: stepStartTimes[idx],
+        responseTime: metrics.normalizedResponseTime,
+        sampleCount,
+      });
+    });
+    return entries;
   });
+  console.log(data);
   try {
     const csv = parse(data, { fields });
     const directoryName = "./csv";
