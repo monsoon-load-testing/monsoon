@@ -66,11 +66,11 @@ const startProcess = (success, error) => {
 
   const commandNormalizer = "cd normalization; node normalizer.js";
 
-  executeCommand(
-    commandNormalizer,
-    (branch) => success(branch),
-    (errormsg) => error(errormsg)
-  );
+  // executeCommand(
+  //   commandNormalizer,
+  //   (branch) => success(branch),
+  //   (errormsg) => error(errormsg)
+  // );
 };
 
 (async () => {
