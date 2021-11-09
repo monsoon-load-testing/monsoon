@@ -50,9 +50,11 @@ Algorithm:
 const fs = require("fs");
 const AWS = require("aws-sdk");
 const { nanoid } = require("nanoid");
+
 const config = JSON.parse(
   fs.readFileSync("../load-generation/petrichor/config.json", "utf-8")
 );
+
 const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -87,6 +89,25 @@ const testDuration = config.TEST_LENGTH;
 const initialOffset = 15_000; // should cover the case where average response time of a request is 3s
 const pollingTime = 15_000; // our use case
 
+// we can let each container do this calculation and will not need to fetch timestamps from the S3 bucket
+const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
+  let currentTime = originTimestamp;
+  const normalizedTimestamps = [];
+  const finalTimestamp = originTimestamp + testDuration;
+  while (currentTime < finalTimestamp) {
+    normalizedTimestamps.push(currentTime);
+    currentTime += timeWindow;
+  }
+  normalizedTimestamps.push(finalTimestamp);
+  return normalizedTimestamps;
+};
+
+const normalizedTimestamps = initializeTimestamps(
+  timeWindow,
+  testDuration,
+  originTimestamp
+);
+
 // function definitions
 const writeToS3 = async (finalBucket) => {
   const BUCKET_NAME = "monsoon-load-testing-bucket";
@@ -107,24 +128,6 @@ const writeToS3 = async (finalBucket) => {
 };
 
 // for excel testing
-const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
-  let currentTime = originTimestamp;
-  const normalizedTimestamps = [];
-  const finalTimestamp = originTimestamp + testDuration;
-  while (currentTime < finalTimestamp) {
-    normalizedTimestamps.push(currentTime);
-    currentTime += timeWindow;
-  }
-  normalizedTimestamps.push(finalTimestamp);
-  return normalizedTimestamps;
-};
-
-const normalizedTimestamps = initializeTimestamps(
-  timeWindow,
-  testDuration,
-  originTimestamp
-);
-
 const writeToLocal = async (finalBucket) => {
   for (let filename in finalBucket) {
     let [stepName, normalizedTimestamp] = filename.split("-");
@@ -245,8 +248,8 @@ async function doNormalization() {
           }
         });
         // send to S3 bucket
-        // await writeToS3(finalBucket);
-        await writeToLocal(finalBucket);
+        await writeToS3(finalBucket);
+        // await writeToLocal(finalBucket);
         normalizedTimestamps.shift();
       }
     } catch (err) {
@@ -325,8 +328,8 @@ async function doNormalization() {
     }
   });
   // send to S3 bucket
-  // await writeToS3(finalBucket);
-  await writeToLocal(finalBucket);
+  await writeToS3(finalBucket);
+  // await writeToLocal(finalBucket);
   normalizedTimestamps.shift();
 }
 doNormalization();
