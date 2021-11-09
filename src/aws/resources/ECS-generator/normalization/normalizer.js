@@ -152,7 +152,7 @@ async function doNormalization() {
     await sleep(pollingTime); // polling
     let shouldProcess = false;
     if (normalizedTimestamps.length === 1) {
-      shouldRunningNormaliation = false;
+      shouldRunningNormalization = false; // RdH typo fixed (used to read Normaliation)
       shouldProcess = false;
       break;
     }
