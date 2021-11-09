@@ -19,29 +19,6 @@ async function fetchFile(fileName) {
   }
 }
 
-const executeCommand = (cmd, successCallback, errorCallback) => {
-  exec(cmd, (error, stdout, stderr) => {
-    if (error) {
-      // console.log(`error: ${error.message}`);
-      if (errorCallback) {
-        errorCallback(error.message);
-      }
-      return;
-    }
-    if (stderr) {
-      //console.log(`stderr: ${stderr}`);
-      if (errorCallback) {
-        errorCallback(stderr);
-      }
-      return;
-    }
-    //console.log(`stdout: ${stdout}`);
-    if (successCallback) {
-      successCallback(stdout);
-    }
-  });
-};
-
 const startProcess = (success, error) => {
   pm2.connect(function (err) {
     if (err) {
@@ -53,8 +30,22 @@ const startProcess = (success, error) => {
       {
         cwd: `${cwd()}/load-generation`,
         script: "runner.js",
-        autorestart: false,
-        max_memory_restart: "350M",
+        autorestart: true,
+        max_memory_restart: "250M",
+      },
+      (err, apps) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+
+    pm2.start(
+      {
+        cwd: `${cwd()}/normalization`,
+        script: "normalizer.js",
+        autorestart: true,
+        max_memory_restart: "250M",
       },
       (err, apps) => {
         if (err) {
@@ -63,14 +54,6 @@ const startProcess = (success, error) => {
       }
     );
   });
-
-  const commandNormalizer = "cd normalization; node normalizer.js";
-
-  // executeCommand(
-  //   commandNormalizer,
-  //   (branch) => success(branch),
-  //   (errormsg) => error(errormsg)
-  // );
 };
 
 (async () => {
@@ -80,7 +63,7 @@ const startProcess = (success, error) => {
     TIME_WINDOW: 15_000,
     ORIGIN_TIMESTAMP: Date.now(),
     NUMBER_OF_USERS: 10,
-    STEP_GRACE_PERIOD: 30 * 1000,
+    STEP_GRACE_PERIOD: 120 * 1000,
   };
   fs.writeFileSync(
     `./load-generation/petrichor/config.json`,
@@ -96,5 +79,6 @@ const startProcess = (success, error) => {
 
   setTimeout(() => {
     pm2.delete("runner", (err, apps) => pm2.disconnect());
+    pm2.delete("normalizer", (err, apps) => pm2.disconnect());
   }, tempConfig.TEST_LENGTH + tempConfig.STEP_GRACE_PERIOD);
 })();
