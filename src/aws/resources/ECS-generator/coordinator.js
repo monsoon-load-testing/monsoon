@@ -4,6 +4,10 @@ const s3 = new AWS.S3();
 const pm2 = require("pm2");
 const { cwd } = require("process");
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 async function fetchFile(fileName) {
   const paramsObj = {
     Bucket: "monsoon-load-testing-bucket",
@@ -70,6 +74,17 @@ const startProcess = (success, error) => {
   // );
   await fetchFile("config.json");
   await fetchFile("test_script.js");
+
+  const originTimestamp = JSON.parse(
+    fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
+  ).ORIGIN_TIMESTAMP;
+
+  const currentTime = Date.now();
+
+  const waitTime =
+    currentTime < originTimestamp ? originTimestamp - currentTime : 0;
+
+  await sleep(waitTime);
 
   startProcess(
     (message) => console.log(message),

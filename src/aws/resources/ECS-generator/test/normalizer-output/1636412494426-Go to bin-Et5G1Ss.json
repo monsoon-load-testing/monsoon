@@ -1,7 +1,0 @@
-{
-  "1": { "metrics": { "normalizedResponseTime": 124 }, "sampleCount": 2 },
-  "2": { "metrics": { "normalizedResponseTime": 121 }, "sampleCount": 2 },
-  "3": { "metrics": { "normalizedResponseTime": 124 }, "sampleCount": 2 },
-  "4": { "metrics": { "normalizedResponseTime": 121 }, "sampleCount": 2 },
-  "5": { "metrics": { "normalizedResponseTime": 123 }, "sampleCount": 2 }
-}

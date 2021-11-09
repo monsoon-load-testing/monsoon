@@ -1,7 +1,13 @@
 node_modules/
-results
 jspm_packages/
 output
+
+# project specific
+results
+output
+load-gen-results
+normalizer-output
+csv
 
 # TypeScript v1 declaration files
 typings/
