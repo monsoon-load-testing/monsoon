@@ -8,6 +8,7 @@ const removeTarget = async () => {
   const targetParams = {
     Rule: ruleName,
     Ids: ["MetronomeLambdaTriggeredByEventBridgeRule"],
+    Force: true
   };
   await EventBridge.removeTargets(targetParams).promise();
 };
@@ -15,6 +16,7 @@ const removeTarget = async () => {
 const deleteRule = async () => {
   const params = {
     Name: ruleName,
+    Force: true
   };
   await EventBridge.deleteRule(params).promise();
 };
@@ -22,7 +24,7 @@ const deleteRule = async () => {
 const removeMetronomePermissions = async () => {
   const params = {
     FunctionName: "Metronome-Lambda",
-    StatementId: "Invoke_metronome_lambda_every_1_min",
+    StatementId: "Invoke_metronome_lambda_every_1_min1",
   };
 
   await lambda.removePermission(params).promise();
@@ -43,11 +45,11 @@ const handler = async (event) => {
   const { timestamps, stepNames } = JSON.parse(timestampsFile.Body);
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
-    (async () => {
-      await removeTarget();
-      await deleteRule();
-      await removeMetronomePermissions();
-    })();
+
+    await removeMetronomePermissions();
+    await removeTarget();
+    await deleteRule();
+    return;
   }
 
   const expiredTimestamps = [];
