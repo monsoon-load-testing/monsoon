@@ -1,6 +1,7 @@
 node_modules/
 results
 jspm_packages/
+output
 
 # TypeScript v1 declaration files
 typings/

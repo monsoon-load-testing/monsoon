@@ -16,9 +16,8 @@ const addTarget = async () => {
     Rule: ruleName,
     Targets: [
       {
-        // Arn: "arn:aws:lambda:us-east-1:270778738836:function:dummyMetronomeLambda",
         Arn: "arn:aws:lambda:us-east-1:270778738836:function:Metronome-Lambda",
-        Id: "dummyMetronomeLambdaTriggeredByEventBridgeRule",
+        Id: "MetronomeLambdaTriggeredByEventBridgeRule",
       },
     ],
   };
@@ -36,20 +35,15 @@ const createRule = async () => {
 
   await EventBridge.putRule(ruleParams).promise();
   await setMetronomeLambdaPermissions();
-  // await setDummyMetronomeLambdaPermissions();
   await addTarget();
 };
 
-// REAL METRONOME LAMBDA
-// WE HAVEN'T TESTED THIS COCE, BUT THE SAME CODE WORKS FOR DUMMY METROMONE LAMBDA
 const setMetronomeLambdaPermissions = async () => {
   const paramsAddPermission = {
     Action: "lambda:InvokeFunction",
     FunctionName: "Metronome-Lambda",
     Principal: "events.amazonaws.com",
-    StatementId: `invoke_metronome_lambda_every_1_${Math.random()
-      .toString()
-      .slice(2)}`,
+    StatementId: "Invoke_metronome_lambda_every_1_min",
     SourceArn:
       "arn:aws:events:us-east-1:270778738836:rule/invoke-metronome-lambda-rule",
   };
@@ -57,21 +51,6 @@ const setMetronomeLambdaPermissions = async () => {
   await lambda.addPermission(paramsAddPermission).promise();
 };
 
-// DUMMY METRONOME LAMBDA
-const setDummyMetronomeLambdaPermissions = async () => {
-  const paramsAddPermission = {
-    Action: "lambda:InvokeFunction",
-    FunctionName: "dummyMetronomeLambda",
-    Principal: "events.amazonaws.com",
-    StatementId: `invoke_metronome_lambda_every_1_${Math.random()
-      .toString()
-      .slice(2)}`,
-    SourceArn:
-      "arn:aws:events:us-east-1:270778738836:rule/invoke-metronome-lambda-rule",
-  };
-
-  await lambda.addPermission(paramsAddPermission).promise();
-};
 /*
 NOTE: 
 The dummyMetronomeLambda needs permission to talk to EventBridge, S3, Logs -> 
@@ -98,11 +77,12 @@ const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
 };
 
 const configObj = {
-  TEST_LENGTH: 1_200_000,
+  TEST_LENGTH: 1 * 5 * 60 * 1000,
   TEST_UNIT: "milliseconds",
   TIME_WINDOW: 15_000,
   ORIGIN_TIMESTAMP: Date.now(),
   NUMBER_OF_USERS: 10,
+  STEP_GRACE_PERIOD: 120 * 1000,
 };
 
 const normalizedTimestamps = {
@@ -149,24 +129,13 @@ prototype scenario: one task definition -> two containers -> 10 users
   
   problems:
     - figure out the memory and cpu the container is using (for lambda, there is aws memory optomization, is there some for ecs, containers?) - until we fix memory leak and the normalizer
-    - the time between the current timeOriginStamp and the time that the first container spins up is too far away. need a fix
-    - how the startingLambda can pass AWS config to the containers (see other capstone projects and see their practice)
-
-  - timeOriginTimestamp possible solution for production:
-      - the user starts at 5:04:30 -> originTimestamp = 5:04:30
-          Create a originTimestamp = originTimestamp + 1min = 5:05:30
-          During this one min, containers are spinning up
-          After one min, all containers should be in RUNNING state
-          inside container: each container checks if Date.now() >= checkTimestamp -> start the test
-      - create another lambda to check if the first container is spinned up
-      - a stepFunction
 */
 
 const vpcId = "vpc-0c4ee5abc1c7a6a06"; // hard-coded
 
 // calling lambda handler
 exports.handler = async (event) => {
-  await createRule();
+  // await createRule();
   await s3.upload(params).promise();
   await s3.upload(params2).promise();
 
@@ -199,8 +168,8 @@ exports.handler = async (event) => {
 
   // Create task definition
   const taskParams = {
-    memory: "0.5GB",
-    cpu: "0.25 vCPU",
+    memory: "2GB",
+    cpu: "1 vCPU",
     executionRoleArn: "ecsTaskExecutionRole",
     taskRoleArn: "ecsTaskExecutionRole",
     networkMode: "awsvpc",
@@ -211,11 +180,11 @@ exports.handler = async (event) => {
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
-            value: "KEY-xxxxxx", // replace this on private startingLambda
+            value: "KEY-XXXX",
           },
           {
             name: "AWS_SECRET_ACCESS_KEY",
-            value: "KEY-xxxxxx", // replace this on private startingLambda
+            value: "KEY-XXXX",
           },
         ],
       },
