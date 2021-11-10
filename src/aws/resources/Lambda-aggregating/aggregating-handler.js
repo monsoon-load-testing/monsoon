@@ -19,7 +19,8 @@ const s3 = new AWS.S3({});
 const timestreamwrite = new AWS.TimestreamWrite({ region: "us-east-1" });
 
 // const Prefix = "130/Go to Main Page";
-const Bucket = "monsoon-load-testing-bucket";
+// const Bucket = "monsoon-load-testing-bucket";
+const Bucket = process.env.BUCKET;
 const aggregateAllContents = async (event) => {
   // repeatedly calling AWS list objects because it only returns 1000 objects
   const accumulator = {
@@ -44,7 +45,7 @@ const aggregateAllContents = async (event) => {
     let res = await s3.listObjectsV2(params).promise();
     let contents = res.Contents; // this is a list of up to 1000 S3 resources
     if (contents.length === 0) {
-      return "contents are empty";  
+      return "contents are empty";
     }
     let promises = contents.map((entry) => {
       const Key = entry.Key; // access a property on entry and assign it to Key
@@ -52,7 +53,6 @@ const aggregateAllContents = async (event) => {
       return file;
     });
     let finishedPromises = await Promise.allSettled(promises);
-
 
     finishedPromises.forEach((item) => {
       const obj = JSON.parse(item.value.Body);
@@ -76,32 +76,27 @@ const aggregateAllContents = async (event) => {
 
   results.concurrentUsers = accumulator.countUsers;
 
-  
   // write to db example
   const currentTime = Date.now().toString(); // Unix time in milliseconds
   const [normalizedTimestamp, stepName] = event.Prefix.split("/");
-  
-  const dimensions = [
-    { Name: "stepName", Value: `${stepName}`}
-  ]
 
+  const dimensions = [{ Name: "stepName", Value: `${stepName}` }];
 
   const responseTime = {
     Dimensions: dimensions,
     MeasureName: "response_time",
     MeasureValue: results.averageResponseTime.toString(),
     MeasureValueType: "DOUBLE",
-    Time: normalizedTimestamp
-  }
-  
+    Time: normalizedTimestamp,
+  };
+
   const concurrentUsers = {
     Dimensions: dimensions,
     MeasureName: "concurrent_users",
     MeasureValue: results.concurrentUsers.toString(),
     MeasureValueType: "DOUBLE",
-    Time: normalizedTimestamp
-  }
-
+    Time: normalizedTimestamp,
+  };
 
   const records = [responseTime, concurrentUsers];
 
@@ -111,7 +106,6 @@ const aggregateAllContents = async (event) => {
     Records: records,
   };
 
-  
   const res = await timestreamwrite.writeRecords(paramsWrite).promise();
   console.log(res);
 

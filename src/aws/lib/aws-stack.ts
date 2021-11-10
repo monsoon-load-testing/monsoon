@@ -1,5 +1,6 @@
-import * as cdk from '@aws-cdk/core';
-import { AggregatingLambda } from './aggregating-lambda';
+import * as cdk from "@aws-cdk/core";
+import { AggregatingLambda } from "./aggregating-lambda";
+import * as s3 from "@aws-cdk/aws-s3";
 // import * as sqs from '@aws-cdk/aws-sqs';
 
 export class AwsStack extends cdk.Stack {
@@ -7,9 +8,12 @@ export class AwsStack extends cdk.Stack {
     super(scope, id, props);
 
     // The code that defines your stack goes here
-
-    const aggregatingLambda = new AggregatingLambda(this, "aggregating-lambda-test", {bucketName: "dummy-bucket"});
-
+    const bucket = new s3.Bucket(this, "monsoon-bucket-dummy");
+    const aggregatingLambda = new AggregatingLambda(
+      this,
+      "aggregating-lambda-test",
+      { bucketName: bucket.bucketName }
+    );
 
     // example resource
     // const queue = new sqs.Queue(this, 'AwsQueue', {
