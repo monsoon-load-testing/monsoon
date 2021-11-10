@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-// import * as sqs from '@aws-cdk/aws-sqs';
+import { S3 } from './s3';
 
 export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -11,5 +11,8 @@ export class AwsStack extends cdk.Stack {
     // const queue = new sqs.Queue(this, 'AwsQueue', {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
+    const bucket = new S3(this, "ms-dummy-monsoon-load-testing");
+    // extract details
+    console.log('bucketArn', bucket.bucket.bucketArn)
   }
 }
