@@ -2,7 +2,8 @@ import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import * as path from "path";
-export class AggregatingLambda extends cdk.Construct {
+
+export class MetronomeLambda extends cdk.Construct {
   scope: cdk.Construct;
   id: string;
   props: any;
@@ -24,15 +25,15 @@ export class AggregatingLambda extends cdk.Construct {
       ManagedPolicy.fromAwsManagedPolicyName("AWSLambda_FullAccess")
     );
     lambdaRole.addManagedPolicy(
-      ManagedPolicy.fromAwsManagedPolicyName("AmazonTimestreamFullAccess")
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonEventBridgeFullAccess")
     );
 
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(
-        path.join(__dirname, "/../resources/Lambda-aggregating")
+        path.join(__dirname, "/../resources/Lambda-metronome")
       ),
-      handler: "aggregating-handler.handler",
+      handler: "metronome-handler.handler",
       environment: {
         BUCKET: props.bucketName,
       },

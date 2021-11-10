@@ -8,7 +8,7 @@ const removeTarget = async () => {
   const targetParams = {
     Rule: ruleName,
     Ids: ["MetronomeLambdaTriggeredByEventBridgeRule"],
-    Force: true
+    Force: true,
   };
   await EventBridge.removeTargets(targetParams).promise();
 };
@@ -16,7 +16,7 @@ const removeTarget = async () => {
 const deleteRule = async () => {
   const params = {
     Name: ruleName,
-    Force: true
+    Force: true,
   };
   await EventBridge.deleteRule(params).promise();
 };
@@ -63,8 +63,8 @@ const handler = async (event) => {
       break;
     }
   }
-  
-  const promises = []
+
+  const promises = [];
   expiredTimestamps.forEach((timestamp) => {
     stepNames.forEach((stepName) => {
       const Prefix = `${timestamp}/${stepName}`;
@@ -77,10 +77,13 @@ const handler = async (event) => {
       promises.push(lambda.invoke(lambdaParams).promise());
     });
   });
-  const res = await Promise.allSettled(promises)      
+  const res = await Promise.allSettled(promises);
   console.log("invocations", res);
-  const body = JSON.stringify({ timestamps: nonExpiredTimestamps, stepNames: stepNames});
-  const uploadParams = {...params, Body: body};
+  const body = JSON.stringify({
+    timestamps: nonExpiredTimestamps,
+    stepNames: stepNames,
+  });
+  const uploadParams = { ...params, Body: body };
   await s3.upload(uploadParams).promise();
 };
 

@@ -1,6 +1,7 @@
 import * as cdk from "@aws-cdk/core";
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
+import { MetronomeLambda } from "./metronome-lambda";
 // import * as sqs from '@aws-cdk/aws-sqs';
 
 export class AwsStack extends cdk.Stack {
@@ -11,9 +12,12 @@ export class AwsStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, "monsoon-bucket-dummy");
     const aggregatingLambda = new AggregatingLambda(
       this,
-      "aggregating-lambda-test",
+      "aggregating-lambda",
       { bucketName: bucket.bucketName }
     );
+    const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
+      bucketName: bucket.bucketName,
+    });
 
     // example resource
     // const queue = new sqs.Queue(this, 'AwsQueue', {
