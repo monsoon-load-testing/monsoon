@@ -61,7 +61,7 @@ const startProcess = (success, error) => {
 
 (async () => {
   // const tempConfig = {
-  //   TEST_LENGTH: 1 * 1 * 60 * 1000,
+  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
   //   TEST_UNIT: "milliseconds",
   //   TIME_WINDOW: 15_000,
   //   ORIGIN_TIMESTAMP: Date.now(),
@@ -75,10 +75,11 @@ const startProcess = (success, error) => {
   await fetchFile("config.json");
   await fetchFile("test_script.js");
 
-  const originTimestamp = JSON.parse(
+  const config = JSON.parse(
     fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
-  ).ORIGIN_TIMESTAMP;
+  );
 
+  const originTimestamp = config.ORIGIN_TIMESTAMP;
   const currentTime = Date.now();
 
   const waitTime =
@@ -98,5 +99,5 @@ const startProcess = (success, error) => {
   setTimeout(() => {
     pm2.delete("runner", (err, apps) => pm2.disconnect());
     pm2.delete("normalizer", (err, apps) => pm2.disconnect());
-  }, 60_000 + 500_000);
+  }, config.TEST_LENGTH + config.STEP_GRACE_PERIOD);
 })();
