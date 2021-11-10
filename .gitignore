@@ -8,6 +8,7 @@ output
 load-gen-results
 normalizer-output
 csv
+package-lock.json
 
 # TypeScript v1 declaration files
 typings/
