@@ -264,8 +264,8 @@ async function doNormalization() {
           }
         });
         // send to S3 bucket
-        // await writeToS3(finalBucket);
-        await writeToLocal(finalBucket);
+        await writeToS3(finalBucket);
+        // await writeToLocal(finalBucket);
         normalizedTimestamps.shift();
       } else {
         if (noNextDataPoint) {
@@ -340,8 +340,8 @@ async function doNormalization() {
             }
           });
           // send to S3 bucket
-          // await writeToS3(finalBucket);
-          await writeToLocal(finalBucket);
+          await writeToS3(finalBucket);
+          // await writeToLocal(finalBucket);
           normalizedTimestamps.shift();
         } else {
           noNextDataPoint = true;
@@ -425,8 +425,8 @@ async function doNormalization() {
     }
   });
   // send to S3 bucket
-  // await writeToS3(finalBucket);
-  await writeToLocal(finalBucket);
+  await writeToS3(finalBucket);
+  // await writeToLocal(finalBucket);
   normalizedTimestamps.shift();
 }
 

@@ -60,43 +60,44 @@ const startProcess = (success, error) => {
 };
 
 (async () => {
-  const tempConfig = {
-    TEST_LENGTH: 1 * 2 * 60 * 1000,
-    TEST_UNIT: "milliseconds",
-    TIME_WINDOW: 15_000,
-    ORIGIN_TIMESTAMP: Date.now(),
-    NUMBER_OF_USERS: 10,
-    STEP_GRACE_PERIOD: 180 * 1000,
-  };
-  fs.writeFileSync(
-    `./load-generation/petrichor/config.json`,
-    JSON.stringify(tempConfig)
+  // const tempConfig = {
+  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
+  //   TEST_UNIT: "milliseconds",
+  //   TIME_WINDOW: 15_000,
+  //   ORIGIN_TIMESTAMP: Date.now(),
+  //   NUMBER_OF_USERS: 10,
+  //   STEP_GRACE_PERIOD: 120 * 1000,
+  // };
+  // fs.writeFileSync(
+  //   `./load-generation/petrichor/config.json`,
+  //   JSON.stringify(tempConfig)
+  // );
+  await fetchFile("config.json");
+  await fetchFile("test_script.js");
+
+  const config = JSON.parse(
+    fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
   );
-  // await fetchFile("config.json");
-  // await fetchFile("test_script.js");
 
-  // const originTimestamp = JSON.parse(
-  //   fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
-  // ).ORIGIN_TIMESTAMP;
+  const originTimestamp = config.ORIGIN_TIMESTAMP;
+  const currentTime = Date.now();
 
-  // const currentTime = Date.now();
+  const waitTime =
+    currentTime < originTimestamp ? originTimestamp - currentTime : 0;
 
-  // const waitTime =
-  //   currentTime < originTimestamp ? originTimestamp - currentTime : 0;
-
-  // await sleep(waitTime);
+  await sleep(waitTime);
 
   startProcess(
     (message) => console.log(message),
     (error) => console.log(error)
   );
 
-  setTimeout(() => {
-    pm2.delete("runner", (err, apps) => pm2.disconnect());
-    pm2.delete("normalizer", (err, apps) => pm2.disconnect());
-  }, tempConfig.TEST_LENGTH + tempConfig.STEP_GRACE_PERIOD);
   // setTimeout(() => {
   //   pm2.delete("runner", (err, apps) => pm2.disconnect());
   //   pm2.delete("normalizer", (err, apps) => pm2.disconnect());
-  // }, 60_000 + 500_000);
+  // }, tempConfig.TEST_LENGTH + tempConfig.STEP_GRACE_PERIOD);
+  setTimeout(() => {
+    pm2.delete("runner", (err, apps) => pm2.disconnect());
+    pm2.delete("normalizer", (err, apps) => pm2.disconnect());
+  }, config.TEST_LENGTH + config.STEP_GRACE_PERIOD);
 })();
