@@ -21,12 +21,12 @@ export class AggregatingLambda extends cdk.Construct {
     
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset("aggregating-lambda-test"),
+      code: lambda.Code.fromAsset(path.join(__dirname,"/../resources/Lambda-aggregating")),
       handler: "aggregating-handler.handler",
       environment: {
         BUCKET: props.bucketName,
       },
-      // role: lambdaRole
+      role: lambdaRole
     });
   }
 }
