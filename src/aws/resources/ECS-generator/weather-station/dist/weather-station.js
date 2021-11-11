@@ -47,12 +47,18 @@ class WeatherStation {
     }
     async measure(stepName, script, delay = 0) {
         await this.startStep(stepName);
+        let timeoutId;
         try {
+            timeoutId = setTimeout(() => new Error("Step took too long to complete. Max 10s"), 10000);
             await script();
+            clearTimeout(timeoutId);
+            timeoutId = undefined;
             await this.endStep(delay);
         }
         catch (error) {
             await this.endStep(delay, error);
+            if (timeoutId !== undefined)
+                clearTimeout(timeoutId);
         }
     }
     resetMeasures() {

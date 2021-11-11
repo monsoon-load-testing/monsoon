@@ -119,11 +119,16 @@ class WeatherStation {
 
   public async measure(stepName: string, script: script, delay: delay = 0) {
     await this.startStep(stepName);
+    let timeoutId;
     try {
+      timeoutId = setTimeout(() => new Error("Step took too long to complete. Max 10s"),10_000);
       await script();
+      clearTimeout(timeoutId);
+      timeoutId = undefined;
       await this.endStep(delay)
     } catch (error: any) {
       await this.endStep(delay, error)
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
     }
   }
 
