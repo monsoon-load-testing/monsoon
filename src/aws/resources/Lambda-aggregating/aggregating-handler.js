@@ -102,7 +102,7 @@ const aggregateAllContents = async (event) => {
 
   const paramsWrite = {
     DatabaseName: "monsoon",
-    TableName: "test1",
+    TableName: "test1", // tableName shouldd be dynamic. e.g. timeOrigin
     Records: records,
   };
 

@@ -8,21 +8,24 @@ export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-    const bucket = new s3.Bucket(this, "monsoon-bucket-dummy");
+    const bucket = new s3.Bucket(this, "monsoon-bucket-dummy", {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
     const aggregatingLambda = new AggregatingLambda(
       this,
       "aggregating-lambda",
       { bucketName: bucket.bucketName }
     );
-    const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
-      bucketName: bucket.bucketName,
-    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'AwsQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
+      ruleName: "invoke-metronome-lambda-rule",
+      targetId: "MetronomeLambdaTriggeredByEventBridgeRule",
+      permissionStatementId: "Invoke_metronome_lambda_every_1_min",
+      bucketName: bucket.bucketName,
+      aggregatingLambdaName: aggregatingLambda.handler.functionName,
+    });
   }
 }
 /*
@@ -31,8 +34,3 @@ AGGREGATING LAMBDA
 TIMESTREAM
 S3 BUCKET (dummy)
 */
-
-// const lambdaRole = new iam.Role(this, 'lambda_basic_execution', {
-//   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-// });
-// lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambda_FullAccess'));

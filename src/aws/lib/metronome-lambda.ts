@@ -31,11 +31,16 @@ export class MetronomeLambda extends cdk.Construct {
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(
-        path.join(__dirname, "/../resources/Lambda-metronome")
+        path.join(__dirname, "/../resources/Lambda-metronome"),
+        { exclude: ["node_modules", "package.json", "package-lock.json"] }
       ),
       handler: "metronome-handler.handler",
       environment: {
+        RULE_NAME: props.ruleName,
+        TARGET_ID: props.targetId,
+        PERMISSION_STATEMENT_ID: props.permissionStatementId,
         BUCKET: props.bucketName,
+        AGGREGATING_LAMBDA_NAME: props.aggregatingLambdaName,
       },
       role: lambdaRole,
     });
