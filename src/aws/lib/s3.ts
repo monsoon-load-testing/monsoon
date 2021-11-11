@@ -10,6 +10,8 @@ export class S3 extends cdk.Construct {
     super(scope, id);
     // define the s3
 
-    this.bucket = new s3.Bucket(this, id)
+    this.bucket = new s3.Bucket(this, id, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    })
   }
 }
