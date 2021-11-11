@@ -20,11 +20,15 @@ startingLambda:
   - figure out role policies (only the needed ones)
 
 ECS:
-  - create a custom vpc
-  - extract vpc-id
-  - extract user's IAM credentials and plug in
-  - calculate how many concurrent users from CLI and determine how many tasks and plug in
-  - create an ecsTaskExecutionRole for the taskDefinition -> pass the name of the policy to startingLambda
+  - create a custom vpc DONE
+  - extract vpc-id DONE
+  - dynamically pass IAM credentials to startingLambda DONE
+  - extract user's IAM credentials and plug in -> CLI problem
+  - calculate how many concurrent users from CLI and determine how many tasks and plug in for desiredCount
+  - create an ecsTaskExecutionRole for the taskDefinition -> pass the name of the policy to startingLambda DONE
+  - auto delete service after testLength (sdk problem) -> metronome problem
+  - move crete cluster to cdk level DONE
+  - clusterName not working
 
 General solution:
   - pass everything to environment variables in the startingLambda
@@ -33,6 +37,10 @@ General solution:
   - add extra properties on instances in the construct (ex: this.bucket) to solve circular dependencies
   - use available cdk methods (for example: grantReadWrite)
 
+Stretch goal:
+  - can we place the S3 inside the vpc? (Probably not, amazon will go broke)
+  - dynamically locate vpc regions
+  - extract and use all availability zones
 
 import * as cdk from "@aws-cdk/core";
 import { MyLambda } from "./my_lambda";
@@ -65,3 +73,9 @@ export class MyBucket extends cdk.Construct {
     this.bucket = new s3.Bucket(this, id);
   }
 }
+
+this.s3 = new s3.Bucket(this, 'EkkoBucket', {
+      versioned: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true
+    });

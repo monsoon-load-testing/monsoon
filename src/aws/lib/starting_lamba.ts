@@ -18,10 +18,6 @@ export class StartingLambda extends cdk.Construct {
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'));
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchFullAccess'));
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'));
-    // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaExecute'));
-    // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECSTaskExecutionRolePolicy'));
-    // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaBasicExecutionRole'));
-    // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaRole'));
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEventBridgeFullAccess'));
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambda_FullAccess'));
     
@@ -36,7 +32,11 @@ export class StartingLambda extends cdk.Construct {
         metronomeLambdaName: props.metronomeLambdaName,
         timeWindow: props.timeWindow,
         testLengthInMinutes: props.testLengthInMinutes,
-        numberOfUsers: props.numberOfUsers
+        numberOfUsers: props.numberOfUsers,
+        vpcId: props.vpcId,
+        clusterName: props.clusterName,
+        access_key: props.access_key,
+        secret_access_key: props.secret_access_key
       },
       role: lambdaRole,
     });

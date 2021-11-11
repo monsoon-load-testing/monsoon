@@ -140,7 +140,7 @@ prototype scenario: one task definition -> two containers -> 10 users
     - figure out the memory and cpu the container is using (for lambda, there is aws memory optomization, is there some for ecs, containers?) - until we fix memory leak and the normalizer
 */
 
-const vpcId = "vpc-0c4ee5abc1c7a6a06"; // hard-coded
+const vpcId = process.env.vpcId;
 
 // calling lambda handler
 exports.handler = async (event) => {
@@ -148,7 +148,6 @@ exports.handler = async (event) => {
   await s3.upload(params).promise();
   await s3.upload(params2).promise();
 
-  // Retrieve vpc-id (default vpc) from somewhere - thinking of creating a new vpc cluster for the user's IAM account instead.
   const subnetParams = {
     Filters: [
       {
@@ -162,18 +161,6 @@ exports.handler = async (event) => {
   const response = await ec2.describeSubnets(subnetParams).promise();
   const subnets = response.Subnets.map((subnet) => subnet.SubnetId);
   const [subnet1, subnet2] = [subnets[0], subnets[1]];
-  // console.log('subnet1', subnet1)
-  // console.log('subnet2', subnet2)
-
-  // Create a cluster
-  const clusterName = "startingLambdaTest";
-
-  let clusterParams = {
-    clusterName,
-  };
-
-  const clusterResponse = await ecs.createCluster(clusterParams).promise();
-  // console.log(clusterResponse)
 
   // Create task definition
   const taskParams = {
@@ -189,11 +176,15 @@ exports.handler = async (event) => {
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
-            value: "KEY-XXXX",
+            value: process.env.AWS_ACCESS_KEY_ID,
           },
           {
             name: "AWS_SECRET_ACCESS_KEY",
-            value: "KEY-XXXX",
+            value: process.env.AWS_SECRET_ACCESS_KEY,
+          },
+          {
+            name: "bucketName",
+            value: process.env.bucketName,
           },
         ],
       },
@@ -201,13 +192,12 @@ exports.handler = async (event) => {
     family: "ecs-prototype-test-one-container",
   };
 
-  const taskResponse = await ecs.registerTaskDefinition(taskParams).promise();
-  // console.log(taskResponse)
+  await ecs.registerTaskDefinition(taskParams).promise();
 
   // Create a service
   const createServiceParams = {
     desiredCount: 2, // number of tasks
-    cluster: clusterName,
+    cluster: process.env.clusterName,
     serviceName: "monsoon-prototype",
     taskDefinition: "ecs-prototype-test-one-container",
     launchType: "FARGATE",
@@ -219,10 +209,7 @@ exports.handler = async (event) => {
     },
   };
 
-  const createServiceResponse = await ecs
-    .createService(createServiceParams)
-    .promise();
-  // console.log(createServiceResponse)
+  await ecs.createService(createServiceParams).promise();
 };
 
 // *****************************************************
