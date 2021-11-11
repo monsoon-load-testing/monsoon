@@ -43,37 +43,37 @@ const startProcess = (success, error) => {
       }
     );
 
-    pm2.start(
-      {
-        cwd: `${cwd()}/normalization`,
-        script: "normalizer.js",
-        autorestart: true,
-        max_memory_restart: "250M",
-      },
-      (err, apps) => {
-        if (err) {
-          throw err;
-        }
-      }
-    );
+    // pm2.start(
+      // {
+        // cwd: `${cwd()}/normalization`,
+        // script: "normalizer.js",
+        // autorestart: true,
+        // max_memory_restart: "250M",
+      // },
+      // (err, apps) => {
+        // if (err) {
+          // throw err;
+        // }
+      // }
+    // );
   });
 };
 
 (async () => {
-  // const tempConfig = {
-  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
-  //   TEST_UNIT: "milliseconds",
-  //   TIME_WINDOW: 15_000,
-  //   ORIGIN_TIMESTAMP: Date.now(),
-  //   NUMBER_OF_USERS: 10,
-  //   STEP_GRACE_PERIOD: 120 * 1000,
-  // };
-  // fs.writeFileSync(
-  //   `./load-generation/petrichor/config.json`,
-  //   JSON.stringify(tempConfig)
-  // );
-  await fetchFile("config.json");
-  await fetchFile("test_script.js");
+  const tempConfig = {
+    TEST_LENGTH: 1 * 2 * 60 * 1000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: 15_000,
+    ORIGIN_TIMESTAMP: Date.now(),
+    NUMBER_OF_USERS: 10,
+    STEP_GRACE_PERIOD: 120 * 1000,
+  };
+  fs.writeFileSync(
+    `./load-generation/petrichor/config.json`,
+    JSON.stringify(tempConfig)
+  );
+  // await fetchFile("config.json");
+  // await fetchFile("test_script.js");
 
   const config = JSON.parse(
     fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")

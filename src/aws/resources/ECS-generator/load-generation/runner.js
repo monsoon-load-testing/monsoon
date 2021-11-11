@@ -14,7 +14,7 @@ function promiseMapper(userId, promise) {
   });
 }
 
-async function runMultipleTest(numberOfUsers = 5) {
+async function runMultipleTest(numberOfUsers = 1) {
   if (Date.now() >= STOP_TIME) return;
 
   const browser = await puppeteer.launch({

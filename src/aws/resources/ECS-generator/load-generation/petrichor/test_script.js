@@ -13,14 +13,14 @@ async function testScript(browser, page, userId) {
     // await sleep(20_000);
   }, 2500)
 
-  await weatherStation.measure("Go to bin", async () => {
-    await page.type("input", "p9c-yf");
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click("button[class*=green]"),
-    ]);
-    // await sleep(20_000);
-  }, 5000);
+  // await weatherStation.measure("Go to bin", async () => {
+  //   await page.type("input", "p9c-yf");
+  //   await Promise.all([
+  //     page.waitForNavigation(),
+  //     page.click("button[class*=green]"),
+  //   ]);
+  //   // await sleep(20_000);
+  // }, 5000);
 }
 
 module.exports = {
