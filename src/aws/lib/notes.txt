@@ -4,18 +4,20 @@ Order of difficulty:
   - ecs
 
 S3:
-  - create a bucket
-  - extract the name
-  - grant read/write permissions to startingLambda
+  - create a bucket DONE
+  - extract the name DONE
+  - grant read/write permissions to startingLambda DONE
+  - `cdk destroy` needs to delete bucket with objects as well DONE
 
 startingLambda:
   - eventBridge:
     - dynamically plug in the end user's AWS account number into the ARN of the EventBridge target 
-      (ARN for Metronome Lambda)
+      (ARN for Metronome Lambda) DONE
   - config:
-    - covered on S3
+    - covered on S3 DONE
   - ecs:
     - receive the vpc-id from custom vpc and plug in
+  - figure out role policies (only the needed ones)
 
 ECS:
   - create a custom vpc

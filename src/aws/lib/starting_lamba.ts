@@ -17,7 +17,7 @@ export class StartingLambda extends cdk.Construct {
     });
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'));
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchFullAccess'));
-    // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'));
+    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'));
     // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaExecute'));
     // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECSTaskExecutionRolePolicy'));
     // lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaBasicExecutionRole'));

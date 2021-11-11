@@ -23,6 +23,7 @@ export class AwsStack extends cdk.Stack {
       timeWindow: "15", // hard-coded: user enters in seconds
       numberOfUsers: "10", // hard-coded
     })
+    dummyBucket.bucket.grantReadWrite(startingLambda.handler);
     // console.log('metronomeLambda', metronomeLambda.handler.functionArn)
     // console.log('bucketArn', dummyBucket.bucket.bucketArn)
     // console.log('bucketName', dummyBucket.bucket.bucketName)

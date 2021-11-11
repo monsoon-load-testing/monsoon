@@ -12,6 +12,7 @@ export class S3 extends cdk.Construct {
 
     this.bucket = new s3.Bucket(this, id, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     })
   }
 }
