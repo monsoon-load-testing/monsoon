@@ -57,6 +57,8 @@ measure = t2 - t1 = (10900 + 65) - (10000 + 220) = 745ms
 */
 type browser = puppeteer.Browser;
 type page = puppeteer.Page;
+type script = () => Promise<void>
+type delay = number | [number, number];
 
 class WeatherStation {
   browser: browser;
@@ -65,7 +67,8 @@ class WeatherStation {
   stepName: string;
   stepStartTime: number;
   metrics: {
-    responseTime: number;
+    responseTime: number | null;
+    passed: boolean;
   };
   constructor(browser: browser, page: page, userId: string) {
     this.browser = browser;
@@ -73,9 +76,9 @@ class WeatherStation {
     this.userId = userId;
     this.stepName = "";
     this.stepStartTime = NaN;
-    this.metrics = { responseTime: NaN };
+    this.metrics = { responseTime: NaN, passed: false };
   }
-  public async startStep(stepName: string) {
+  private async startStep(stepName: string) {
     this.stepName = stepName;
 
     this.stepStartTime = Math.round(
@@ -86,27 +89,48 @@ class WeatherStation {
       })
     );
   }
-  public async endStep(stepName: string, delay: number = 0) {
-    const stepEndTime = Math.round(
-      await this.page.evaluate(() => {
-        const relativeTimeStamp = window.performance.now();
-        const timeOrigin = window.performance.timeOrigin;
-        return timeOrigin + relativeTimeStamp;
-      })
-    );
-
-    this.metrics.responseTime = stepEndTime - this.stepStartTime;
+  private async endStep(delay: delay, error?: Error) {
+    if (!error) {
+      const stepEndTime = Math.round(
+        await this.page.evaluate(() => {
+          const relativeTimeStamp = window.performance.now();
+          const timeOrigin = window.performance.timeOrigin;
+          return timeOrigin + relativeTimeStamp;
+        })
+      );
+  
+      this.metrics.responseTime = stepEndTime - this.stepStartTime;
+      this.metrics.passed = true;
+    } else {
+      this.metrics.responseTime = null;
+      this.metrics.passed = false;
+    }
+    
     this.writePointToFS();
-    this.resetObserver();
+    this.resetMeasures();
     if (delay) {
-      await this.sleep(delay);
+      if (typeof delay === 'number') {
+        await this.sleep(delay);
+      } else {
+        await this.sleep(Math.random()*(delay[1] - delay[0]) + delay[0])
+      }
     }
   }
 
-  private resetObserver() {
+  public async measure(stepName: string, script: script, delay: delay = 0) {
+    await this.startStep(stepName);
+    try {
+      await script();
+      await this.endStep(delay)
+    } catch (error: any) {
+      await this.endStep(delay, error)
+    }
+  }
+
+  private resetMeasures() {
     this.stepName = "";
     this.stepStartTime = NaN;
-    this.metrics = { responseTime: NaN };
+    this.metrics = { responseTime: NaN, passed: false };
   }
 
   private writePointToFS() {
@@ -115,6 +139,7 @@ class WeatherStation {
       stepStartTime: this.stepStartTime,
       metrics: {
         responseTime: this.metrics.responseTime,
+        passed: this.metrics.passed
       },
     });
 
@@ -133,7 +158,6 @@ class WeatherStation {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  public endTest() {}
 }
 
 export = WeatherStation;

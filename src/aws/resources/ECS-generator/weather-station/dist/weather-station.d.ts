@@ -1,6 +1,8 @@
 import * as puppeteer from "puppeteer";
 declare type browser = puppeteer.Browser;
 declare type page = puppeteer.Page;
+declare type script = () => Promise<void>;
+declare type delay = number | [number, number];
 declare class WeatherStation {
     browser: browser;
     page: page;
@@ -8,14 +10,15 @@ declare class WeatherStation {
     stepName: string;
     stepStartTime: number;
     metrics: {
-        responseTime: number;
+        responseTime: number | null;
+        passed: boolean;
     };
     constructor(browser: browser, page: page, userId: string);
-    startStep(stepName: string): Promise<void>;
-    endStep(stepName: string, delay?: number): Promise<void>;
-    private resetObserver;
+    private startStep;
+    private endStep;
+    measure(stepName: string, script: script, delay?: delay): Promise<void>;
+    private resetMeasures;
     private writePointToFS;
     private sleep;
-    endTest(): void;
 }
 export = WeatherStation;

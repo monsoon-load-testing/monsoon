@@ -10,7 +10,7 @@ class WeatherStation {
         this.userId = userId;
         this.stepName = "";
         this.stepStartTime = NaN;
-        this.metrics = { responseTime: NaN };
+        this.metrics = { responseTime: NaN, passed: false };
     }
     async startStep(stepName) {
         this.stepName = stepName;
@@ -20,23 +20,45 @@ class WeatherStation {
             return timeOrigin + relativeTimeStamp;
         }));
     }
-    async endStep(stepName, delay = 0) {
-        const stepEndTime = Math.round(await this.page.evaluate(() => {
-            const relativeTimeStamp = window.performance.now();
-            const timeOrigin = window.performance.timeOrigin;
-            return timeOrigin + relativeTimeStamp;
-        }));
-        this.metrics.responseTime = stepEndTime - this.stepStartTime;
+    async endStep(delay, error) {
+        if (!error) {
+            const stepEndTime = Math.round(await this.page.evaluate(() => {
+                const relativeTimeStamp = window.performance.now();
+                const timeOrigin = window.performance.timeOrigin;
+                return timeOrigin + relativeTimeStamp;
+            }));
+            this.metrics.responseTime = stepEndTime - this.stepStartTime;
+            this.metrics.passed = true;
+        }
+        else {
+            this.metrics.responseTime = null;
+            this.metrics.passed = false;
+        }
         this.writePointToFS();
-        this.resetObserver();
+        this.resetMeasures();
         if (delay) {
-            await this.sleep(delay);
+            if (typeof delay === 'number') {
+                await this.sleep(delay);
+            }
+            else {
+                await this.sleep(Math.random() * (delay[1] - delay[0]) + delay[0]);
+            }
         }
     }
-    resetObserver() {
+    async measure(stepName, script, delay = 0) {
+        await this.startStep(stepName);
+        try {
+            await script();
+            await this.endStep(delay);
+        }
+        catch (error) {
+            await this.endStep(delay, error);
+        }
+    }
+    resetMeasures() {
         this.stepName = "";
         this.stepStartTime = NaN;
-        this.metrics = { responseTime: NaN };
+        this.metrics = { responseTime: NaN, passed: false };
     }
     writePointToFS() {
         const json = JSON.stringify({
@@ -44,6 +66,7 @@ class WeatherStation {
             stepStartTime: this.stepStartTime,
             metrics: {
                 responseTime: this.metrics.responseTime,
+                passed: this.metrics.passed
             },
         });
         const fileName = `${this.userId}-${this.stepName}-${this.stepStartTime}.json`;
@@ -60,6 +83,5 @@ class WeatherStation {
     sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
-    endTest() { }
 }
 module.exports = WeatherStation;
