@@ -2,6 +2,7 @@ import * as cdk from "@aws-cdk/core";
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
 import { MetronomeLambda } from "./metronome-lambda";
+import { TimestreamConstruct } from "./timestream";
 // import * as sqs from '@aws-cdk/aws-sqs';
 
 export class AwsStack extends cdk.Stack {
@@ -26,11 +27,10 @@ export class AwsStack extends cdk.Stack {
       bucketName: bucket.bucketName,
       aggregatingLambdaName: aggregatingLambda.handler.functionName,
     });
+
+    const timeStreamDB = new TimestreamConstruct(this, "timestream", {
+      databaseName: "monsoonDB",
+      tableName: "monsoonTable",
+    })
   }
 }
-/*
-METRONOME LAMBDA
-AGGREGATING LAMBDA
-TIMESTREAM
-S3 BUCKET (dummy)
-*/
