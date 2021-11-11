@@ -16,7 +16,7 @@ const addTarget = async () => {
     Rule: ruleName,
     Targets: [
       {
-        Arn: "arn:aws:lambda:us-east-1:270778738836:function:Metronome-Lambda",
+        Arn: process.env.functionArn,
         Id: "MetronomeLambdaTriggeredByEventBridgeRule",
       },
     ],
@@ -38,14 +38,23 @@ const createRule = async () => {
   await addTarget();
 };
 
+const extractArn = async () => {
+  const response = await EventBridge.listRules({
+    NamePrefix: ruleName,
+  }).promise();
+  const sourceArn = response.Rules[0].Arn;
+  console.log(sourceArn);
+  return sourceArn;
+};
+
 const setMetronomeLambdaPermissions = async () => {
+  const sourceArn = await extractArn();
   const paramsAddPermission = {
     Action: "lambda:InvokeFunction",
-    FunctionName: "Metronome-Lambda",
+    FunctionName: process.env.metronomeLambdaName,
     Principal: "events.amazonaws.com",
     StatementId: "Invoke_metronome_lambda_every_1_min1",
-    SourceArn:
-      "arn:aws:events:us-east-1:270778738836:rule/invoke-metronome-lambda-rule",
+    SourceArn: sourceArn,
   };
 
   await lambda.addPermission(paramsAddPermission).promise();
@@ -77,12 +86,12 @@ const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
 };
 
 const configObj = {
-  TEST_LENGTH: 1 * 5 * 60 * 1000,
+  TEST_LENGTH: Number(process.env.testLengthInMinutes) * 60 * 1000,
   TEST_UNIT: "milliseconds",
-  TIME_WINDOW: 15_000,
-  ORIGIN_TIMESTAMP: Date.now(),
-  NUMBER_OF_USERS: 10,
-  STEP_GRACE_PERIOD: 120 * 1000,
+  TIME_WINDOW: Number(process.env.timeWindow) * 1000,
+  ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000,
+  NUMBER_OF_USERS: Number(process.env.numberOfUsers),
+  STEP_GRACE_PERIOD: 2 * 60 * 1000,
 };
 
 const normalizedTimestamps = {
@@ -97,7 +106,7 @@ const normalizedTimestamps = {
 const configFileContents = JSON.stringify(configObj);
 const normalizedTimestampsContents = JSON.stringify(normalizedTimestamps);
 
-const BUCKET_NAME = "monsoon-load-testing-bucket";
+const BUCKET_NAME = process.env.bucketName;
 
 // for config file
 const params = {
@@ -135,7 +144,7 @@ const vpcId = "vpc-0c4ee5abc1c7a6a06"; // hard-coded
 
 // calling lambda handler
 exports.handler = async (event) => {
-  // await createRule();
+  await createRule();
   await s3.upload(params).promise();
   await s3.upload(params2).promise();
 

@@ -12,7 +12,7 @@ export class StartingLambda extends cdk.Construct {
     super(scope, id);
 
     const ManagedPolicy = iam.ManagedPolicy;
-    const lambdaRole = new iam.Role(this, "ms-dummy-starting-lambda-role", {
+    const lambdaRole = new iam.Role(this, "starting-lambda-role", {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
     lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'));
@@ -27,11 +27,16 @@ export class StartingLambda extends cdk.Construct {
     
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset(path.join(__dirname,"/../resources/Lambda-starting")),
-      handler: "dummy_starting_lambda.handler",
+      code: lambda.Code.fromAsset(path.join(__dirname,"/../resources/Lambda-starting"),
+      { exclude: ["node_modules", "package.json", "package-lock.json"] }),
+      handler: "starting-handler.handler",
       environment: {
-        BUCKET: props.bucketName,
-        functionArn: props.functionArn
+        bucketName: props.bucketName,
+        functionArn: props.functionArn,
+        metronomeLambdaName: props.metronomeLambdaName,
+        timeWindow: props.timeWindow,
+        testLengthInMinutes: props.testLengthInMinutes,
+        numberOfUsers: props.numberOfUsers
       },
       role: lambdaRole,
     });
