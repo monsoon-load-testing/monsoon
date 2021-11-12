@@ -1,15 +1,19 @@
-import * as cdk from "@aws-cdk/core";
+import * as cdk from '@aws-cdk/core';
+import { S3 } from './s3';
+import { StartingLambda } from './starting_lamba';
+import { MetronomeLambda } from './metronome_lambda'
+import { VPC } from './vpc';
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
-import { MetronomeLambda } from "./metronome-lambda";
 import { TimestreamConstruct } from "./timestream";
-// import * as sqs from '@aws-cdk/aws-sqs';
 
 export class AwsStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: any) {
     super(scope, id, props);
 
-    const bucket = new s3.Bucket(this, "monsoon-bucket-dummy", {
+    const customVpc = new VPC(this, "custom-vpc")
+ 
+    const bucket = new s3.Bucket(this, "monsoon-load-testing-bucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -27,6 +31,20 @@ export class AwsStack extends cdk.Stack {
       bucketName: bucket.bucketName,
       aggregatingLambdaName: aggregatingLambda.handler.functionName,
     });
+    
+    const startingLambda = new StartingLambda(this, "starting-lambda", {
+      bucketName: bucket.bucketName,
+      functionArn: metronomeLambda.handler.functionArn,
+      metronomeLambdaName: metronomeLambda.handler.functionName,
+      testLengthInMinutes: "1", // will be passed to startingLambda event
+      timeWindow: "15",
+      numberOfUsers: "10", // will be passed to startingLambda event
+      vpcId: customVpc.vpc.vpcId,
+      clusterName: customVpc.cluster.clusterName,
+      access_key: "KEY-XXXX", // extract from CLI
+      secret_access_key: "KEY-XXXX", // extract from CLI
+    })
+    bucket.grantReadWrite(startingLambda.handler);
 
     const timeStreamDB = new TimestreamConstruct(this, "timestream", {
       databaseName: "monsoonDB",

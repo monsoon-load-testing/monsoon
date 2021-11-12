@@ -1,0 +1,45 @@
+Order of difficulty:
+  - S3
+  - startingLambda
+  - ecs
+
+S3:
+  - create a bucket DONE
+  - extract the name DONE
+  - grant read/write permissions to startingLambda DONE
+  - `cdk destroy` needs to delete bucket with objects as well DONE
+
+startingLambda:
+  - eventBridge:
+    - dynamically plug in the end user's AWS account number into the ARN of the EventBridge target 
+      (ARN for Metronome Lambda) DONE
+  - config:
+    - covered on S3 DONE
+  - ecs:
+    - receive the vpc-id from custom vpc and plug in DONE
+  - figure out role policies (only the needed ones) DONE
+  - stepNames: fetch the test_script file from S3 bucket and figure out the rest to get the stepNames
+
+ECS:
+  - create a custom vpc DONE
+  - extract vpc-id DONE
+  - dynamically pass IAM credentials to startingLambda DONE
+  - extract user's IAM credentials and plug in -> CLI problem
+  - determine how many tasks and plug in for desiredCount DONE
+  - calculate how many concurrent users from CLI -> CLI concern
+  - create an ecsTaskExecutionRole for the taskDefinition -> pass the name of the policy to startingLambda DONE
+  - auto delete service after testLength (sdk problem) -> metronome problem. depend on metronome lambda deals with the deletion of the service. 
+Some of the serivce information can be at the cdk level
+  - move crete cluster to cdk level DONE
+  - clusterName not working DONE
+
+General solution:
+  - pass everything to environment variables in the startingLambda
+  - expose property to construct
+  - pass through props
+  - add extra properties on instances in the construct (ex: this.bucket) to solve circular dependencies
+  - use available cdk methods (for example: grantReadWrite)
+
+Stretch goal:
+  - dynamically locate vpc regions
+  - extract and use all availability zones
