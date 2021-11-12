@@ -3,6 +3,7 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import * as path from "path";
 
+// this is dummy metronome lambda
 export class MetronomeLambda extends cdk.Construct {
   scope: cdk.Construct;
   id: string;

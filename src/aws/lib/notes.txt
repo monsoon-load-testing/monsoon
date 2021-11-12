@@ -16,19 +16,22 @@ startingLambda:
   - config:
     - covered on S3 DONE
   - ecs:
-    - receive the vpc-id from custom vpc and plug in
-  - figure out role policies (only the needed ones)
+    - receive the vpc-id from custom vpc and plug in DONE
+  - figure out role policies (only the needed ones) DONE
+  - stepNames: fetch the test_script file from S3 bucket and figure out the rest to get the stepNames
 
 ECS:
   - create a custom vpc DONE
   - extract vpc-id DONE
   - dynamically pass IAM credentials to startingLambda DONE
   - extract user's IAM credentials and plug in -> CLI problem
-  - calculate how many concurrent users from CLI and determine how many tasks and plug in for desiredCount
+  - determine how many tasks and plug in for desiredCount DONE
+  - calculate how many concurrent users from CLI -> CLI concern
   - create an ecsTaskExecutionRole for the taskDefinition -> pass the name of the policy to startingLambda DONE
-  - auto delete service after testLength (sdk problem) -> metronome problem
+  - auto delete service after testLength (sdk problem) -> metronome problem. depend on metronome lambda deals with the deletion of the service. 
+Some of the serivce information can be at the cdk level
   - move crete cluster to cdk level DONE
-  - clusterName not working
+  - clusterName not working DONE
 
 General solution:
   - pass everything to environment variables in the startingLambda
@@ -41,38 +44,6 @@ Stretch goal:
   - can we place the S3 inside the vpc? (Probably not, amazon will go broke)
   - dynamically locate vpc regions
   - extract and use all availability zones
-
-import * as cdk from "@aws-cdk/core";
-import { MyLambda } from "./my_lambda";
-import { MyBucket } from "./my_s3";
-
-export class LambdaTutorialStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-
-const myBucket = new MyBucket(this, "rdh-test");
-    const myLambda = new MyLambda(this, "rdh-MyLambda", {
-      bucketName: myBucket.bucket.bucketName,
-    });
-    myBucket.bucket.grantReadWrite(myLambda.handler);
-  }
-}
-
-import * as cdk from "@aws-cdk/core";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as s3 from "@aws-cdk/aws-s3";
-
-export class MyBucket extends cdk.Construct {
-  scope: cdk.Construct;
-  id: string;
-  props: any;
-  bucket: s3.Bucket;
-  constructor(scope: any, id: any, props?: any) {
-    super(scope, id);
-
-    this.bucket = new s3.Bucket(this, id);
-  }
-}
 
 this.s3 = new s3.Bucket(this, 'EkkoBucket', {
       versioned: true,
