@@ -1,7 +1,7 @@
-import * as cdk from '@aws-cdk/core';
-import { StartingLambda } from './starting_lamba';
-import { MetronomeLambda } from './metronome-lambda'
-import { VPC } from './vpc';
+import * as cdk from "@aws-cdk/core";
+import { StartingLambda } from "./starting_lamba";
+import { MetronomeLambda } from "./metronome-lambda";
+import { VPC } from "./vpc";
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
 import { TimestreamConstruct } from "./timestream";
@@ -9,9 +9,10 @@ import { TimestreamConstruct } from "./timestream";
 export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: any) {
     super(scope, id, props);
+    const databaseName = "monsoonDB";
 
-    const customVpc = new VPC(this, "custom-vpc")
- 
+    const customVpc = new VPC(this, "custom-vpc");
+
     const bucket = new s3.Bucket(this, "monsoon-load-testing-bucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
@@ -20,7 +21,7 @@ export class AwsStack extends cdk.Stack {
     const aggregatingLambda = new AggregatingLambda(
       this,
       "aggregating-lambda",
-      { bucketName: bucket.bucketName }
+      { bucketName: bucket.bucketName, databaseName }
     );
 
     const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
@@ -30,7 +31,7 @@ export class AwsStack extends cdk.Stack {
       bucketName: bucket.bucketName,
       aggregatingLambdaName: aggregatingLambda.handler.functionName,
     });
-    
+
     const startingLambda = new StartingLambda(this, "starting-lambda", {
       bucketName: bucket.bucketName,
       functionArn: metronomeLambda.handler.functionArn,
@@ -42,12 +43,11 @@ export class AwsStack extends cdk.Stack {
       clusterName: customVpc.cluster.clusterName,
       access_key: "KEY-XXXX", // extract from CLI
       secret_access_key: "KEY-XXXX", // extract from CLI
-    })
+    });
     bucket.grantReadWrite(startingLambda.handler);
 
     const timeStreamDB = new TimestreamConstruct(this, "timestream", {
-      databaseName: "monsoonDB",
-      tableName: "monsoonTable",
-    })
+      databaseName,
+    });
   }
 }

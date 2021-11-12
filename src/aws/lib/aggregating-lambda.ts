@@ -35,6 +35,7 @@ export class AggregatingLambda extends cdk.Construct {
       handler: "aggregating-handler.handler",
       environment: {
         BUCKET: props.bucketName,
+        DATABASE_NAME: props.databaseName,
       },
       role: lambdaRole,
     });
