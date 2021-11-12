@@ -77,11 +77,11 @@ const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
 };
 
 const configObj = {
-  TEST_LENGTH: Number(process.env.testLengthInMinutes) * 60 * 1000,
+  TEST_LENGTH: 1 * 5 * 60 * 1000, // received through event
   TEST_UNIT: "milliseconds",
   TIME_WINDOW: Number(process.env.timeWindow) * 1000,
   ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
-  NUMBER_OF_USERS: Number(process.env.numberOfUsers),
+  NUMBER_OF_USERS: 10, // received through event
   STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
 };
 

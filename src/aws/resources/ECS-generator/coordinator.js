@@ -10,7 +10,7 @@ const sleep = (ms) => {
 
 async function fetchFile(fileName) {
   const paramsObj = {
-    Bucket: "monsoon-load-testing-bucket",
+    Bucket: process.env.bucketName,
     Key: fileName,
   };
 
@@ -93,6 +93,8 @@ const startProcess = (success, error) => {
   );
 
   setTimeout(() => {
-    pm2.delete("runner", (err, apps) => pm2.delete("normalizer", (err, apps) => pm2.disconnect()));
+    pm2.delete("runner", (err, apps) =>
+      pm2.delete("normalizer", (err, apps) => pm2.disconnect())
+    );
   }, config.TEST_LENGTH + config.STEP_GRACE_PERIOD);
 })();

@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import { S3 } from './s3';
 import { StartingLambda } from './starting_lamba';
-import { MetronomeLambda } from './metronome_lambda'
+import { MetronomeLambda } from './metronome-lambda'
 import { VPC } from './vpc';
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";

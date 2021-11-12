@@ -101,7 +101,7 @@ const originTimestamp = config.ORIGIN_TIMESTAMP;
 const timeWindow = config.TIME_WINDOW;
 const testDuration = config.TEST_LENGTH;
 
-const initialOffset = 15_000; // should cover the case where average response time of a request is 3s
+const initialOffset = 20_000; // timeout is 10s.
 const pollingTime = 15_000; // our use case
 
 // we can let each container do this calculation and will not need to fetch timestamps from the S3 bucket
@@ -125,7 +125,7 @@ const normalizedTimestamps = initializeTimestamps(
 
 // function definitions
 const writeToS3 = async (finalBucket) => {
-  const BUCKET_NAME = "monsoon-load-testing-bucket";
+  const BUCKET_NAME = process.env.bucketName;
 
   const s3 = new AWS.S3();
   for (let filename in finalBucket) {
