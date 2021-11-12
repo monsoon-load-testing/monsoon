@@ -15,14 +15,5 @@ export class TimestreamConstruct extends Construct {
     this.database = new CfnDatabase(this, "TimeStreamDatabase", {
       databaseName: props.databaseName,
     });
-    // this.table = new CfnTable(this, 'TimeStreamTable', {
-    //   tableName: props.tableName,
-    //   databaseName: props.databaseName,
-    //   retentionProperties: {
-    //     memoryStoreRetentionPeriodInHours: (24 * 7).toString(10),
-    //     magneticStoreRetentionPeriodInDays: (7).toString(10)
-    //   }
-    // });
-    // this.table.node.addDependency(this.database);
   }
 }
