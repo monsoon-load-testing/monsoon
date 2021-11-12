@@ -1,62 +1,10 @@
 import * as puppeteer from "puppeteer";
 import fs from "fs";
 
-/*
-filename = 34f3n98-Load Main Page-134.json
-{
-    stepName: "Load Main Page",
-    userId: "34f3n98",
-    stepStartTime: 134,
-    metrics: {
-        responseTime: 900,
-    }
-}
-*/
-
-/*
-/results
-    - 34f3n98-Load Main Page-130.json
-    - 34f3n98-Go To Page-130.json
-*/
-
-// OBSERVER - WEATHER_STATION:
-//   - extract metrics
-//   - save to directory on container FS
-
-/*
-PROPERTIES:
-  browser: browser;
-  page: page;
-  userId: string;
-  stepName
-  stepStartTime
-  metrics: {
-    responseTime
-  }
-  markStart: {timeStamp, timeOrigin}
-  markEnd: {same}
-METHODS:
-- 
-- startStep(stepName: string): void
-- endStep(stepName: string, delay?: int): void
-- public endTest(): void
-- private exportToJSON(): void
-=============
-startStep and endStep
-- window.performance.mark()
-- window.performance.measure()
-- window.performance.timeOrigin
-EXAMPLE SPA:
-mark1: t=220ms, tOrigin = 10000
-mark2: t=530ms, tOrigin = 10000
-measure = 530 - 220 = 310ms
-EXAMPLE different pages:
-mark1: t=220ms, tOrigin= 10,000ms
-mark2: t=65ms, tOrigin= 10,900ms
-measure = t2 - t1 = (10900 + 65) - (10000 + 220) = 745ms
-*/
 type browser = puppeteer.Browser;
 type page = puppeteer.Page;
+type script = () => Promise<void>
+type delay = number | [number, number];
 
 class WeatherStation {
   browser: browser;
@@ -65,7 +13,8 @@ class WeatherStation {
   stepName: string;
   stepStartTime: number;
   metrics: {
-    responseTime: number;
+    responseTime: number | null;
+    passed: boolean;
   };
   constructor(browser: browser, page: page, userId: string) {
     this.browser = browser;
@@ -73,9 +22,9 @@ class WeatherStation {
     this.userId = userId;
     this.stepName = "";
     this.stepStartTime = NaN;
-    this.metrics = { responseTime: NaN };
+    this.metrics = { responseTime: NaN, passed: false };
   }
-  public async startStep(stepName: string) {
+  private async startStep(stepName: string) {
     this.stepName = stepName;
 
     this.stepStartTime = Math.round(
@@ -86,27 +35,59 @@ class WeatherStation {
       })
     );
   }
-  public async endStep(stepName: string, delay: number = 0) {
-    const stepEndTime = Math.round(
-      await this.page.evaluate(() => {
-        const relativeTimeStamp = window.performance.now();
-        const timeOrigin = window.performance.timeOrigin;
-        return timeOrigin + relativeTimeStamp;
-      })
-    );
-
-    this.metrics.responseTime = stepEndTime - this.stepStartTime;
+  private async endStep(delay: delay, error?: Error) {
+    if (!error) {
+      const stepEndTime = Math.round(
+        await this.page.evaluate(() => {
+          const relativeTimeStamp = window.performance.now();
+          const timeOrigin = window.performance.timeOrigin;
+          return timeOrigin + relativeTimeStamp;
+        })
+      );
+  
+      this.metrics.responseTime = stepEndTime - this.stepStartTime;
+      this.metrics.passed = true;
+    } else {
+      this.metrics.responseTime = null;
+      this.metrics.passed = false;
+    }
+    
     this.writePointToFS();
-    this.resetObserver();
+    this.resetMeasures();
     if (delay) {
-      await this.sleep(delay);
+      if (typeof delay === 'number') {
+        await this.sleep(delay);
+      } else {
+        await this.sleep(Math.random()*(delay[1] - delay[0]) + delay[0])
+      }
     }
   }
 
-  private resetObserver() {
+  public async measure(stepName: string, script: script, delay: delay = 0) {
+    await this.startStep(stepName);
+
+    const timeout = 10_000;
+    const scriptPromise = new Promise((resolve, reject) => {
+        script().then((data) => resolve("passed")).catch((err) => reject(err))
+      }
+    )
+    const timeoutPromise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Failed to retrieve data after ${timeout} milliseconds`))
+      }, timeout)
+    });
+    try {
+      const resolvedValue = await Promise.race([scriptPromise, timeoutPromise]);
+      await this.endStep(delay)
+    } catch (err: any) {
+      await this.endStep(delay, err)
+    }
+  }
+
+  private resetMeasures() {
     this.stepName = "";
     this.stepStartTime = NaN;
-    this.metrics = { responseTime: NaN };
+    this.metrics = { responseTime: NaN, passed: false };
   }
 
   private writePointToFS() {
@@ -115,6 +96,7 @@ class WeatherStation {
       stepStartTime: this.stepStartTime,
       metrics: {
         responseTime: this.metrics.responseTime,
+        passed: this.metrics.passed
       },
     });
 
@@ -133,7 +115,6 @@ class WeatherStation {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  public endTest() {}
 }
 
 export = WeatherStation;
