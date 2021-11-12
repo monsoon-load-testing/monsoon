@@ -3,27 +3,52 @@ import { S3 } from './s3';
 import { StartingLambda } from './starting_lamba';
 import { MetronomeLambda } from './metronome_lambda'
 import { VPC } from './vpc';
+import { AggregatingLambda } from "./aggregating-lambda";
+import * as s3 from "@aws-cdk/aws-s3";
+import { TimestreamConstruct } from "./timestream";
 
 export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: any) {
     super(scope, id, props);
 
-    const dummyBucket = new S3(this, "monsoon-load-testing");
-    const metronomeLambda = new MetronomeLambda(this, "metronome-lambda")
     const customVpc = new VPC(this, "custom-vpc")
+ 
+    const bucket = new s3.Bucket(this, "monsoon-load-testing-bucket", {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
 
+    const aggregatingLambda = new AggregatingLambda(
+      this,
+      "aggregating-lambda",
+      { bucketName: bucket.bucketName }
+    );
+
+    const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
+      ruleName: "invoke-metronome-lambda-rule",
+      targetId: "MetronomeLambdaTriggeredByEventBridgeRule",
+      permissionStatementId: "Invoke_metronome_lambda_every_1_min",
+      bucketName: bucket.bucketName,
+      aggregatingLambdaName: aggregatingLambda.handler.functionName,
+    });
+    
     const startingLambda = new StartingLambda(this, "starting-lambda", {
-      bucketName: dummyBucket.bucket.bucketName,
+      bucketName: bucket.bucketName,
       functionArn: metronomeLambda.handler.functionArn,
       metronomeLambdaName: metronomeLambda.handler.functionName,
-      testLengthInMinutes: "1", // hard-coded: user enters in minute, extract CLI
-      timeWindow: "15", // hard-coded: user enters in seconds, extract from CLI
-      numberOfUsers: "10", // hard-coded, extract from CLI
+      testLengthInMinutes: "1", // will be passed to startingLambda event
+      timeWindow: "15",
+      numberOfUsers: "10", // will be passed to startingLambda event
       vpcId: customVpc.vpc.vpcId,
       clusterName: customVpc.cluster.clusterName,
-      access_key: "AKIAZCVRTWYDA2X2MPRY ", // extract from CLI
-      secret_access_key: "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", // extract from CLI
+      access_key: "KEY-XXXX", // extract from CLI
+      secret_access_key: "KEY-XXXX", // extract from CLI
     })
-    dummyBucket.bucket.grantReadWrite(startingLambda.handler);
+    bucket.grantReadWrite(startingLambda.handler);
+
+    const timeStreamDB = new TimestreamConstruct(this, "timestream", {
+      databaseName: "monsoonDB",
+      tableName: "monsoonTable",
+    })
   }
 }
