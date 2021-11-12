@@ -41,12 +41,5 @@ General solution:
   - use available cdk methods (for example: grantReadWrite)
 
 Stretch goal:
-  - can we place the S3 inside the vpc? (Probably not, amazon will go broke)
   - dynamically locate vpc regions
   - extract and use all availability zones
-
-this.s3 = new s3.Bucket(this, 'EkkoBucket', {
-      versioned: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true
-    });

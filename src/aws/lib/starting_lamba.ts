@@ -2,6 +2,7 @@ import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam"
 import * as path from 'path'
+import { Duration } from "@aws-cdk/core";
 
 export class StartingLambda extends cdk.Construct {
   scope: cdk.Construct;
@@ -39,6 +40,7 @@ export class StartingLambda extends cdk.Construct {
         secret_access_key: props.secret_access_key
       },
       role: lambdaRole,
+      timeout: Duration.seconds(10),
     });
   }
 }

@@ -8,9 +8,9 @@ export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: any) {
     super(scope, id, props);
 
-    const dummyBucket = new S3(this, "ms-monsoon-load-testing");
+    const dummyBucket = new S3(this, "monsoon-load-testing");
     const metronomeLambda = new MetronomeLambda(this, "metronome-lambda")
-    const customVpc = new VPC(this, "ms-custom-vpc")
+    const customVpc = new VPC(this, "custom-vpc")
 
     const startingLambda = new StartingLambda(this, "starting-lambda", {
       bucketName: dummyBucket.bucket.bucketName,
@@ -21,8 +21,8 @@ export class AwsStack extends cdk.Stack {
       numberOfUsers: "10", // hard-coded, extract from CLI
       vpcId: customVpc.vpc.vpcId,
       clusterName: customVpc.cluster.clusterName,
-      access_key: "KEY-XXXX", // extract from CLI
-      secret_access_key: "KEY-XXXX", // extract from CLI
+      access_key: "AKIAZCVRTWYDA2X2MPRY ", // extract from CLI
+      secret_access_key: "eKTZUPGVcykNkyeE7p7mBMLttyN++x1DBaMV/u/3", // extract from CLI
     })
     dummyBucket.bucket.grantReadWrite(startingLambda.handler);
   }
