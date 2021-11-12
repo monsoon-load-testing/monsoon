@@ -21,6 +21,8 @@ const timestreamwrite = new AWS.TimestreamWrite({ region: "us-east-1" });
 // const Prefix = "130/Go to Main Page";
 // const Bucket = "monsoon-load-testing-bucket";
 const Bucket = process.env.BUCKET;
+const databaseName = process.env.DATABASE_NAME;
+
 const aggregateAllContents = async (event) => {
   // repeatedly calling AWS list objects because it only returns 1000 objects
   const accumulator = {
@@ -76,7 +78,34 @@ const aggregateAllContents = async (event) => {
 
   results.concurrentUsers = accumulator.countUsers;
 
-  // write to db example
+  // write to db
+  // const tableName = event.tableName;
+  const tableName = "test2"; // delete
+
+  const paramsListTables = {
+    DatabaseName: databaseName,
+  };
+  const resListTables = await timestreamwrite
+    .listTables(paramsListTables)
+    .promise();
+  const tables = resListTables.Tables;
+
+  if (tables.filter((table) => table.TableName === tableName).length === 0) {
+    const paramsCreateTables = {
+      DatabaseName: databaseName,
+      TableName: tableName,
+      RetentionProperties: {
+        MemoryStoreRetentionPeriodInHours: (24 * 7).toString(10),
+        MagneticStoreRetentionPeriodInDays: (7).toString(10),
+      },
+    };
+
+    const resCreateTable = await timestreamwrite
+      .createTable(paramsCreateTables)
+      .promise();
+    console.log(resCreateTable);
+  }
+
   const currentTime = Date.now().toString(); // Unix time in milliseconds
   const [normalizedTimestamp, stepName] = event.Prefix.split("/");
 
@@ -101,8 +130,8 @@ const aggregateAllContents = async (event) => {
   const records = [responseTime, concurrentUsers];
 
   const paramsWrite = {
-    DatabaseName: "monsoon",
-    TableName: "test1", // tableName shouldd be dynamic. e.g. timeOrigin
+    DatabaseName: databaseName,
+    TableName: tableName, // tableName shouldd be dynamic. e.g. timeOrigin
     Records: records,
   };
 
