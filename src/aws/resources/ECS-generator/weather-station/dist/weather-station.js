@@ -48,23 +48,21 @@ class WeatherStation {
     async measure(stepName, script, delay = 0) {
         await this.startStep(stepName);
         const timeout = 10000;
-        const data = new Promise((resolve) => {
-            resolve(script());
-        }); // this needs to return a promise that resolves to a response object?
-        const failure = new Promise((resolve, reject) => {
+        const scriptPromise = new Promise((resolve, reject) => {
+            script().then((data) => resolve("passed")).catch((err) => reject(err));
+        });
+        const timeoutPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 reject(new Error(`Failed to retrieve data after ${timeout} milliseconds`));
             }, timeout);
         });
-        Promise.race([data, failure])
-            .then(async (dataObj) => {
-            // console.log(dataObj);
-            // await this.endStep(delay)
-        })
-            .catch(async (failureObj) => {
-            // console.log(failureObj);
-            // await this.endStep(delay, err)
-        });
+        try {
+            const resolvedValue = await Promise.race([scriptPromise, timeoutPromise]);
+            await this.endStep(delay);
+        }
+        catch (err) {
+            await this.endStep(delay, err);
+        }
     }
     resetMeasures() {
         this.stepName = "";

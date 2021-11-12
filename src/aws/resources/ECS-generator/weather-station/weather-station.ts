@@ -1,60 +1,6 @@
 import * as puppeteer from "puppeteer";
 import fs from "fs";
 
-/*
-filename = 34f3n98-Load Main Page-134.json
-{
-    stepName: "Load Main Page",
-    userId: "34f3n98",
-    stepStartTime: 134,
-    metrics: {
-        responseTime: 900,
-    }
-}
-*/
-
-/*
-/results
-    - 34f3n98-Load Main Page-130.json
-    - 34f3n98-Go To Page-130.json
-*/
-
-// OBSERVER - WEATHER_STATION:
-//   - extract metrics
-//   - save to directory on container FS
-
-/*
-PROPERTIES:
-  browser: browser;
-  page: page;
-  userId: string;
-  stepName
-  stepStartTime
-  metrics: {
-    responseTime
-  }
-  markStart: {timeStamp, timeOrigin}
-  markEnd: {same}
-METHODS:
-- 
-- startStep(stepName: string): void
-- endStep(stepName: string, delay?: int): void
-- public endTest(): void
-- private exportToJSON(): void
-=============
-startStep and endStep
-- window.performance.mark()
-- window.performance.measure()
-- window.performance.timeOrigin
-EXAMPLE SPA:
-mark1: t=220ms, tOrigin = 10000
-mark2: t=530ms, tOrigin = 10000
-measure = 530 - 220 = 310ms
-EXAMPLE different pages:
-mark1: t=220ms, tOrigin= 10,000ms
-mark2: t=65ms, tOrigin= 10,900ms
-measure = t2 - t1 = (10900 + 65) - (10000 + 220) = 745ms
-*/
 type browser = puppeteer.Browser;
 type page = puppeteer.Page;
 type script = () => Promise<void>
@@ -120,27 +66,22 @@ class WeatherStation {
   public async measure(stepName: string, script: script, delay: delay = 0) {
     await this.startStep(stepName);
 
-    const timeout = 10_000
-    const data = new Promise((resolve) => {
-      resolve(script());
-    }) // this needs to return a promise that resolves to a response object?
-    
-    const failure = new Promise((resolve, reject) => {
+    const timeout = 10_000;
+    const scriptPromise = new Promise((resolve, reject) => {
+        script().then((data) => resolve("passed")).catch((err) => reject(err))
+      }
+    )
+    const timeoutPromise = new Promise((resolve, reject) => {
       setTimeout(() => {
         reject(new Error(`Failed to retrieve data after ${timeout} milliseconds`))
       }, timeout)
     });
-
-    Promise.race([data, failure])
-    .then(async (dataObj) => {
-      // console.log(dataObj);
-      // await this.endStep(delay)
-    })  
-    .catch(async (failureObj) => {
-      // console.log(failureObj);
-      // await this.endStep(delay, err)
-    });
-
+    try {
+      const resolvedValue = await Promise.race([scriptPromise, timeoutPromise]);
+      await this.endStep(delay)
+    } catch (err: any) {
+      await this.endStep(delay, err)
+    }
   }
 
   private resetMeasures() {
