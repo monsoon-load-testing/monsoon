@@ -101,6 +101,7 @@ const handler = async (event) => {
   const body = JSON.stringify({
     timestamps: nonExpiredTimestamps,
     stepNames: stepNames,
+    tableName,
   });
   const uploadParams = { ...params, Body: body };
   await s3.upload(uploadParams).promise();
