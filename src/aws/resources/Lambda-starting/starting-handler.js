@@ -9,7 +9,7 @@ const s3 = new AWS.S3();
 // *****************************************************
 // EVENTBRIDGE SETUP
 // *****************************************************
-const ruleName = "invoke-metronome-lambda-rule";
+const ruleName = "invoke-metronome-lambda-rule"; // make it an env variable
 
 const addTarget = async () => {
   const params = {
@@ -28,7 +28,7 @@ const addTarget = async () => {
 const createRule = async () => {
   const params = {
     Name: ruleName,
-    Description: "Invokes the Metronome Lambda every 1 minute",
+    Description: "Invokes the Metronome Lambda every 1 minute", // make it an env variable
     ScheduleExpression: "rate(1 minute)",
     State: "ENABLED",
   };
@@ -52,7 +52,7 @@ const setMetronomeLambdaPermissions = async () => {
     Action: "lambda:InvokeFunction",
     FunctionName: process.env.metronomeLambdaName,
     Principal: "events.amazonaws.com",
-    StatementId: "Invoke_metronome_lambda_every_1_min1",
+    StatementId: "Invoke_metronome_lambda_every_1_min", // make it an env variable
     SourceArn: sourceArn,
   };
 
@@ -135,8 +135,8 @@ const createTaskDefinition = async () => {
   const params = {
     memory: "4GB",
     cpu: "2 vCPU",
-    executionRoleArn: "ecsTaskExecutionRole",
-    taskRoleArn: "ecsTaskExecutionRole",
+    // executionRoleArn: "ecsTaskExecutionRole",
+    // taskRoleArn: "ecsTaskExecutionRole",
     networkMode: "awsvpc",
     containerDefinitions: [
       {
@@ -164,7 +164,7 @@ const createTaskDefinition = async () => {
 };
 
 const createService = async (subnet1, subnet2) => {
-  const desiredCount = Number(process.env.numberOfUsers) / 5; // number of tasks
+  const desiredCount = 2; // number of tasks - passed from CLI through event
   const params = {
     desiredCount,
     cluster: process.env.clusterName,
