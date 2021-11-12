@@ -79,8 +79,8 @@ const aggregateAllContents = async (event) => {
   results.concurrentUsers = accumulator.countUsers;
 
   // write to db
-  // const tableName = event.tableName;
-  const tableName = "test2"; // delete
+  const tableName = event.tableName;
+  // const tableName = "test2"; // delete
 
   const paramsListTables = {
     DatabaseName: databaseName,

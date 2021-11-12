@@ -61,7 +61,7 @@ const handler = async (event) => {
   };
   const timestampsFile = await s3.getObject(params).promise();
 
-  const { timestamps, stepNames } = JSON.parse(timestampsFile.Body);
+  const { timestamps, stepNames, tableName } = JSON.parse(timestampsFile.Body);
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
 
@@ -91,7 +91,7 @@ const handler = async (event) => {
         FunctionName: aggregatingLambdaName,
         InvocationType: "Event",
         LogType: "None",
-        Payload: JSON.stringify({ Prefix }),
+        Payload: JSON.stringify({ Prefix, tableName }),
       };
       promises.push(lambda.invoke(lambdaParams).promise());
     });

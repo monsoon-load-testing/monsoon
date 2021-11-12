@@ -85,6 +85,7 @@ const configObj = {
   STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
 };
 
+const testName = "downpour-test"; // testName needs to be passed through an event from the CLI client
 const normalizedTimestamps = {
   timestamps: initializeTimestamps(
     configObj.TIME_WINDOW,
@@ -92,6 +93,7 @@ const normalizedTimestamps = {
     configObj.ORIGIN_TIMESTAMP
   ),
   stepNames: ["Load main page", "Go to bin"],
+  tableName: `${testName}-${configObj.ORIGIN_TIMESTAMP}`, // testName needs to be passed through an event from the CLI client
 };
 
 const configFileContents = JSON.stringify(configObj);
