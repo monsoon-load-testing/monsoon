@@ -10,6 +10,7 @@ const permissionStatementId = process.env.PERMISSION_STATEMENT_ID; // "Invoke_me
 
 const bucketName = process.env.BUCKET; // "monsoon-load-testing-bucket"
 const aggregatingLambdaName = process.env.AGGREGATING_LAMBDA_NAME; // "Aggregating-Lambda"
+const functionName = process.env.FUNCTION_NAME;
 
 const removeTarget = async () => {
   const targetParams = {
@@ -30,7 +31,7 @@ const deleteRule = async () => {
 
 const removeMetronomePermissions = async () => {
   const params = {
-    FunctionName: "Metronome-Lambda",
+    FunctionName: functionName,
     StatementId: permissionStatementId,
   };
 

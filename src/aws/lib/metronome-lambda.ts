@@ -41,6 +41,7 @@ export class MetronomeLambda extends cdk.Construct {
         PERMISSION_STATEMENT_ID: props.permissionStatementId,
         BUCKET: props.bucketName,
         AGGREGATING_LAMBDA_NAME: props.aggregatingLambdaName,
+        FUNCTION_NAME: this.handler.functionName,
       },
       role: lambdaRole,
     });

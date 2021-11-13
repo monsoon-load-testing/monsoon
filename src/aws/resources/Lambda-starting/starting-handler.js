@@ -52,7 +52,7 @@ const setMetronomeLambdaPermissions = async () => {
     Action: "lambda:InvokeFunction",
     FunctionName: process.env.metronomeLambdaName,
     Principal: "events.amazonaws.com",
-    StatementId: "Invoke_metronome_lambda_every_1_min", // make it an env variable
+    StatementId: process.env.permissionStatementId, // "Invoke_metronome_lambda_every_1_min"
     SourceArn: sourceArn,
   };
 

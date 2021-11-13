@@ -5,12 +5,13 @@ import { VPC } from "./vpc";
 import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
 import { TimestreamConstruct } from "./timestream";
+import { nanoid } from "nanoid";
 
 export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: any) {
     super(scope, id, props);
     const databaseName = "monsoonDB";
-
+    const permissionStatementId = nanoid();
     const customVpc = new VPC(this, "custom-vpc");
 
     const bucket = new s3.Bucket(this, "monsoon-load-testing-bucket", {
@@ -27,7 +28,7 @@ export class AwsStack extends cdk.Stack {
     const metronomeLambda = new MetronomeLambda(this, "metronome-lambda", {
       ruleName: "invoke-metronome-lambda-rule",
       targetId: "MetronomeLambdaTriggeredByEventBridgeRule",
-      permissionStatementId: "Invoke_metronome_lambda_every_1_min",
+      permissionStatementId,
       bucketName: bucket.bucketName,
       aggregatingLambdaName: aggregatingLambda.handler.functionName,
     });
@@ -43,6 +44,7 @@ export class AwsStack extends cdk.Stack {
       clusterName: customVpc.cluster.clusterName,
       access_key: "KEY-XXXX", // extract from CLI
       secret_access_key: "KEY-XXXX", // extract from CLI
+      permissionStatementId,
     });
     bucket.grantReadWrite(startingLambda.handler);
 

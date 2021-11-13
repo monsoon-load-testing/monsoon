@@ -1,7 +1,7 @@
 import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
-import * as iam from "@aws-cdk/aws-iam"
-import * as path from 'path'
+import * as iam from "@aws-cdk/aws-iam";
+import * as path from "path";
 import { Duration } from "@aws-cdk/core";
 
 export class StartingLambda extends cdk.Construct {
@@ -14,18 +14,30 @@ export class StartingLambda extends cdk.Construct {
 
     const ManagedPolicy = iam.ManagedPolicy;
     const lambdaRole = new iam.Role(this, "starting-lambda-role", {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
     });
-    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'));
-    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchFullAccess'));
-    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonECS_FullAccess'));
-    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEventBridgeFullAccess'));
-    lambdaRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSLambda_FullAccess'));
-    
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess")
+    );
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("CloudWatchFullAccess")
+    );
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonECS_FullAccess")
+    );
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonEventBridgeFullAccess")
+    );
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AWSLambda_FullAccess")
+    );
+
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset(path.join(__dirname,"/../resources/Lambda-starting"),
-      { exclude: ["node_modules", "package.json", "package-lock.json"] }),
+      code: lambda.Code.fromAsset(
+        path.join(__dirname, "/../resources/Lambda-starting"),
+        { exclude: ["node_modules", "package.json", "package-lock.json"] }
+      ),
       handler: "starting-handler.handler",
       environment: {
         bucketName: props.bucketName,
@@ -37,7 +49,8 @@ export class StartingLambda extends cdk.Construct {
         vpcId: props.vpcId,
         clusterName: props.clusterName,
         access_key: props.access_key,
-        secret_access_key: props.secret_access_key
+        secret_access_key: props.secret_access_key,
+        permissionStatementId: props.permissionStatementId,
       },
       role: lambdaRole,
       timeout: Duration.seconds(10),
