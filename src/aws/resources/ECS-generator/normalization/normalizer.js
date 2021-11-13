@@ -114,10 +114,19 @@ const buildFinalBucket = (filteredBucket) => {
   let finalBucket = {};
   Object.keys(filteredBucket).forEach((key) => {
     let sum = 0;
+    let passCount = 0;
+    let failCount = 0;
     filteredBucket[key].forEach((dataPoint) => {
-      sum += dataPoint.metrics.responseTime;
+      if (dataPoint.metrics.passed) {
+        passCount += 1;
+        sum += dataPoint.metrics.responseTime;
+      } else {
+        failCount += 1;
+      }
     });
     const normalizedResponseTime = Math.round(sum / filteredBucket[key].length);
+    const sampleCount = filteredBucket[key].length;
+    const transactionRate = Math.round((sampleCount * 15) / 60);
     const [userId, stepName, normalizedTimestamp] = key.split("-");
     const newKey = `${stepName}-${normalizedTimestamp}`;
 
@@ -126,8 +135,11 @@ const buildFinalBucket = (filteredBucket) => {
       finalBucket[newKey][userId] = {
         metrics: {
           normalizedResponseTime,
+          passCount,
+          failCount,
+          transactionRate,
         },
-        sampleCount: filteredBucket[key].length,
+        sampleCount,
       };
     } else {
       // newKey doesn't exist yet
@@ -135,8 +147,11 @@ const buildFinalBucket = (filteredBucket) => {
         [userId]: {
           metrics: {
             normalizedResponseTime,
+            passCount,
+            failCount,
+            transactionRate,
           },
-          sampleCount: filteredBucket[key].length,
+          sampleCount,
         },
       };
     }

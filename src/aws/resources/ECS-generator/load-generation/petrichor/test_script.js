@@ -13,6 +13,9 @@ async function testScript(browser, page, userId) {
     async () => {
       await page.goto("https://requestbin.rauldehevia.com");
       // await sleep(20_000);
+      // random sleep between 1s to 15s
+      // Math.random * max + min as offset
+      await sleep((Math.floor(Math.random() * 15) + 1) * 1_000);
     },
     1000
   );
