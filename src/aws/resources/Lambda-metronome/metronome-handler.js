@@ -10,7 +10,7 @@ const permissionStatementId = process.env.PERMISSION_STATEMENT_ID; // "Invoke_me
 
 const bucketName = process.env.BUCKET; // "monsoon-load-testing-bucket"
 const aggregatingLambdaName = process.env.AGGREGATING_LAMBDA_NAME; // "Aggregating-Lambda"
-const functionName = process.env.FUNCTION_NAME;
+// const functionName = process.env.FUNCTION_NAME;
 
 const removeTarget = async () => {
   const targetParams = {
@@ -29,7 +29,7 @@ const deleteRule = async () => {
   await EventBridge.deleteRule(params).promise();
 };
 
-const removeMetronomePermissions = async () => {
+const removeMetronomePermissions = async (functionName) => {
   const params = {
     FunctionName: functionName,
     StatementId: permissionStatementId,
@@ -39,7 +39,8 @@ const removeMetronomePermissions = async () => {
   console.log("Metronome-Lambda permissions removed");
 };
 
-const handler = async (event) => {
+const handler = async (event, context) => {
+  const functionName = context.functionName;
   console.log(
     "ruleName, targetId, permissionStatementId",
     ruleName,
@@ -66,7 +67,7 @@ const handler = async (event) => {
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
 
-    await removeMetronomePermissions();
+    await removeMetronomePermissions(functionName);
     await removeTarget();
     await deleteRule();
     return;
