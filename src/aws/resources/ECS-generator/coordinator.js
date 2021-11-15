@@ -60,32 +60,32 @@ const startProcess = (success, error) => {
 };
 
 (async () => {
-  // const tempConfig = {
-  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
-  //   TEST_UNIT: "milliseconds",
-  //   TIME_WINDOW: 15_000,
-  //   ORIGIN_TIMESTAMP: Date.now(),
-  //   NUMBER_OF_USERS: 10,
-  //   STEP_GRACE_PERIOD: 120 * 1000,
-  // };
-  // fs.writeFileSync(
-  //   `./load-generation/petrichor/config.json`,
-  //   JSON.stringify(tempConfig)
-  // );
-  await fetchFile("config.json");
-  await fetchFile("test_script.js");
-
-  const config = JSON.parse(
-    fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
+  const tempConfig = {
+    TEST_LENGTH: 1 * 3 * 60 * 1000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: 15_000,
+    ORIGIN_TIMESTAMP: Date.now(),
+    NUMBER_OF_USERS: 10,
+    STEP_GRACE_PERIOD: 240 * 1000,
+  };
+  fs.writeFileSync(
+    `./load-generation/petrichor/config.json`,
+    JSON.stringify(tempConfig)
   );
+  // await fetchFile("config.json");
+  // await fetchFile("test_script.js");
 
-  const originTimestamp = config.ORIGIN_TIMESTAMP;
-  const currentTime = Date.now();
+  // const config = JSON.parse(
+  //   fs.readFileSync("./load-generation/petrichor/config.json", "utf-8")
+  // );
 
-  const waitTime =
-    currentTime < originTimestamp ? originTimestamp - currentTime : 0;
+  // const originTimestamp = config.ORIGIN_TIMESTAMP;
+  // const currentTime = Date.now();
 
-  await sleep(waitTime);
+  // const waitTime =
+  //   currentTime < originTimestamp ? originTimestamp - currentTime : 0;
+
+  // await sleep(waitTime);
 
   startProcess(
     (message) => console.log(message),
@@ -96,5 +96,5 @@ const startProcess = (success, error) => {
     pm2.delete("runner", (err, apps) =>
       pm2.delete("normalizer", (err, apps) => pm2.disconnect())
     );
-  }, config.TEST_LENGTH + config.STEP_GRACE_PERIOD);
+  }, tempConfig.TEST_LENGTH + tempConfig.STEP_GRACE_PERIOD);
 })();
