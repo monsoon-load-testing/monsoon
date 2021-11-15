@@ -1,0 +1,60 @@
+Features
+- monsoon init: A command to spin up a monsoon main directory
+(create a test script template for the user to write their codes, package.json, default config.json may be saved in another sub-directory)
+    - have global monsoon npm package
+    - `monsoon init`
+        - make a directory `monsoon`
+        - a default test_script.js inside
+        - a package.json including puppeteer, weather-station
+        - a default test_config.json (concurrentUsers, testDuration) - a single source of truth for parameters
+        - possible solutions for cdk:
+            - our cdk codes will be inside the global package (monsoon-load-testing)
+                - if our structure includes the aws source inside the `src` directory -> make sure it has node_modules to function
+                    - run `npm install` after `npm i -g monsoon-load-testing`
+                    - some other solutions
+                - if our structure put cdk and CLI codes in the same `monsoon-load-testing` directory
+                    - possible collision we need to resolve before publishing 
+            - deploy the aws source to another repo
+- monsoon configure: Ask questions for AWS credentials (save in hidden directory) (dotenv for the .env file)
+    - cli-ux
+    - os ({ homedir }), .platform()
+    - path
+    - fs
+    - dotenv
+- monsoon deploy: A command to deploy the infrastructure
+    - possible solutions:
+        - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`. Our package needs to include the source codes (aws folder)
+        - like ekko: we deploy aws in another repo. we fetch the repo from CLI, and run commands in another shell -> mostly likely will
+        deploy infrastructure with a YAML or JSON file.
+- monsoon start mypoortest.js: A command to start the test (rename the test script according to our infrastructure and upload to S3)
+    - will not be allowed until the user builds the infrastructure
+- monsoon update: update the parameters if they want to change it (optional - strech goal)
+- monsoon destroy: A command to tear-down infrastructure
+    - will be the same logic as deploy
+- monsoon weather-channel -on: A command to spin up the dashboard
+    - wait for the dashboard -> a local express app -> a shell to run `npm start`
+- monsoon weather-channel -off: A command to stop the dashboard
+
+- npm i -g monsoon-load-testing (or similar): Npm package
+
+// hold off until CLI finished main core
+Monsoon-main-directory
+	node_modules
+package.json (aws, puppeteer, our library)
+TestFolder123
+  |- myawesometest.js -> linking to local libraries
+  |- config.json (or test-parameters.json or test-config.json)
+TestFolder456
+  |- mypoortest.js
+|- config.json (or test-parameters.json or test-config.json)
+
+Problems:
+Minh:
+    - explore folder structures
+Stephanie:
+    - publish the weather station package -> test it with some simple import
+    - publish the hello CLI (under the name hello-monsoon)
+        - npm i -g hello-monsoon
+        - test running `hello-monsoon hello`
+Unassigned:
+    - explore how to connect cdk with CLI
