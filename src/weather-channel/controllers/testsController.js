@@ -64,7 +64,7 @@ const querySteps = async (tableName) => {
 const getSteps = async (req, res, next) => {
   let tableName = req.params.tableName;
 
-  const stepNames = await querySteps(tableName);
+  const stepNames = (await querySteps(tableName)).sort();
   res.send(stepNames);
 };
 
@@ -87,67 +87,12 @@ const getTableData = async (req, res, next) => {
   res.send(data);
 };
 
-const data = {
-  "Load main page": {
-    responseTime: [
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-    ],
-
-    concurrentUsers: [
-      { time: 1234, value: 765, metrics: "Concurrent users", unit: "" },
-    ],
-  },
-  "Go to bin": {
-    responseTime: [
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-    ],
-
-    concurrentUsers: [
-      { time: 1234, value: 765, metrics: "Concurrent users", unit: "" },
-    ],
-  },
-};
-// const data2 = [
-//   { a: new Date(1982, 1, 1), b: 125, c: "ms" },
-//   { a: new Date(1987, 1, 1), b: 257, c: "ms" },
-//   { a: new Date(1993, 1, 1), b: 345, c: "ms" },
-//   { a: new Date(1997, 1, 1), b: 515, c: "ms" },
-//   { a: new Date(2001, 1, 1), b: 132, c: "ms" },
-//   { a: new Date(2005, 1, 1), b: 305, c: "ms" },
-//   { a: new Date(2011, 1, 1), b: 270, c: "ms" },
-//   { a: new Date(2015, 1, 1), b: 470, c: "ms" },
-// ];
-
-// const responseTime = [
-//   { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-//   { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-// ];
-// const concurrentUsers=[
-//   { time: 1234, value: 765, metrics: "Concurrent users", unit: "" },
-// ]
-
-/*
-https://docs.aws.amazon.com/timestream/latest/developerguide/aggregate-functions.html
-
-Response Time
-- percentile 95 approx_percentile(x, w, percentages)
-- average: avg(x)
-- minimum: min(x)
-- maximum: max(x)
-*/
-
 const processStat = (nestedTimestreamObj) => {
   return nestedTimestreamObj.Rows[0].Data[0].ScalarValue;
 };
 
-const getTableStats = async (req, res, next) => {
-  const results = {};
-  const tableName = req.params.tableName;
-  const stepNames = await querySteps(tableName);
-
-  const percentile95Promises = stepNames.map(async (step) => {
+const queryP95 = (tableName, stepNames) => {
+  const percentile95Promises = stepNames.map((step) => {
     const params = {
       QueryString: `
         SELECT approx_percentile(measure_value::double, 0.95) as p95
@@ -157,43 +102,86 @@ const getTableStats = async (req, res, next) => {
     };
     return timestreamquery.query(params).promise();
   });
-  const data = await Promise.all(percentile95Promises);
+  return percentile95Promises;
+}
+
+const queryAVG = (tableName, stepNames) => {
+  const avgPromises = stepNames.map((step) => {
+    const params = {
+      QueryString: `
+        SELECT avg(measure_value::double) as avg
+        FROM "${process.env.DATABASE_NAME}"."${tableName}"
+        WHERE stepName = '${step}' AND measure_name = 'response_time'
+      `,
+    };
+    return timestreamquery.query(params).promise();
+  });
+  return avgPromises;
+}
+
+const queryMax = (tableName, stepNames) => {
+  const maxPromises = stepNames.map((step) => {
+    const params = {
+      QueryString: `
+        SELECT max(measure_value::double) as max
+        FROM "${process.env.DATABASE_NAME}"."${tableName}"
+        WHERE stepName = '${step}' AND measure_name = 'response_time'
+      `,
+    };
+    return timestreamquery.query(params).promise();
+  });
+  return maxPromises;
+}
+
+const queryMin = (tableName, stepNames) => {
+  const minPromises = stepNames.map((step) => {
+    const params = {
+      QueryString: `
+        SELECT min(measure_value::double) as min
+        FROM "${process.env.DATABASE_NAME}"."${tableName}"
+        WHERE stepName = '${step}' AND measure_name = 'response_time'
+      `,
+    };
+    return timestreamquery.query(params).promise();
+  });
+  return minPromises;
+}
+
+const processResults = (stepNames, data, metricNames) => {
+  // data is an array of values
+  // stepNames is an array of stepNames
+  // metricNames is an array of string values, representing metric names
+
+  const results = {};
+  const nbrOfSteps = stepNames.length;
+
+  stepNames.forEach((stepName, stepIdx) => {
+    let dataIdx = stepIdx;
+    results[stepName] = {responseTime: {}};
+    metricNames.forEach((metricName, metricIdx) => {
+      results[stepName]["responseTime"][metricName] = data[dataIdx];
+      dataIdx += nbrOfSteps
+    });
+  });
+
+  return results;
+}
+
+const getTableStats = async (req, res, next) => {
+  const tableName = req.params.tableName;
+  const stepNames = await querySteps(tableName);
+
+  const q95promises = queryP95(tableName, stepNames);
+  const avgPromises = queryAVG(tableName, stepNames);
+  const maxPromises = queryMax(tableName, stepNames);
+  const minPromises = queryMin(tableName, stepNames);
+  const promises = [...q95promises, ...avgPromises, ...maxPromises, ...minPromises];
+  const metricNames = ["95th Percentile", "Average", "Max", "Min"];
+
+  const data = await Promise.all(promises);
   const newData = data.map((datum) => processStat(datum));
-  console.log(newData);
 
-  // const averagePromises = stepNames.map(async (step) => {
-  //   const params = {
-  //     QueryString: `
-  //       //find the average
-  //     `,
-  //   };
-  //   return timestreamquery.query(params).promise();
-  // });
-
-  // const minPromises = stepNames.map(async (step) => {
-  //   const params = {
-  //     QueryString: `
-  //       //find the min
-  //     `,
-  //   };
-  //   return timestreamquery.query(params).promise();
-  // });
-
-  // p95 stats for stepNames[0] will always be p95Promises[0]
-
-  /*
-    {
-      "Go to bin": {
-        responseTime: {
-          percentile95: "123",
-          average: "50",
-          min: "10",
-          max: "140"
-        },
-        "Load main page": {}
-      }    
-  */
-
+  const results = processResults(stepNames, newData, metricNames);
   res.send(results);
 };
 
@@ -221,4 +209,5 @@ module.exports = {
   getTableData,
   getTableStats,
   getTestList,
+  getSteps,
 };
