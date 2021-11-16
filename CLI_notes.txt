@@ -6,34 +6,27 @@ Features
         - make a directory `monsoon`
         - a default test_script.js inside
         - a package.json including puppeteer, weather-station
+          - `npm install`
         - a default test_config.json (concurrentUsers, testDuration) - a single source of truth for parameters
-        - possible solutions for cdk:
-            - our cdk codes will be inside the global package (monsoon-load-testing)
-                - if our structure includes the aws source inside the `src` directory -> make sure it has node_modules to function
-                    - run `npm install` after `npm i -g monsoon-load-testing`
-                    - some other solutions
-                - if our structure put cdk and CLI codes in the same `monsoon-load-testing` directory
-                    - possible collision we need to resolve before publishing 
-            - deploy the aws source to another repo
-      - issues:
-        - how do we want the user to configure their credentials - or we can just use the credentials from
-          ~/.aws/credentials
-        - make a generator
-- monsoon configure: Ask questions for AWS credentials (save in hidden directory) (dotenv for the .env file)
-    - cli-ux
-    - os ({ homedir }), .platform()
-    - path
-    - fs
-    - dotenv
-- monsoon deploy: A command to deploy the infrastructure
-    - possible solutions:
-        - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`. Our package needs to include the source codes (aws folder)
-        - like ekko: we deploy aws in another repo. we fetch the repo from CLI, and run commands in another shell -> mostly likely will
-        deploy infrastructure with a YAML or JSON file.
+        - cdk: include aws infrastructure inside the CLI -> deploy directly DONE
+        - current solution for aws credentals: create global .monsoon -> store credentials in .env file DONE
+        - make a generator possible solutions:
+          - write by hand (fs module, etc...)
+          - make a repo: run `git clone -q` from the user's system and remove `rm -rf .git`
+- monsoon configure: Ask questions for AWS credentials DONE
+- monsoon deploy: A command to deploy the infrastructure DONE
+    - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`. 
+    Our package needs to include the source codes (aws folder)
+    - `cdk synth`, `cdk bootstrap`, `cdk deploy` are only allowed after `cdk init`
 - monsoon start mypoortest.js: A command to start the test (rename the test script according to our infrastructure and upload to S3)
     - will not be allowed until the user builds the infrastructure
+    - monsoon start (sdk-level):
+      - scan the S3 buckets and find(regex) the monsoon S3
+      - change the testscript name to test_script.js upload test_script to S3
+      - after the upload -> scan the lambdas and find the startingLambda
+      - start the lambda
 - monsoon update: update the parameters if they want to change it (optional - strech goal)
-- monsoon destroy: A command to tear-down infrastructure
+- monsoon destroy: A command to tear-down infrastructure DONE
     - will be the same logic as deploy
 - monsoon weather-channel -on: A command to spin up the dashboard
     - wait for the dashboard -> a local express app -> a shell to run `npm start`
@@ -41,24 +34,18 @@ Features
 
 - npm i -g monsoon-load-testing (or similar): Npm package
 
-// hold off until CLI finished main core
-Monsoon-main-directory
-	node_modules
-package.json (aws, puppeteer, our library)
-TestFolder123
-  |- myawesometest.js -> linking to local libraries
-  |- config.json (or test-parameters.json or test-config.json)
-TestFolder456
-  |- mypoortest.js
-|- config.json (or test-parameters.json or test-config.json)
+`monsoon init` folder structure
+monsoon-load-testing (main directory)
 
-Problems:
-Minh:
-    - explore folder structures
-Stephanie:
-    - publish the weather station package -> test it with some simple import
-    - publish the hello CLI (under the name hello-monsoon)
-        - npm i -g hello-monsoon
-        - test running `hello-monsoon hello`
-Unassigned:
-    - explore how to connect cdk with CLI
+node_modules
+package.json (monsoon-weather-station, puppeteer)
+mytest
+  |- test_script.js
+  |- test_config.json
+mytest2
+  |- test_script.js
+  |- test_config.json
+
+`monsoon list` -> list all the names of the directories they can run the test
+`monsoon new-test` -> to create a new test directory
+dirNames = [""] // some random names for monsoon new-test
