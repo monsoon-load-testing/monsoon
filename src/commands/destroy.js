@@ -11,7 +11,7 @@ class DestroyCommand extends Command {
     await Promisify.changeDir(cdkPath);
 
     spinner.start(`Currently tearing down the infrastructure.`);
-    await Promisify.execute(`cdk destroy --force --profile=minhvu`);
+    await Promisify.execute(`cdk destroy --force`);
     spinner.succeed(`Successfully teared-down.`);
   }
 }

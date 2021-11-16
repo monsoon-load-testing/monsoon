@@ -14,17 +14,15 @@ class DeployCommand extends Command {
     await Promisify.changeDir(cdkPath);
 
     spinner.start(`Currently synthing your AWS account`);
-    await Promisify.execute(`cdk synth --profile=minhvu`);
+    await Promisify.execute(`cdk synth`);
     spinner.succeed(`Successfully synthesized`);
 
     spinner.start(`Currently bootstraping the infrastructure`);
-    await Promisify.execute(`cdk bootstrap --profile=minhvu`);
+    await Promisify.execute(`cdk bootstrap`);
     spinner.succeed(`Successfully bootstraped`);
 
     spinner.start(`Currently deploying the infrastructure`);
-    await Promisify.execute(
-      `cdk deploy --require-approval never --profile=minhvu`
-    );
+    await Promisify.execute(`cdk deploy --require-approval never`);
     spinner.succeed(`Successfully deployed.`);
   }
 }
