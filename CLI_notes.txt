@@ -15,6 +15,10 @@ Features
                 - if our structure put cdk and CLI codes in the same `monsoon-load-testing` directory
                     - possible collision we need to resolve before publishing 
             - deploy the aws source to another repo
+      - issues:
+        - how do we want the user to configure their credentials - or we can just use the credentials from
+          ~/.aws/credentials
+        - make a generator
 - monsoon configure: Ask questions for AWS credentials (save in hidden directory) (dotenv for the .env file)
     - cli-ux
     - os ({ homedir }), .platform()

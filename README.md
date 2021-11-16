@@ -1,7 +1,4 @@
-monsoon
-=======
-
-
+# monsoon
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/monsoon.svg)](https://npmjs.org/package/monsoon)
@@ -9,11 +6,15 @@ monsoon
 [![License](https://img.shields.io/npm/l/monsoon.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g monsoon
 $ monsoon COMMAND
@@ -25,11 +26,39 @@ USAGE
   $ monsoon COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`monsoon hello`](#monsoon-hello)
-* [`monsoon help [COMMAND]`](#monsoon-help-command)
+
+- [`monsoon deploy`](#monsoon-deploy)
+- [`monsoon destroy`](#monsoon-destroy)
+- [`monsoon hello`](#monsoon-hello)
+- [`monsoon help [COMMAND]`](#monsoon-help-command)
+
+## `monsoon deploy`
+
+This is deploy command
+
+```
+USAGE
+  $ monsoon deploy
+```
+
+_See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/deploy.ts)_
+
+## `monsoon destroy`
+
+This is destroy command
+
+```
+USAGE
+  $ monsoon destroy
+```
+
+_See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/destroy.ts)_
 
 ## `monsoon hello`
 
@@ -47,8 +76,6 @@ DESCRIPTION
   Extra documentation goes here
 ```
 
-_See code: [src/commands/hello.js](https://github.com/minhphanhvu/monsoon/blob/v0.0.0/src/commands/hello.js)_
-
 ## `monsoon help [COMMAND]`
 
 display help for monsoon
@@ -65,4 +92,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.4/src/commands/help.ts)_
+
 <!-- commandsstop -->
