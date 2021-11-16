@@ -15,11 +15,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g monsoon-test
+$ npm install -g monsoon
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-test/1.0.0 linux-x64 node-v16.3.0
+monsoon/0.0.0 linux-x64 node-v16.3.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
@@ -45,7 +45,7 @@ USAGE
   $ monsoon deploy
 ```
 
-_See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/deploy.ts)_
+_See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/deploy.ts)_
 
 ## `monsoon destroy`
 
@@ -56,7 +56,7 @@ USAGE
   $ monsoon destroy
 ```
 
-_See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/destroy.ts)_
+_See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/destroy.ts)_
 
 ## `monsoon hello`
 
@@ -74,7 +74,7 @@ DESCRIPTION
   Extra documentation goes here
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/hello.ts)_
+_See code: [src/commands/hello.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/hello.ts)_
 
 ## `monsoon help [COMMAND]`
 
@@ -102,5 +102,5 @@ USAGE
   $ monsoon init
 ```
 
-_See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v0.0.0/src/commands/init.ts)_
 <!-- commandsstop -->

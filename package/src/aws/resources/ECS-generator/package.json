@@ -1,0 +1,21 @@
+{
+  "name": "petrichor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1019.0",
+    "nanoid": "^3.1.30",
+    "pm2": "^5.1.2",
+    "puppeteer": "^10.0.0"
+  },
+  "devDependencies": {
+    "csv-parse": "^4.16.3",
+    "json2csv": "^5.0.6"
+  }
+}

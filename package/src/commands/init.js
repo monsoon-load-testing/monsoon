@@ -27,16 +27,16 @@ class InitCommand extends Command {
     } else {
       await setAWSCredentials();
     }
-    // let goodDirectory = await cli.prompt(
-    //   `You are currently in ${process.cwd()}\nDo you want to create your Monsoon folder here? (y/n)`
-    // );
-    // goodDirectory = goodDirectory.toLowerCase();
-    // if (goodDirectory === "y") {
-    //   // await createNewTemplate();
-    //   console.log(MONSOON_GLOBAL_DIRECTORY);
-    // } else if (goodDirectory === "n") {
-    //   console.log("Please move to where you want your Monsoon project to be.");
-    // }
+    let goodDirectory = await cli.prompt(
+      `You are currently in ${process.cwd()}\nDo you want to create your Monsoon folder here? (y/n)`
+    );
+    goodDirectory = goodDirectory.toLowerCase();
+    if (goodDirectory === "y") {
+      // await createNewTemplate();
+      console.log(MONSOON_GLOBAL_DIRECTORY);
+    } else if (goodDirectory === "n") {
+      console.log("Please move to where you want your Monsoon project to be.");
+    }
   }
 }
 

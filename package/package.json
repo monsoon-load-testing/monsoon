@@ -1,6 +1,6 @@
 {
   "name": "monsoon",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "author": "monsoon-load-testing",
   "bin": {
     "monsoon": "./bin/run"
@@ -26,13 +26,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
     "/src",
-    "/src/aws/bin/aws.ts",
-    "/src/aws/lib/aggregating-lambda.ts",
-    "/src/aws/lib/aws-stack.ts",
-    "/src/aws/lib/metronome-lambda.ts",
-    "/src/aws/lib/starting_lamba.ts",
-    "/src/aws/lib/timestream.ts",
-    "/src/aws/lib/vpc.ts"
+    "/src/aws/bin/aws.ts"
   ],
   "homepage": "https://github.com/monsoon-load-testing/monsoon",
   "keywords": [
