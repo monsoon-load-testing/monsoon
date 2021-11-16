@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const WeatherStation = require("../../weather-station/dist/weather-station");
+const WeatherStation = require("monsoon-weather-station");
 
 const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));

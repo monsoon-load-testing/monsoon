@@ -15,7 +15,7 @@ class DeployCommand extends Command {
 
     spinner.start(`Currently synthing your AWS account`);
     await Promisify.execute(`cdk synth --profile=minhvu`);
-    spinner.succeed(`Successfully synthed`);
+    spinner.succeed(`Successfully synthesized`);
 
     spinner.start(`Currently bootstraping the infrastructure`);
     await Promisify.execute(`cdk bootstrap --profile=minhvu`);
