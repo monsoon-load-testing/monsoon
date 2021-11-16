@@ -1,6 +1,0 @@
-docker-image
-Dockerfile
-test-jest
-results
-node_modules
-package-lock.json
