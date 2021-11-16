@@ -4,7 +4,7 @@ const aws = require("aws-sdk");
 const timestreamwrite = new aws.TimestreamWrite({ region: "us-east-1" });
 const timestreamquery = new aws.TimestreamQuery({ region: "us-east-1" });
 
-const processData = (stepRawData) => {
+const processTableData = (stepRawData) => {
   const data = {
     concurrentUsers: [],
     responseTime: [],
@@ -51,16 +51,26 @@ const processData = (stepRawData) => {
   return data;
 };
 
-const getTableData = async (req, res, next) => {
-  let tableName = req.params.tableName;
-
+const querySteps = async (tableName) => {
   const paramsStepNames = {
     QueryString: `SELECT DISTINCT stepName FROM "${process.env.DATABASE_NAME}"."${tableName}" `,
   };
 
   const stepNamesData = await timestreamquery.query(paramsStepNames).promise();
   const stepNames = stepNamesData.Rows.map((row) => row.Data[0].ScalarValue);
-  console.log("stepNames", stepNames);
+  return stepNames;
+};
+
+const getSteps = async (req, res, next) => {
+  let tableName = req.params.tableName;
+
+  const stepNames = await querySteps(tableName);
+  res.send(stepNames);
+};
+
+const getTableData = async (req, res, next) => {
+  let tableName = req.params.tableName;
+  const stepNames = await querySteps(tableName);
 
   const promises = stepNames.map(async (stepName) => {
     const params = {
@@ -70,11 +80,9 @@ const getTableData = async (req, res, next) => {
   });
   const rawData = await Promise.all(promises);
   console.log("rawData", rawData);
-  // const data = await timestreamquery.query(params).promise();
-  // console.log(data);
   const data = rawData.reduce((acc, stepRawData, idx) => {
     const stepName = stepNames[idx];
-    return { ...acc, [stepName]: processData(stepRawData) };
+    return { ...acc, [stepName]: processTableData(stepRawData) };
   }, {});
   res.send(data);
 };
@@ -121,58 +129,73 @@ const data = {
 // ]
 
 /*
-SELECT approx_percentile(measure_value::double, 0.95) as p95
-FROM "monsoon".test1
-WHERE stepName = 'Load main page' AND measure_name = 'response_time'
+https://docs.aws.amazon.com/timestream/latest/developerguide/aggregate-functions.html
 
-
-Returned format is:
-{
-  Rows: [
-    {
-      Data: [
-        {
-          "ScalarValue": stepName,
-        },
-        {
-          "ScalarValue": metricName,
-        },
-        {
-          "ScalarValue": timestamp,
-        },
-        {
-          "ScalarValue": metricValue,
-        },
-      ]
-    },
-  ]
-}
-================================================================================
-Desired format is:
-{
-  "stepName1": {
-    metricName1: [
-      { time: 1234, value: 765, metrics: "metricName1", unit: "ms" },
-      { time: 1234, value: 765, metrics: "metricName1", unit: "ms" },
-    ],
-
-    metricName2: [
-      { time: 1234, value: 765, metrics: "Concurrent users", unit: "" },
-    ],
-  },
-  "stepName2": {
-    metricName1: [
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-      { time: 1234, value: 765, metrics: "Response Time", unit: "ms" },
-    ],
-
-    metricName2: [
-      { time: 1234, value: 765, metrics: "Concurrent users", unit: "" },
-    ],
-  },
-};
+Response Time
+- percentile 95 approx_percentile(x, w, percentages)
+- average: avg(x)
+- minimum: min(x)
+- maximum: max(x)
 */
-const getTableStats = (req, res, next) => {};
+
+const processStat = (nestedTimestreamObj) => {
+  return nestedTimestreamObj.Rows[0].Data[0].ScalarValue;
+};
+
+const getTableStats = async (req, res, next) => {
+  const results = {};
+  const tableName = req.params.tableName;
+  const stepNames = await querySteps(tableName);
+
+  const percentile95Promises = stepNames.map(async (step) => {
+    const params = {
+      QueryString: `
+        SELECT approx_percentile(measure_value::double, 0.95) as p95
+        FROM "${process.env.DATABASE_NAME}"."${tableName}"
+        WHERE stepName = '${step}' AND measure_name = 'response_time'
+      `,
+    };
+    return timestreamquery.query(params).promise();
+  });
+  const data = await Promise.all(percentile95Promises);
+  const newData = data.map((datum) => processStat(datum));
+  console.log(newData);
+
+  // const averagePromises = stepNames.map(async (step) => {
+  //   const params = {
+  //     QueryString: `
+  //       //find the average
+  //     `,
+  //   };
+  //   return timestreamquery.query(params).promise();
+  // });
+
+  // const minPromises = stepNames.map(async (step) => {
+  //   const params = {
+  //     QueryString: `
+  //       //find the min
+  //     `,
+  //   };
+  //   return timestreamquery.query(params).promise();
+  // });
+
+  // p95 stats for stepNames[0] will always be p95Promises[0]
+
+  /*
+    {
+      "Go to bin": {
+        responseTime: {
+          percentile95: "123",
+          average: "50",
+          min: "10",
+          max: "140"
+        },
+        "Load main page": {}
+      }    
+  */
+
+  res.send(results);
+};
 
 const getTestList = async (req, res, next) => {
   const paramsListTables = {
