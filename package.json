@@ -1,5 +1,5 @@
 {
-  "name": "monsoon",
+  "name": "monsoon-load-testing",
   "version": "1.0.0",
   "author": "monsoon-load-testing",
   "bin": {
@@ -30,7 +30,7 @@
     "/src/aws/lib/aggregating-lambda.ts",
     "/src/aws/lib/aws-stack.ts",
     "/src/aws/lib/metronome-lambda.ts",
-    "/src/aws/lib/starting_lamba.ts",
+    "/src/aws/lib/starting_lambda.ts",
     "/src/aws/lib/timestream.ts",
     "/src/aws/lib/vpc.ts"
   ],

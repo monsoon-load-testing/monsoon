@@ -15,11 +15,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g monsoon-test
+$ npm install -g cli-ms-load-testing-test3
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-test/1.0.0 linux-x64 node-v16.3.0
+cli-ms-load-testing-test3/1.0.0 linux-x64 node-v16.3.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
