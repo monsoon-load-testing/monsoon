@@ -15,8 +15,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.static("build"));
 app.use(express.json());
-
 app.use("/api", routes);
 
 app.use((req, res, next) => {
