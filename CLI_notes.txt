@@ -2,7 +2,7 @@ Features
 - monsoon init: A command to spin up a monsoon main directory
 (create a test script template for the user to write their codes, package.json, default config.json may be saved in another sub-directory)
     - have global monsoon npm package
-    - `monsoon init`
+    - `monsoon init` DONE
         - make a directory `monsoon`
         - a default test_script.js inside
         - a package.json including puppeteer, weather-station
@@ -19,8 +19,9 @@ Features
     - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`.  DONE
     Our package needs to include the source codes (aws folder)
     - `cdk synth`, `cdk bootstrap`, `cdk deploy` are only allowed after `cdk init`
-- monsoon start mytest: A command to start the test (rename the test script according to our infrastructure and upload to S3)
-    - will not be allowed until the user builds the infrastructure
+- monsoon start mytest: A command to start the test
+(rename the test script according to our infrastructure and upload to S3)
+    - will not be allowed until the user builds the infrastructure (strech goal)
     - monsoon start (sdk-level): we are going to need their credentials
       - scan the S3 buckets and find(regex) the monsoon S3
       - change the testscript name to test_script.js upload test_script to S3
