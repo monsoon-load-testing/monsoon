@@ -1,19 +1,38 @@
+const path = require("path");
+require("dotenv").config({
+  path: path.join(__dirname, "../../.env"),
+});
 const { Command } = require("@oclif/command");
+const Promisify = require("../util/promisify");
+const inquirer = require("inquirer");
+const fs = require("fs");
 
 class StartCommand extends Command {
   async run() {
-    console.log("start");
+    await Promisify.changeDir(process.cwd());
+    const names = fs.readdirSync("./", "utf-8");
+    const excludedNames = ["node_modules", "package.json", "package-lock.json"];
+    const targetNames = names.filter((name) => {
+      return !excludedNames.includes(name);
+    });
+
+    const choices = targetNames.map((name) => {
+      return { name };
+    });
+    const responses = await inquirer.prompt([
+      {
+        name: "dirName",
+        message: "Choose your test's directory",
+        type: "list",
+        choices,
+      },
+    ]);
+    const dirName = responses.dirName;
+    // sdk codes running...
   }
 }
 
 /*
-this command will navigate to the current monsoon directory (the user should be in
-here when they issue monsoon commands)
-
-this command will extract all the names of the directories (except the node_modules)
-this command will display all options of the test names
-The user has the option to choose which test they want to start
-
 Sdk level (extract AWS_PROFILE from .monsoon/.env)
 This command will look for any js file.
   list all buckets
@@ -36,6 +55,7 @@ Invoke the lambda and send information through the event object
       numberOfusers: ...,
       access_key: ....,
       secret_access_key: ....,
+      testName: testDirectoryName (cannot have '-')
     }
 spinner.succeed(``)
 */

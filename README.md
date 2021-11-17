@@ -35,6 +35,9 @@ USAGE
 * [`monsoon hello`](#monsoon-hello)
 * [`monsoon help [COMMAND]`](#monsoon-help-command)
 * [`monsoon init`](#monsoon-init)
+* [`monsoon list`](#monsoon-list)
+* [`monsoon new-test`](#monsoon-new-test)
+* [`monsoon start`](#monsoon-start)
 * [`monsoon teardown`](#monsoon-teardown)
 
 ## `monsoon deploy`
@@ -104,6 +107,39 @@ USAGE
 ```
 
 _See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/init.ts)_
+
+## `monsoon list`
+
+This is list command.
+
+```
+USAGE
+  $ monsoon list
+```
+
+_See code: [src/commands/list.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/list.ts)_
+
+## `monsoon new-test`
+
+This is new-test command.
+
+```
+USAGE
+  $ monsoon new-test
+```
+
+_See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/new-test.ts)_
+
+## `monsoon start`
+
+This is start command.
+
+```
+USAGE
+  $ monsoon start
+```
+
+_See code: [src/commands/start.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/start.ts)_
 
 ## `monsoon teardown`
 

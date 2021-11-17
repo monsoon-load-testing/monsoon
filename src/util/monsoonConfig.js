@@ -3,6 +3,7 @@ const Promisify = require("../util/promisify");
 const ora = require("ora");
 const spinner = ora();
 const fs = require("fs");
+const path = require("path");
 const {
   MONSOON_GLOBAL_DIRECTORY,
   MONSOON_ENV_FILE_PATH,
@@ -26,8 +27,13 @@ const setAWSCredentials = async (existGlobalDir = false) => {
     fs.mkdirSync(MONSOON_GLOBAL_DIRECTORY);
   }
   spinner.start();
-  // Write AWS credentials to /enmonsoon .env file
+  // Write AWS credentials to /.monsoon .env file
   fs.writeFileSync(MONSOON_ENV_FILE_PATH, ENV_VARIABLES);
+  // Write AWS_PROFILE to package .env file
+  fs.writeFileSync(
+    path.join(__dirname, "../../.env"),
+    `AWS_PROFILE=${AWS_PROFILE}`
+  );
   spinner.succeed("Your AWS credentials saved to monsoon environment\n");
 };
 
