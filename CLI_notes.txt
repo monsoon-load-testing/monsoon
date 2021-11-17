@@ -52,4 +52,3 @@ mytest2
 
 `monsoon list` -> list all the names of the directories they can run the test
 `monsoon new-test` -> to create a new test directory
-dirNames = [""] // some random names for monsoon new-test

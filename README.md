@@ -19,7 +19,7 @@ $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-load-testing/1.0.0 linux-x64 node-v16.13.0
+monsoon-load-testing/1.0.0 linux-x64 node-v16.3.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
