@@ -194,9 +194,9 @@ const getTestList = async (req, res, next) => {
     .promise();
   const tables = resListTables.Tables;
   const newTables = tables.map((table) => {
-    let testName = "downpour-test";
-    let timestamp = "1637014373298";
-    // let [testName, timestamp] = table.TableName.split("-");
+    // let testName = "downpour-test";
+    // let timestamp = "1637014373298";
+    let [testName, timestamp] = table.TableName.split("-");
     return {
       testName,
       date: timestamp,
