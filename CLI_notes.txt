@@ -39,16 +39,26 @@ Features
 - npm i -g monsoon-load-testing (or similar): Npm package
 
 `monsoon init` folder structure
-monsoon-load-testing (main directory)
 
-node_modules
-package.json (monsoon-weather-station, puppeteer)
+monsoon_tests (main directory - where the user types our commands)
+  node_modules
+  package.json (monsoon-weather-station, puppeteer)
+  package-lock.json
+  mytest
+    |- test_script.js
+    |- test_config.json
+  mytest2
+    |- test_script.js
+    |- test_config.json
+  mytest3
+    |- test_script.js
+    |- test_config.json
+
+`monsoon list` -> list all test names
+`monsoon new-test` -> to create a new test directory DONE
+
+`monsoon start`
+
 mytest
-  |- test_script.js
-  |- test_config.json
 mytest2
-  |- test_script.js
-  |- test_config.json
-
-`monsoon list` -> list all the names of the directories they can run the test
-`monsoon new-test` -> to create a new test directory
+cancel
