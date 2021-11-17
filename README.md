@@ -15,11 +15,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g cli-ms-load-testing-test3
+$ npm install -g monsoon-load-testing
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-cli-ms-load-testing-test3/1.0.0 linux-x64 node-v16.3.0
+monsoon-load-testing/1.0.0 linux-x64 node-v16.13.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
@@ -35,6 +35,7 @@ USAGE
 * [`monsoon hello`](#monsoon-hello)
 * [`monsoon help [COMMAND]`](#monsoon-help-command)
 * [`monsoon init`](#monsoon-init)
+* [`monsoon teardown`](#monsoon-teardown)
 
 ## `monsoon deploy`
 
@@ -49,7 +50,7 @@ _See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/mons
 
 ## `monsoon destroy`
 
-This is destroy command
+Deletes the .monsoon directory from the user's local machine
 
 ```
 USAGE
@@ -103,4 +104,15 @@ USAGE
 ```
 
 _See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/init.ts)_
+
+## `monsoon teardown`
+
+This is teardown command
+
+```
+USAGE
+  $ monsoon teardown
+```
+
+_See code: [src/commands/teardown.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/teardown.ts)_
 <!-- commandsstop -->
