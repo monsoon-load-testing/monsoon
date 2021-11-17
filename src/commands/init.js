@@ -12,7 +12,6 @@ const {
 } = require("../util/monsoonConfig");
 
 const {
-  MONSOON_GLOBAL_DIRECTORY,
   MONSOON_ENV_FILE_PATH,
   START_HERE_REPO,
 } = require("../constants/paths");
@@ -22,9 +21,9 @@ const cloneStartHereRepo = async () => {
 
   const repoExists = fs.existsSync("./monsoon_tests"); // hard_coded folder test name
   if (!repoExists) {
-    spinner.start(`Cloning ${START_HERE_REPO}`);
+    spinner.start(`Cloning ${START_HERE_REPO} && installing packages.`);
     await Promisify.execute(`git clone -q ${START_HERE_REPO}`);
-    await Promisify.execute(`cd monsoon_tests && rm -rf .git`);
+    await Promisify.execute(`cd monsoon_tests && rm -rf .git && npm i`);
     spinner.succeed(`${START_HERE_REPO} successfully cloned`);
   } else {
     spinner.start();

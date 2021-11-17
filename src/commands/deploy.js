@@ -1,7 +1,6 @@
 const { Command } = require("@oclif/command");
 const Promisify = require("../util/promisify");
 const ora = require("ora");
-const os = require("os");
 const path = require("path");
 const fs = require("fs");
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
@@ -18,16 +17,17 @@ class DeployCommand extends Command {
       "utf-8"
     );
     const AWS_PROFILE = envVariables.split("\n")[2].split("=")[1];
+    console.log(AWS_PROFILE);
 
-    spinner.start(`Currently compiling your CloudFormation`);
+    spinner.start(`Currently compiling your CloudFormation.`);
     await Promisify.execute(`cdk synth --profile=${AWS_PROFILE}`);
-    spinner.succeed(`Successfully synthesized`);
+    spinner.succeed(`Successfully compiled.`);
 
-    spinner.start(`Currently bootstraping the infrastructure`);
+    spinner.start(`Currently bootstraping the infrastructure.`);
     await Promisify.execute(`cdk bootstrap --profile=${AWS_PROFILE}`);
-    spinner.succeed(`Successfully bootstraped`);
+    spinner.succeed(`Successfully bootstraped.`);
 
-    spinner.start(`Currently deploying the infrastructure`);
+    spinner.start(`Currently deploying the infrastructure.`);
     await Promisify.execute(
       `cdk deploy --require-approval never --profile=${AWS_PROFILE}`
     );
