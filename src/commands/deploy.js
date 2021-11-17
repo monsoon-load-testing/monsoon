@@ -17,7 +17,6 @@ class DeployCommand extends Command {
       "utf-8"
     );
     const AWS_PROFILE = envVariables.split("\n")[2].split("=")[1];
-    console.log(AWS_PROFILE);
 
     spinner.start(`Currently compiling your CloudFormation.`);
     await Promisify.execute(`cdk synth --profile=${AWS_PROFILE}`);
