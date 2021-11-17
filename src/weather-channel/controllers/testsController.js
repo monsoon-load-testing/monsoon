@@ -74,7 +74,7 @@ const getTableData = async (req, res, next) => {
 
   const promises = stepNames.map(async (stepName) => {
     const params = {
-      QueryString: `SELECT * FROM "${process.env.DATABASE_NAME}"."${tableName}" WHERE stepName='${stepName}'`,
+      QueryString: `SELECT * FROM "${process.env.DATABASE_NAME}"."${tableName}" WHERE stepName='${stepName}' ORDER BY time ASC`,
     };
     return timestreamquery.query(params).promise();
   });
@@ -103,7 +103,7 @@ const queryP95 = (tableName, stepNames) => {
     return timestreamquery.query(params).promise();
   });
   return percentile95Promises;
-}
+};
 
 const queryAVG = (tableName, stepNames) => {
   const avgPromises = stepNames.map((step) => {
@@ -117,7 +117,7 @@ const queryAVG = (tableName, stepNames) => {
     return timestreamquery.query(params).promise();
   });
   return avgPromises;
-}
+};
 
 const queryMax = (tableName, stepNames) => {
   const maxPromises = stepNames.map((step) => {
@@ -131,7 +131,7 @@ const queryMax = (tableName, stepNames) => {
     return timestreamquery.query(params).promise();
   });
   return maxPromises;
-}
+};
 
 const queryMin = (tableName, stepNames) => {
   const minPromises = stepNames.map((step) => {
@@ -145,7 +145,7 @@ const queryMin = (tableName, stepNames) => {
     return timestreamquery.query(params).promise();
   });
   return minPromises;
-}
+};
 
 const processResults = (stepNames, data, metricNames) => {
   // data is an array of values
@@ -157,15 +157,15 @@ const processResults = (stepNames, data, metricNames) => {
 
   stepNames.forEach((stepName, stepIdx) => {
     let dataIdx = stepIdx;
-    results[stepName] = {responseTime: {}};
+    results[stepName] = { responseTime: {} };
     metricNames.forEach((metricName, metricIdx) => {
       results[stepName]["responseTime"][metricName] = data[dataIdx];
-      dataIdx += nbrOfSteps
+      dataIdx += nbrOfSteps;
     });
   });
 
   return results;
-}
+};
 
 const getTableStats = async (req, res, next) => {
   const tableName = req.params.tableName;
@@ -175,7 +175,12 @@ const getTableStats = async (req, res, next) => {
   const avgPromises = queryAVG(tableName, stepNames);
   const maxPromises = queryMax(tableName, stepNames);
   const minPromises = queryMin(tableName, stepNames);
-  const promises = [...q95promises, ...avgPromises, ...maxPromises, ...minPromises];
+  const promises = [
+    ...q95promises,
+    ...avgPromises,
+    ...maxPromises,
+    ...minPromises,
+  ];
   const metricNames = ["95th Percentile", "Average", "Max", "Min"];
 
   const data = await Promise.all(promises);
