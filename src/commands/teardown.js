@@ -5,7 +5,7 @@ const path = require("path");
 
 const spinner = ora();
 
-class DestroyCommand extends Command {
+class TeardownCommand extends Command {
   async run() {
     const cdkPath = path.join(__dirname, "../aws");
     await Promisify.changeDir(cdkPath);
@@ -16,6 +16,6 @@ class DestroyCommand extends Command {
   }
 }
 
-DestroyCommand.description = `This is destroy command`;
+TeardownCommand.description = `This is teardown command`;
 
-module.exports = DestroyCommand;
+module.exports = TeardownCommand;

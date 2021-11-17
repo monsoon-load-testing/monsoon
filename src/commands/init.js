@@ -20,9 +20,9 @@ class InitCommand extends Command {
       console.log("");
       spinner.start();
       spinner.succeed("Your monsoon AWS env file already exists.");
-      let updateAWS = await cli.prompt("Do you want to update your AWS?");
+      let updateAWS = await cli.prompt("Do you want to update your AWS?(y/n)");
       if (updateAWS === "y") {
-        await updateAWSCredentials();
+        await updateAWSCredentials(true);
       }
     } else {
       await setAWSCredentials();

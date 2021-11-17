@@ -8,7 +8,7 @@ const {
   MONSOON_ENV_FILE_PATH,
 } = require("../constants/paths");
 
-const setAWSCredentials = async () => {
+const setAWSCredentials = async (existGlobalDir = false) => {
   const AWS_ACCESS_KEY_ID = await cli.prompt(
     "Please enter your AWS ACCESS KEY ID",
     { type: "hide" }
@@ -30,13 +30,15 @@ const setAWSCredentials = async () => {
   spinner.succeed("AWS config file updated with credentials");
 
   spinner.start();
-  fs.mkdirSync(MONSOON_GLOBAL_DIRECTORY);
+  if (!existGlobalDir) {
+    fs.mkdirSync(MONSOON_GLOBAL_DIRECTORY);
+  }
   fs.writeFileSync(MONSOON_ENV_FILE_PATH, ENV_VARIABLES);
   spinner.succeed("Credentials saved to monsoon environment\n");
 };
 
-const updateAWSCredentials = async () => {
-  await setAWSCredentials();
+const updateAWSCredentials = async (existGlobalDir) => {
+  await setAWSCredentials(existGlobalDir);
 };
 
 module.exports = { setAWSCredentials, updateAWSCredentials };
