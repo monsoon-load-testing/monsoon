@@ -21,18 +21,14 @@ const setAWSCredentials = async (existGlobalDir = false) => {
   );
   const ENV_VARIABLES = `AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}\nAWS_SECRET_KEY=${AWS_SECRET_KEY}\nAWS_PROFILE=${AWS_PROFILE}\n`;
   console.log("");
-  spinner.start();
-  spinner.succeed(
-    "Your AWS credentials are saved in global .monsoon directory."
-  );
 
-  spinner.start();
   if (!existGlobalDir) {
     fs.mkdirSync(MONSOON_GLOBAL_DIRECTORY);
-    // Write AWS credentials to /enmonsoon .env file
-    fs.writeFileSync(MONSOON_ENV_FILE_PATH, ENV_VARIABLES);
-    spinner.succeed("Credentials saved to monsoon environment\n");
   }
+  spinner.start();
+  // Write AWS credentials to /enmonsoon .env file
+  fs.writeFileSync(MONSOON_ENV_FILE_PATH, ENV_VARIABLES);
+  spinner.succeed("Your AWS credentials saved to monsoon environment\n");
 };
 
 const updateAWSCredentials = async (existGlobalDir) => {

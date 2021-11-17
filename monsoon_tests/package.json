@@ -1,0 +1,15 @@
+{
+  "name": "monsoon_template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test_script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "monsoon-weather-station": "^1.0.0",
+    "puppeteer": "^10.4.0"
+  }
+}
