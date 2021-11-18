@@ -98,15 +98,6 @@ const extractStepNames = async (fileName) => {
   return matches;
 };
 
-const configObj = {
-  TEST_LENGTH: 1 * event.testLengthInMinutes * 60 * 1000,
-  TEST_UNIT: "milliseconds",
-  TIME_WINDOW: Number(process.env.timeWindow) * 1000,
-  ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
-  NUMBER_OF_USERS: event.numberOfUsers,
-  STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
-};
-
 // *****************************************************
 // ECS
 // *****************************************************
@@ -178,6 +169,14 @@ const runTasks = async (subnet1, subnet2) => {
 // calling lambda handler
 exports.handler = async (event) => {
   await createRule();
+  const configObj = {
+    TEST_LENGTH: 1 * Number(event.testLengthInMinutes) * 60 * 1000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: Number(process.env.timeWindow) * 1000,
+    ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
+    NUMBER_OF_USERS: Number(event.numberOfUsers),
+    STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
+  };
   const stepNames = await extractStepNames("test_script.js");
   const timestamps = initializeTimestamps(
     configObj.TIME_WINDOW,
