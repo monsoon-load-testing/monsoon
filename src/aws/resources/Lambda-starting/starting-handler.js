@@ -99,7 +99,7 @@ const extractStepNames = async (fileName) => {
 };
 
 const configObj = {
-  TEST_LENGTH: 1 * 5 * 60 * 1000, // received through event
+  TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
   TEST_UNIT: "milliseconds",
   TIME_WINDOW: Number(process.env.timeWindow) * 1000,
   ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
