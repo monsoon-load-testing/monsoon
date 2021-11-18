@@ -91,8 +91,8 @@ const handler = async (event, context) => {
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
 
-    const taskArns = await listTasks();
-    await stopTasks(taskArns);
+    // const taskArns = await listTasks();
+    // await stopTasks(taskArns);
     await removeMetronomePermissions(functionName);
     await removeTarget();
     await deleteRule();
