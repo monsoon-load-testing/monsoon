@@ -66,8 +66,8 @@ export class AwsStack extends cdk.Stack {
     });
     bucket.grantReadWrite(startingLambda.handler);
 
-    // const timeStreamDB = new TimestreamConstruct(this, "timestream", {
-    //   databaseName,
-    // });
+    const timeStreamDB = new TimestreamConstruct(this, "timestream", {
+      databaseName,
+    });
   }
 }
