@@ -30,18 +30,18 @@ const aggregateAllContents = async (event) => {
   // 1) sum number of passes and fails
   // 2) passSum / (passSum + failSum) * 100
   const accumulator = {
-    responseTimeSum: 0,
+    responseTimeSumProd: 0,
     countUsers: 0,
-    transactionRateSum: 0,
+    transactionRateSumProd: 0,
     passSum: 0,
-    failSum: 0
+    failSum: 0,
   };
 
   const results = {
     averageResponseTime: 0,
     concurrentUsers: 0,
     averageTransactionRate: 0,
-    passRatio: 0
+    passRatio: 0,
   };
 
   let shouldContinue = true;
@@ -69,11 +69,20 @@ const aggregateAllContents = async (event) => {
     finishedPromises.forEach((item) => {
       const obj = JSON.parse(item.value.Body);
       Object.values(obj).forEach((user) => {
-        accumulator.responseTimeSum += user.metrics.normalizedResponseTime;
+        const {
+          normalizedResponseTime,
+          transactionRate,
+          passCount,
+          failCount,
+        } = user.metrics;
+
+        if (passCount > 0) {
+          accumulator.responseTimeSumProd += normalizedResponseTime * passCount;
+          accumulator.transactionRateSumProd += transactionRate * passCount;
+        }
         accumulator.countUsers += 1;
-        accumulator.transactionRateSum += user.metrics.transactionRate;
-        accumulator.passSum += user.metrics.passCount;
-        accumulator.failSum += user.metrics.failCount;
+        accumulator.passSum += passCount;
+        accumulator.failSum += failCount;
       });
     });
 
@@ -87,16 +96,17 @@ const aggregateAllContents = async (event) => {
 
   // calculate results
   results.averageResponseTime = Math.round(
-    accumulator.responseTimeSum / accumulator.countUsers
+    accumulator.responseTimeSumProd / accumulator.passSum
   );
 
   results.concurrentUsers = accumulator.countUsers;
 
   results.averageTransactionRate = Math.round(
-    accumulator.transactionRateSum / accumulator.countUsers
+    accumulator.transactionRateSumProd / accumulator.passSum
   );
 
-  results.passRatio = (100 * accumulator.passSum) / (accumulator.passSum + accumulator.failSum);
+  results.passRatio =
+    (100 * accumulator.passSum) / (accumulator.passSum + accumulator.failSum);
 
   // write to db
   const tableName = event.tableName;
