@@ -184,7 +184,7 @@ exports.handler = async (event) => {
     configObj.TEST_LENGTH,
     configObj.ORIGIN_TIMESTAMP
   );
-  const testName = "downpour-test"; // testName needs to be passed through an event from the CLI client
+  const testName = "downpour_test"; // testName needs to be passed through an event from the CLI client
   const normalizedTimestamps = {
     timestamps,
     stepNames,

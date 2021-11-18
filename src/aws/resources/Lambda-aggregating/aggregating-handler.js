@@ -25,14 +25,23 @@ const databaseName = process.env.DATABASE_NAME;
 
 const aggregateAllContents = async (event) => {
   // repeatedly calling AWS list objects because it only returns 1000 objects
+  // averageTransactionRate: same as averageResponseTime
+  // passRatio:
+  // 1) sum number of passes and fails
+  // 2) passSum / (passSum + failSum) * 100
   const accumulator = {
     responseTimeSum: 0,
     countUsers: 0,
+    transactionRateSum: 0,
+    passSum: 0,
+    failSum: 0
   };
 
   const results = {
     averageResponseTime: 0,
     concurrentUsers: 0,
+    averageTransactionRate: 0,
+    passRatio: 0
   };
 
   let shouldContinue = true;
@@ -43,6 +52,7 @@ const aggregateAllContents = async (event) => {
     ContinuationToken: nextContinuationToken || undefined,
   };
 
+  // calculate sums
   while (shouldContinue) {
     let res = await s3.listObjectsV2(params).promise();
     let contents = res.Contents; // this is a list of up to 1000 S3 resources
@@ -61,6 +71,9 @@ const aggregateAllContents = async (event) => {
       Object.values(obj).forEach((user) => {
         accumulator.responseTimeSum += user.metrics.normalizedResponseTime;
         accumulator.countUsers += 1;
+        accumulator.transactionRateSum += user.metrics.transactionRate;
+        accumulator.passSum += user.metrics.passCount;
+        accumulator.failSum += user.metrics.failCount;
       });
     });
 
@@ -72,11 +85,18 @@ const aggregateAllContents = async (event) => {
     }
   }
 
+  // calculate results
   results.averageResponseTime = Math.round(
     accumulator.responseTimeSum / accumulator.countUsers
   );
 
   results.concurrentUsers = accumulator.countUsers;
+
+  results.averageTransactionRate = Math.round(
+    accumulator.transactionRateSum / accumulator.countUsers
+  );
+
+  results.passRatio = (100 * accumulator.passSum) / (accumulator.passSum + accumulator.failSum);
 
   // write to db
   const tableName = event.tableName;
@@ -127,7 +147,23 @@ const aggregateAllContents = async (event) => {
     Time: normalizedTimestamp,
   };
 
-  const records = [responseTime, concurrentUsers];
+  const transactionRate = {
+    Dimensions: dimensions,
+    MeasureName: "transaction_rate",
+    MeasureValue: results.averageTransactionRate.toString(),
+    MeasureValueType: "DOUBLE",
+    Time: normalizedTimestamp,
+  };
+
+  const passRatio = {
+    Dimensions: dimensions,
+    MeasureName: "pass_ratio",
+    MeasureValue: results.passRatio.toString(),
+    MeasureValueType: "DOUBLE",
+    Time: normalizedTimestamp,
+  };
+
+  const records = [responseTime, concurrentUsers, transactionRate, passRatio];
 
   const paramsWrite = {
     DatabaseName: databaseName,

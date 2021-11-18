@@ -30,7 +30,8 @@ export class AggregatingLambda extends cdk.Construct {
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(
-        path.join(__dirname, "/../resources/Lambda-aggregating")
+        path.join(__dirname, "/../resources/Lambda-aggregating"),
+        { exclude: ["node_modules", "package.json", "package-lock.json"] }
       ),
       handler: "aggregating-handler.handler",
       environment: {
