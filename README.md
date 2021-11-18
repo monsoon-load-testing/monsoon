@@ -19,7 +19,7 @@ $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-load-testing/1.0.0 linux-x64 node-v16.3.0
+monsoon-load-testing/1.0.0 linux-x64 node-v16.13.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
@@ -32,7 +32,6 @@ USAGE
 <!-- commands -->
 * [`monsoon deploy`](#monsoon-deploy)
 * [`monsoon destroy`](#monsoon-destroy)
-* [`monsoon hello`](#monsoon-hello)
 * [`monsoon help [COMMAND]`](#monsoon-help-command)
 * [`monsoon init`](#monsoon-init)
 * [`monsoon list`](#monsoon-list)
@@ -61,24 +60,6 @@ USAGE
 ```
 
 _See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/destroy.ts)_
-
-## `monsoon hello`
-
-Describe the command here
-
-```
-USAGE
-  $ monsoon hello
-
-OPTIONS
-  -n, --name=name  name to print
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
-```
-
-_See code: [src/commands/hello.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/hello.ts)_
 
 ## `monsoon help [COMMAND]`
 
