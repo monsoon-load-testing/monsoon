@@ -19,6 +19,10 @@ app.use(express.static("build"));
 app.use(express.json());
 app.use("/api", routes);
 
+app.get("/tests/*", (req, res) => {
+  res.redirect("/");
+});
+
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route.", 404);
   throw error;
@@ -30,10 +34,6 @@ app.use((err, req, res, next) => {
   }
   res.status(err.code || 500);
   res.json({ error: err.message || "An unknown error occured" });
-});
-
-app.get("/*", (req, res) => {
-  res.redirect('/');
 });
 
 app.listen(port, () => {
