@@ -118,7 +118,7 @@ const retrieveSubnets = async (vpcId) => {
   return [subnets[0], subnets[1]];
 };
 
-const createTaskDefinition = async () => {
+const createTaskDefinition = async (event) => {
   const params = {
     memory: "4GB",
     cpu: "2 vCPU",
@@ -148,8 +148,8 @@ const createTaskDefinition = async () => {
   await ecs.registerTaskDefinition(params).promise();
 };
 
-const runTasks = async (subnet1, subnet2) => {
-  const desiredCount = 2; // number of tasks - passed from CLI through event
+const runTasks = async (event, subnet1, subnet2) => {
+  const desiredCount = Number(event.numberOfUsers) / 5;
   const params = {
     cluster: process.env.clusterName,
     taskDefinition: "monsoon-task",
@@ -212,8 +212,8 @@ exports.handler = async (event) => {
   const [subnet1, subnet2] = await retrieveSubnets(vpcId);
 
   // Create task definition
-  await createTaskDefinition();
+  await createTaskDefinition(event);
 
   // Create a service
-  await runTasks(subnet1, subnet2);
+  await runTasks(event, subnet1, subnet2);
 };
