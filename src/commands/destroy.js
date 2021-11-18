@@ -2,7 +2,6 @@ const os = require("os");
 
 const { Command } = require("@oclif/command");
 const ora = require("ora");
-const path = require("path");
 
 const Promisify = require("../util/promisify");
 

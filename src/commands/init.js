@@ -17,14 +17,14 @@ const {
 } = require("../constants/paths");
 
 const cloneStartHereRepo = async () => {
-  await Promisify.changeDir(process.cwd()); // whatever current directory the user is in
+  await Promisify.changeDir(process.cwd());
 
   const repoExists = fs.existsSync("./monsoon_tests"); // hard_coded folder test name
   if (!repoExists) {
-    spinner.start(`Cloning ${START_HERE_REPO} && installing packages.`);
+    spinner.start(`Generating monsoon directory && installing packages.`);
     await Promisify.execute(`git clone -q ${START_HERE_REPO}`);
     await Promisify.execute(`cd monsoon_tests && rm -rf .git && npm i`);
-    spinner.succeed(`${START_HERE_REPO} successfully cloned`);
+    spinner.succeed(`Monsoon directory is successfully generated.`);
   } else {
     spinner.start();
     spinner.succeed(`Monsoon directory monsoon_tests already exists`);

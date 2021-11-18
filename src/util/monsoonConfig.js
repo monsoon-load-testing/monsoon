@@ -1,5 +1,4 @@
 const { cli } = require("cli-ux");
-const Promisify = require("../util/promisify");
 const ora = require("ora");
 const spinner = ora();
 const fs = require("fs");
