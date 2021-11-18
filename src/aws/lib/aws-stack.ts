@@ -39,7 +39,7 @@ export class AwsStack extends cdk.Stack {
       this,
       "ecs-spinning-up-lambda",
       {
-        ruleName: "invoke-ecs-spinning-up-lambda",
+        ruleName: "invoke-ECS-spinning-up-lambda-rule",
         targetId: "ECSSPinningUpLambdaTriggeredByEventBridgeRule",
         permissionStatementIdECS,
         vpcId: customVpc.vpc.vpcId,
@@ -60,11 +60,14 @@ export class AwsStack extends cdk.Stack {
       access_key: "KEY-XXXX", // extract from CLI (delete)
       secret_access_key: "KEY-XXXX", // extract from CLI (delete)
       permissionStatementId, // rename to  permissionStatementIdMetronome
+      ecsSpinningUpLambdaName: ecsSpinningUpLambda.handler.functionName,
+      functionArnECSSpinningUp: ecsSpinningUpLambda.handler.functionArn,
+      permissionStatementIdECS,
     });
     bucket.grantReadWrite(startingLambda.handler);
 
-    const timeStreamDB = new TimestreamConstruct(this, "timestream", {
-      databaseName,
-    });
+    // const timeStreamDB = new TimestreamConstruct(this, "timestream", {
+    //   databaseName,
+    // });
   }
 }

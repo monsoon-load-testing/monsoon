@@ -20,7 +20,7 @@ const targetId = process.env.targetId; // "ECSSPinningUpLambdaTriggeredByEventBr
 const permissionStatementId = process.env.permissionStatementIdECS;
 const vpcId = process.env.vpcId;
 const clusterName = process.env.clusterName;
-const bucketName = process.env.bucket;
+const bucketName = process.env.bucketName;
 
 const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,9 +84,10 @@ const fetchConfig = async () => {
   return s3.getObject(params).promise();
 };
 
-exports.handler = async (event, handler) => {
+exports.handler = async (event, context) => {
   const functionName = context.functionName;
-  const config = await fetchConfig();
+  const configRes = await fetchConfig();
+  const config = JSON.parse(configRes.Body);
 
   const originTimestamp = config.ORIGIN_TIMESTAMP;
   const currentTime = Date.now();
@@ -100,7 +101,7 @@ exports.handler = async (event, handler) => {
       : desiredTaskCount;
 
   const currentTasks = await listTasks();
-  const currentTasksCount = currentTasks.length;
+  let currentTasksCount = currentTasks.length;
   const iterationTaskCountLimit = currentTasksCount + tasksIncrementPerMin;
   const taskPromises = [];
 
@@ -130,7 +131,7 @@ exports.handler = async (event, handler) => {
     currentTasksCount < desiredTaskCount
   ) {
     taskPromises.push(ecs.runTask(paramsTasks).promise());
-    currentTaskCount++;
+    currentTasksCount++;
   }
   await Promise.allSettled(taskPromises);
 
