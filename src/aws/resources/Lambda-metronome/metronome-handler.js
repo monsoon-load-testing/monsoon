@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3({});
 const lambda = new AWS.Lambda();
 const EventBridge = new AWS.EventBridge({ apiVersion: "2015-10-07" });
+const ecs = new AWS.ECS();
 // const ruleName = "invoke-metronome-lambda-rule";
 
 const ruleName = process.env.RULE_NAME; // "invoke-metronome-lambda-rule"
@@ -39,6 +40,29 @@ const removeMetronomePermissions = async (functionName) => {
   console.log("Metronome-Lambda permissions removed");
 };
 
+const listTasks = async () => {
+  const params = {
+    cluster: process.env.clusterName, // Passed from cdk level
+  };
+  const tasks = await ecs.listTasks(params).promise();
+  return tasks.taskArns;
+};
+
+const stopTasks = async (taskArns) => {
+  const promises = [];
+  for (let taskArn of taskArns) {
+    const params = {
+      task: taskArn,
+      cluster: process.env.clusterName,
+    };
+    await ecs.stopTask(params).promise(); //delete
+    // promises.push(ecs.stopTask(params).promise());
+  }
+  // Promise.allSettled(promises);
+};
+
+
+
 const handler = async (event, context) => {
   const functionName = context.functionName;
   console.log(
@@ -67,6 +91,8 @@ const handler = async (event, context) => {
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
 
+    const taskArns = await listTasks();
+    await stopTasks(taskArns);
     await removeMetronomePermissions(functionName);
     await removeTarget();
     await deleteRule();
