@@ -28,6 +28,10 @@ export class MetronomeLambda extends cdk.Construct {
       ManagedPolicy.fromAwsManagedPolicyName("AmazonEventBridgeFullAccess")
     );
 
+    lambdaRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName("AmazonECS_FullAccess")
+    );
+
     this.handler = new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(

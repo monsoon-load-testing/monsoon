@@ -126,7 +126,7 @@ const buildFinalBucket = (filteredBucket) => {
     });
     const normalizedResponseTime = Math.round(sum / filteredBucket[key].length);
     const sampleCount = filteredBucket[key].length;
-    const transactionRate = Math.round((sampleCount / 15) * 60);
+    const transactionRate = Math.round((sampleCount / (timeWindow / 1000)) * 60);
     const [userId, stepName, normalizedTimestamp] = key.split("-");
     const newKey = `${stepName}-${normalizedTimestamp}`;
 

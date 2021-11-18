@@ -1,6 +1,5 @@
 node_modules/
 jspm_packages/
-output
 
 # project specific
 results
@@ -67,3 +66,5 @@ typings/
 
 # .DS_Store
 *.DS_Store*
+
+.vscode

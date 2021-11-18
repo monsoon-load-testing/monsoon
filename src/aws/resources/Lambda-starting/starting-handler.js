@@ -99,7 +99,7 @@ const extractStepNames = async (fileName) => {
 };
 
 const configObj = {
-  TEST_LENGTH: 1 * 5 * 60 * 1000, // received through event
+  TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
   TEST_UNIT: "milliseconds",
   TIME_WINDOW: Number(process.env.timeWindow) * 1000,
   ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
@@ -157,12 +157,10 @@ const createTaskDefinition = async () => {
   await ecs.registerTaskDefinition(params).promise();
 };
 
-const createService = async (subnet1, subnet2) => {
+const runTasks = async (subnet1, subnet2) => {
   const desiredCount = 2; // number of tasks - passed from CLI through event
   const params = {
-    desiredCount,
     cluster: process.env.clusterName,
-    serviceName: "monsoon-service",
     taskDefinition: "monsoon-task",
     launchType: "FARGATE",
     networkConfiguration: {
@@ -172,7 +170,9 @@ const createService = async (subnet1, subnet2) => {
       },
     },
   };
-  await ecs.createService(params).promise();
+  for (let i = 0; i < desiredCount; i++) {
+    await ecs.runTask(params).promise();
+  }
 };
 
 // calling lambda handler
@@ -184,7 +184,7 @@ exports.handler = async (event) => {
     configObj.TEST_LENGTH,
     configObj.ORIGIN_TIMESTAMP
   );
-  const testName = "downpour-test"; // testName needs to be passed through an event from the CLI client
+  const testName = "downpour_test"; // testName needs to be passed through an event from the CLI client
   const normalizedTimestamps = {
     timestamps,
     stepNames,
@@ -216,5 +216,5 @@ exports.handler = async (event) => {
   await createTaskDefinition();
 
   // Create a service
-  await createService(subnet1, subnet2);
+  await runTasks(subnet1, subnet2);
 };
