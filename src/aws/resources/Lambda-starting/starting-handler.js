@@ -157,12 +157,10 @@ const createTaskDefinition = async () => {
   await ecs.registerTaskDefinition(params).promise();
 };
 
-const createService = async (subnet1, subnet2) => {
+const runTasks = async (subnet1, subnet2) => {
   const desiredCount = 2; // number of tasks - passed from CLI through event
   const params = {
-    desiredCount,
     cluster: process.env.clusterName,
-    serviceName: "monsoon-service",
     taskDefinition: "monsoon-task",
     launchType: "FARGATE",
     networkConfiguration: {
@@ -172,7 +170,9 @@ const createService = async (subnet1, subnet2) => {
       },
     },
   };
-  await ecs.createService(params).promise();
+  for (let i = 0; i < desiredCount; i++) {
+    await ecs.runTask(params).promise();
+  }
 };
 
 // calling lambda handler
@@ -216,5 +216,5 @@ exports.handler = async (event) => {
   await createTaskDefinition();
 
   // Create a service
-  await createService(subnet1, subnet2);
+  await runTasks(subnet1, subnet2);
 };
