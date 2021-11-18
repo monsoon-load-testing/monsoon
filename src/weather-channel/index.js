@@ -32,6 +32,10 @@ app.use((err, req, res, next) => {
   res.json({ error: err.message || "An unknown error occured" });
 });
 
+app.get("/*", (req, res) => {
+  res.redirect('/');
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
