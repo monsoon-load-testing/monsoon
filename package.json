@@ -1,5 +1,5 @@
 {
-  "name": "monsoon-load-testing",
+  "name": "monsoon-end-to-end",
   "version": "1.0.0",
   "author": "monsoon-load-testing",
   "bin": {

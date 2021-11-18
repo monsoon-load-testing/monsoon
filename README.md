@@ -15,11 +15,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g monsoon-load-testing
+$ npm install -g monsoon-end-to-end
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-load-testing/1.0.0 linux-x64 node-v16.13.0
+monsoon-end-to-end/1.0.0 linux-x64 node-v16.13.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
@@ -38,6 +38,7 @@ USAGE
 * [`monsoon new-test`](#monsoon-new-test)
 * [`monsoon start`](#monsoon-start)
 * [`monsoon teardown`](#monsoon-teardown)
+* [`monsoon weather-channel`](#monsoon-weather-channel)
 
 ## `monsoon deploy`
 
@@ -132,4 +133,15 @@ USAGE
 ```
 
 _See code: [src/commands/teardown.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/teardown.ts)_
+
+## `monsoon weather-channel`
+
+This is list command.
+
+```
+USAGE
+  $ monsoon weather-channel
+```
+
+_See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/weather-channel.ts)_
 <!-- commandsstop -->
