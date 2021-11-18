@@ -19,7 +19,7 @@ Features
     - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`.  DONE
     Our package needs to include the source codes (aws folder)
     - `cdk synth`, `cdk bootstrap`, `cdk deploy` are only allowed after `cdk init`
-- monsoon start mytest: A command to start the test
+- monsoon start mytest: A command to start the test DONE
 (rename the test script according to our infrastructure and upload to S3)
     - will not be allowed until the user builds the infrastructure (strech goal)
     - monsoon start (sdk-level): we are going to need their credentials
@@ -34,7 +34,7 @@ Features
     - wait for the dashboard -> a local express app -> a shell to run `npm start`
 - monsoon weather-channel -off: A command to stop the dashboard
 - monsoon destroy:
-    - delete all things related to monsoon (.monsoon dir (including .monsoon .env))
+    - delete all things related to monsoon (.monsoon dir (including .monsoon .env)) DONE
     - anything also related the monsoon dashboard
 
 - npm i -g monsoon-load-testing (or similar): Npm package
@@ -55,10 +55,10 @@ monsoon_tests (main directory - where the user types our commands)
     |- test_script.js
     |- test_config.json
 
-`monsoon list` -> list all test names
+`monsoon list` -> list all test names DONE
 `monsoon new-test` -> to create a new test directory DONE
 
-`monsoon start`
+`monsoon start` DONE
 
 mytest
 mytest2

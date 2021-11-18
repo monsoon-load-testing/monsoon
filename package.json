@@ -69,6 +69,7 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.4",
+    "aws-sdk": "^2.1031.0",
     "cli-ux": "^5.5.1",
     "dotenv": "^10.0.0",
     "inquirer": "^8.2.0",

@@ -6,6 +6,13 @@ const { Command } = require("@oclif/command");
 const Promisify = require("../util/promisify");
 const inquirer = require("inquirer");
 const fs = require("fs");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+const lambda = new AWS.Lambda();
+const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
+const ora = require("ora");
+
+const spinner = ora();
 
 class StartCommand extends Command {
   async run() {
@@ -28,37 +35,56 @@ class StartCommand extends Command {
       },
     ]);
     const dirName = responses.dirName;
-    // sdk codes running...
+
+    const params = {};
+    const response = await s3.listBuckets(params).promise();
+    const bucketName = response.Buckets.filter((bucket) => {
+      return bucket.Name.toLowerCase().includes("monsoon-monsoonloadtesting");
+    })[0].Name;
+    await Promisify.changeDir(process.cwd() + `/${dirName}`);
+    const filenames = fs.readdirSync("./", "utf-8");
+    const customTestFilename = filenames.find((filename) => {
+      return (
+        path.extname(filename) === ".js" && !filename.startsWith("test_script")
+      );
+    });
+    const uploadFilename = customTestFilename || "test_script.js";
+    const bodyContent = fs.readFileSync(`./${uploadFilename}`, "utf-8");
+    const bucketParams = {
+      Bucket: `${bucketName}`,
+      Key: `test_script.js`,
+      Body: bodyContent,
+    };
+    await s3.upload(bucketParams).promise();
+    const lambdas = await lambda.listFunctions({}).promise();
+    const startingLambda = lambdas.Functions.filter((func) => {
+      return func.FunctionName.toLowerCase().includes("monsoon-startinglambda");
+    })[0];
+    const startingLambdaName = startingLambda.FunctionName;
+    const envVariables = await fs.promises.readFile(
+      MONSOON_ENV_FILE_PATH,
+      "utf-8"
+    );
+    const access_key = envVariables.split("\n")[0].split("=")[1];
+    const secret_access_key = envVariables.split("\n")[1].split("=")[1];
+    let testConfig = fs.readFileSync(`./test_config.json`, "utf-8");
+    testConfig = JSON.parse(testConfig);
+    const { testLengthInMinutes, numberOfUsers } = testConfig;
+    const testName = dirName;
+    const startingLambdaParams = {
+      FunctionName: startingLambdaName,
+      Payload: JSON.stringify({
+        access_key,
+        secret_access_key,
+        testLengthInMinutes,
+        numberOfUsers,
+        testName,
+      }),
+    };
+    await lambda.invoke(startingLambdaParams).promise();
+    spinner.succeed("Monsoon has started the test.");
   }
 }
-
-/*
-Sdk level (extract AWS_PROFILE from .monsoon/.env)
-This command will look for any js file.
-  list all buckets
-  find the bucket that has `Monsoon-monsoonloadtesting` (includes)
-  if there is any js file addition to test_script.js
-    - upload the file to S3 bucket (change the name to test_script.js)
-  else
-    - upload the default test_script.js
-  
-List all the lambdas
-Find the lambda with the name `monsoon-startinglambda` (includes)
-Extract AWS_ACCESS_KEY_ID and AWS_SECRET_KEY
-This command will read the test_config.json and send event to the startingLambda
-  - testLengthInMinutes
-  - numberOfUsers
-Invoke the lambda and send information through the event object
-  - even object includes
-    { 
-      testlengthInMinutes: ...,
-      numberOfusers: ...,
-      access_key: ....,
-      secret_access_key: ....,
-      testName: testDirectoryName (cannot have '-')
-    }
-spinner.succeed(``)
-*/
 
 StartCommand.description = `This is start command.`;
 

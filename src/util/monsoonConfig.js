@@ -14,13 +14,16 @@ const setAWSCredentials = async (existGlobalDir = false) => {
     "Please enter your AWS ACCESS KEY ID",
     { type: "hide" }
   );
-  const AWS_SECRET_KEY = await cli.prompt("Please enter your AWS SECRET Key", {
-    type: "hide",
-  });
+  const AWS_SECRET_ACCESS_KEY = await cli.prompt(
+    "Please enter your AWS SECRET Key",
+    {
+      type: "hide",
+    }
+  );
   const AWS_PROFILE = await cli.prompt(
     "Please enter the name of your AWS profile"
   );
-  const ENV_VARIABLES = `AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}\nAWS_SECRET_KEY=${AWS_SECRET_KEY}\nAWS_PROFILE=${AWS_PROFILE}\n`;
+  const ENV_VARIABLES = `AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}\nAWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}\nAWS_PROFILE=${AWS_PROFILE}\n`;
   console.log("");
 
   if (!existGlobalDir) {
@@ -32,7 +35,7 @@ const setAWSCredentials = async (existGlobalDir = false) => {
   // Write AWS_PROFILE to package .env file
   fs.writeFileSync(
     path.join(__dirname, "../../.env"),
-    `AWS_PROFILE=${AWS_PROFILE}`
+    `AWS_PROFILE=${AWS_PROFILE}\nAWS_REGION=us-east-1`
   );
   spinner.succeed("Your AWS credentials saved to monsoon environment\n");
 };
