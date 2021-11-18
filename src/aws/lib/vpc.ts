@@ -8,7 +8,7 @@ export class VPC extends cdk.Construct {
   props: any;
   cluster: ecs.Cluster;
   vpc: ec2.Vpc;
-  constructor(scope: cdk.Construct, id: string, props?: any) {
+  constructor(scope: any, id: any, props?: any) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, id, {

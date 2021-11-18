@@ -1,0 +1,65 @@
+Features
+- monsoon init: A command to spin up a monsoon main directory
+(create a test script template for the user to write their codes, package.json, default config.json may be saved in another sub-directory)
+    - have global monsoon npm package
+    - `monsoon init` DONE
+        - make a directory `monsoon`
+        - a default test_script.js inside
+        - a package.json including puppeteer, weather-station
+          - `npm install`
+        - a default test_config.json (concurrentUsers, testDuration) - a single source of truth for parameters
+        - cdk: include aws infrastructure inside the CLI -> deploy directly DONE
+        - current solution for aws credentals: create global .monsoon -> store credentials in .env file DONE
+        - make a generator possible solutions:
+          - write by hand (fs module, etc...)
+          - make a repo: run `git clone -q` from the user's system and remove `rm -rf .git`
+        - prodive the name of the profile of the AWS account you want to use for monsoon project.
+          - save the profile name in .env (AWS_PROFILE=...) (for the dashboard)
+- monsoon deploy: A command to deploy the infrastructure DONE
+    - wrap around `cdk synth`, `cdk bootstrap`, `cdk deploy`.  DONE
+    Our package needs to include the source codes (aws folder)
+    - `cdk synth`, `cdk bootstrap`, `cdk deploy` are only allowed after `cdk init`
+- monsoon start mytest: A command to start the test DONE
+(rename the test script according to our infrastructure and upload to S3)
+    - will not be allowed until the user builds the infrastructure (strech goal)
+    - monsoon start (sdk-level): we are going to need their credentials
+      - scan the S3 buckets and find(regex) the monsoon S3
+      - change the testscript name to test_script.js upload test_script to S3
+      - after the upload -> scan the lambdas and find the startingLambda
+      - start the lambda
+- monsoon update: update the parameters if they want to change it (optional - strech goal)
+- monsoon teardown: A command to tear-down infrastructure (except timestream) DONE
+    - will be the same logic as deploy
+- monsoon weather-channel -on: A command to spin up the dashboard
+    - wait for the dashboard -> a local express app -> a shell to run `npm start`
+- monsoon weather-channel -off: A command to stop the dashboard
+- monsoon destroy:
+    - delete all things related to monsoon (.monsoon dir (including .monsoon .env)) DONE
+    - anything also related the monsoon dashboard
+
+- npm i -g monsoon-load-testing (or similar): Npm package
+
+`monsoon init` folder structure
+
+monsoon_tests (main directory - where the user types our commands)
+  node_modules
+  package.json (monsoon-weather-station, puppeteer)
+  package-lock.json
+  mytest
+    |- test_script.js
+    |- test_config.json
+  mytest2
+    |- test_script.js
+    |- test_config.json
+  mytest3
+    |- test_script.js
+    |- test_config.json
+
+`monsoon list` -> list all test names DONE
+`monsoon new-test` -> to create a new test directory DONE
+
+`monsoon start` DONE
+
+mytest
+mytest2
+cancel
