@@ -230,8 +230,8 @@ async function doNormalization() {
         // build finalBucket -> just the nromalizedTiemstamps[0] batch
         finalBucket = buildFinalBucket(filteredBucket);
         // send to S3 bucket
-        // writeToS3(finalBucket);
-        await writeToLocal(finalBucket);
+        writeToS3(finalBucket);
+        // await writeToLocal(finalBucket);
         normalizedTimestamps.shift();
       } else {
         if (noNextDataPoint) {
@@ -249,8 +249,8 @@ async function doNormalization() {
           // build finalBucket -> just the nromalizedTiemstamps[0] batch
           finalBucket = buildFinalBucket(filteredBucket);
           // send to S3 bucket
-          // writeToS3(finalBucket);
-          await writeToLocal(finalBucket);
+          writeToS3(finalBucket);
+          // await writeToLocal(finalBucket);
           normalizedTimestamps.shift();
         } else {
           noNextDataPoint = true;
@@ -280,8 +280,8 @@ async function doNormalization() {
   // build finalBucket -> just the nromalizedTiemstamps[0] batch
   finalBucket = buildFinalBucket(filteredBucket);
   // // send to S3 bucket
-  // writeToS3(finalBucket);
-  await writeToLocal(finalBucket);
+  writeToS3(finalBucket);
+  // await writeToLocal(finalBucket);
   normalizedTimestamps.shift();
 }
 

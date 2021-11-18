@@ -1,5 +1,5 @@
 import * as cdk from "@aws-cdk/core";
-import { StartingLambda } from "./starting_lamba";
+import { StartingLambda } from "./starting_lambda";
 import { MetronomeLambda } from "./metronome-lambda";
 import { VPC } from "./vpc";
 import { AggregatingLambda } from "./aggregating-lambda";
@@ -8,7 +8,7 @@ import { TimestreamConstruct } from "./timestream";
 import { nanoid } from "nanoid";
 
 export class AwsStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: any) {
+  constructor(scope: any, id: any, props?: any) {
     super(scope, id, props);
     const databaseName = "monsoonDB";
     const permissionStatementId = nanoid();

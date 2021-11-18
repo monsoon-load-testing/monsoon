@@ -10,7 +10,7 @@ export class TimestreamConstruct extends Construct {
   public table: CfnTable;
   scope: Construct;
   id: string;
-  constructor(scope: Construct, id: string, props: TimestreamConstructProps) {
+  constructor(scope: any, id: any, props: TimestreamConstructProps) {
     super(scope, id);
     this.database = new CfnDatabase(this, "TimeStreamDatabase", {
       databaseName: props.databaseName,
