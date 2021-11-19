@@ -26,12 +26,16 @@ async function runMultipleTest(numberOfUsers = 5) {
   });
 
   const concurrentTestPromisesMap = {};
+  const promisesCounter = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   for (let i = 1; i <= numberOfUsers; i++) {
     concurrentTestPromisesMap[i] = promiseMapper(i, runTest(browser, i));
   }
-
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
+
+    promisesCounter[userId] += 1;
+    console.log("counter:", promisesCounter);
+
     delete concurrentTestPromisesMap[userId];
     if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
