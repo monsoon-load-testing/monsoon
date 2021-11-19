@@ -6,16 +6,18 @@
 [![License](https://img.shields.io/npm/l/monsoon.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
 
 <!-- toc -->
-* [monsoon](#monsoon)
-* [Usage](#usage)
-* [Getting Started](#getting-started)
-* [FAQ](#faq)
-* [Commands](#commands)
+
+- [monsoon](#monsoon)
+- [Usage](#usage)
+- [Getting Started](#getting-started)
+- [FAQ](#faq)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
@@ -27,6 +29,7 @@ USAGE
   $ monsoon COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Getting Started
@@ -101,46 +104,62 @@ To uninstall / remove the `Monsoon` cli tool, run `npm uninstall -g monsoon-load
 # Commands
 
 <!-- commands -->
-* [`monsoon config`](#monsoon-config)
-* [`monsoon deploy`](#monsoon-deploy)
-* [`monsoon destroy`](#monsoon-destroy)
-* [`monsoon help [COMMAND]`](#monsoon-help-command)
-* [`monsoon init`](#monsoon-init)
-* [`monsoon list`](#monsoon-list)
-* [`monsoon new-test`](#monsoon-new-test)
-* [`monsoon start`](#monsoon-start)
-* [`monsoon teardown`](#monsoon-teardown)
-* [`monsoon weather-channel`](#monsoon-weather-channel)
+
+- [`monsoon config`](#monsoon-config)
+- [`monsoon deploy`](#monsoon-deploy)
+- [`monsoon destroy`](#monsoon-destroy)
+- [`monsoon help [COMMAND]`](#monsoon-help-command)
+- [`monsoon init`](#monsoon-init)
+- [`monsoon list`](#monsoon-list)
+- [`monsoon new-test`](#monsoon-new-test)
+- [`monsoon start`](#monsoon-start)
+- [`monsoon teardown`](#monsoon-teardown)
+- [`monsoon weather-channel`](#monsoon-weather-channel)
 
 ## `monsoon config`
 
-This is config command description
+Update AWS credentials
 
 ```
 USAGE
   $ monsoon config
+
+DESCRIPTION
+  ...
+  If you want to change your AWS credentials for Monsoon infrastructure.
+
+  You will need:
+     - your AWS access key
+     - your AWS secret key
+     - your AWS profile
 ```
 
-_See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/config.ts)_
+_See code: [src/commands/config.ts]https://github.com/monsoon-load-testing/monsoon/blob/main/src/commands/config.js)_
 
 ## `monsoon deploy`
 
-This is deploy command
+Deploy the infrastructure on your AWS account
 
 ```
 USAGE
   $ monsoon deploy
+
+DESCRIPTION
+  ---
 ```
 
 _See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/deploy.ts)_
 
 ## `monsoon destroy`
 
-Deletes the .monsoon directory from the user's local machine
+Delete the .monsoon directory from the user's local machine
 
 ```
 USAGE
   $ monsoon destroy
+
+DESCRIPTION
+  ---
 ```
 
 _See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/destroy.ts)_
@@ -227,4 +246,5 @@ USAGE
 ```
 
 _See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/weather-channel.ts)_
+
 <!-- commandsstop -->
