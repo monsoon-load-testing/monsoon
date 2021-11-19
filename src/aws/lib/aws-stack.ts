@@ -11,7 +11,7 @@ import { nanoid } from "nanoid";
 export class AwsStack extends cdk.Stack {
   constructor(scope: any, id: any, props?: any) {
     super(scope, id, props);
-    const databaseName = "monsoonDBTest"; // rename to monsoonDB
+    const databaseName = "monsoonDB";
     const permissionStatementId = nanoid(); // rename to permissionStatementIdMetronome
     const permissionStatementIdECS = nanoid();
     const customVpc = new VPC(this, "custom-vpc");
