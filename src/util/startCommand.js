@@ -87,6 +87,7 @@ const kickoffStartingLambda = async (dirName) => {
       secret_access_key,
       testLengthInMinutes,
       numberOfUsers,
+      rampUpLengthInMinutes,
       testName,
     }),
   };
