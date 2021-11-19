@@ -33,8 +33,9 @@ const pollingTime = 15_000; // our use case
 
 // we can let each container do this calculation and will not need to fetch timestamps from the S3 bucket
 const initializeTimestamps = (timeWindow, testDuration, originTimestamp) => {
-  const offset =
+  let offset =
     Math.floor((Date.now() - originTimestamp) / timeWindow) * timeWindow;
+  offset = offset >= 0 ? offset : 0;
 
   let currentTimestamp = originTimestamp + offset;
 
