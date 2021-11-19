@@ -141,15 +141,16 @@ const extractStepNames = async (fileName) => {
   return matches;
 };
 
-const configObj = {
-  TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
-  TEST_UNIT: "milliseconds",
-  TIME_WINDOW: Number(process.env.timeWindow) * 1000,
-  ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
-  NUMBER_OF_USERS: 10, // received through event
-  STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
-  RAMP_UP_LENGTH: 1 * 5 * 60 * 1000, // received through event
-};
+
+// const configObj = {
+//   TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
+//   TEST_UNIT: "milliseconds",
+//   TIME_WINDOW: Number(process.env.timeWindow) * 1000,
+//   ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
+//   NUMBER_OF_USERS: 10, // received through event
+//   STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
+//   RAMP_UP_LENGTH: 1 * 5 * 60 * 1000, // received through event
+// };
 
 // *****************************************************
 // ECS
@@ -171,7 +172,7 @@ const configObj = {
 //   return [subnets[0], subnets[1]];
 // };
 
-const createTaskDefinition = async () => {
+const createTaskDefinition = async (event) => {
   const params = {
     memory: "4GB",
     cpu: "2 vCPU",
@@ -183,11 +184,11 @@ const createTaskDefinition = async () => {
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
-            value: process.env.access_key,
+            value: event.access_key,
           },
           {
             name: "AWS_SECRET_ACCESS_KEY",
-            value: process.env.secret_access_key,
+            value: event.secret_access_key,
           },
           {
             name: "bucketName",
@@ -201,38 +202,30 @@ const createTaskDefinition = async () => {
   await ecs.registerTaskDefinition(params).promise();
 };
 
-// const runTasks = async (subnet1, subnet2) => {
-//   const desiredCount = 2; // number of tasks - passed from CLI through event
-//   const params = {
-//     cluster: process.env.clusterName,
-//     taskDefinition: "monsoon-task",
-//     launchType: "FARGATE",
-//     networkConfiguration: {
-//       awsvpcConfiguration: {
-//         subnets: [subnet1, subnet2],
-//         assignPublicIp: "ENABLED",
-//       },
-//     },
-//   };
-//   for (let i = 0; i < desiredCount; i++) {
-//     await ecs.runTask(params).promise();
-//   }
-// };
-
 // calling lambda handler
 exports.handler = async (event) => {
   await createRule(); //createMetronomeRule
+  const configObj = {
+    TEST_LENGTH: 1 * Number(event.testLengthInMinutes) * 60 * 1000,
+    TEST_UNIT: "milliseconds",
+    TIME_WINDOW: Number(process.env.timeWindow) * 1000,
+    ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
+    NUMBER_OF_USERS: Number(event.numberOfUsers),
+    STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
+    RAMP_UP_LENGTH: 1 * Number(event.rampUpLengthInMinutes) * 60 * 1000
+  };
+
   const stepNames = await extractStepNames("test_script.js");
   const timestamps = initializeTimestamps(
     configObj.TIME_WINDOW,
     configObj.TEST_LENGTH,
     configObj.ORIGIN_TIMESTAMP
   );
-  const testName = "downpour_test"; // testName needs to be passed through an event from the CLI client
+  const testName = event.testName;
   const normalizedTimestamps = {
     timestamps,
     stepNames,
-    tableName: `${testName}-${configObj.ORIGIN_TIMESTAMP}`, // testName needs to be passed through an event from the CLI client
+    tableName: `${testName}-${configObj.ORIGIN_TIMESTAMP}`,
   };
   const configFileContents = JSON.stringify(configObj);
   const normalizedTimestampsContents = JSON.stringify(normalizedTimestamps);
@@ -253,13 +246,8 @@ exports.handler = async (event) => {
   await s3.upload(configParams).promise();
   await s3.upload(timestampsParams).promise();
 
-  // Retrieve subnetIds
-  // const [subnet1, subnet2] = await retrieveSubnets(vpcId); // delete
-
   // Create task definition
-  await createTaskDefinition();
+  await createTaskDefinition(event);
 
-  // Create a service
-  // await runTasks(subnet1, subnet2); // delete
   await createECSSpinningUpRule();
 };

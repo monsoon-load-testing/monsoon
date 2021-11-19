@@ -25,7 +25,6 @@
     "/bin",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    ".env",
     "/src",
     "/src/aws/bin/aws.ts",
     "/src/aws/lib/aggregating-lambda.ts",

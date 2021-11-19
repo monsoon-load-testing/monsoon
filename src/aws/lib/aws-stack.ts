@@ -52,17 +52,13 @@ export class AwsStack extends cdk.Stack {
       bucketName: bucket.bucketName,
       functionArn: metronomeLambda.handler.functionArn, // rename to functionArnMetronome
       metronomeLambdaName: metronomeLambda.handler.functionName,
-      testLengthInMinutes: "1", // will be passed to startingLambda event
       timeWindow: "15",
-      numberOfUsers: "10", // will be passed to startingLambda event
       vpcId: customVpc.vpc.vpcId,
       clusterName: customVpc.cluster.clusterName,
-      access_key: "KEY-XXXX", // extract from CLI (delete)
-      secret_access_key: "KEY-XXXX", // extract from CLI (delete)
-      permissionStatementId, // rename to  permissionStatementIdMetronome
       ecsSpinningUpLambdaName: ecsSpinningUpLambda.handler.functionName,
       functionArnECSSpinningUp: ecsSpinningUpLambda.handler.functionArn,
       permissionStatementIdECS,
+      permissionStatementId,  // rename to  permissionStatementIdMetronome
     });
     bucket.grantReadWrite(startingLambda.handler);
 

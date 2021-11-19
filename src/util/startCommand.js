@@ -5,12 +5,18 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 const lambda = new AWS.Lambda();
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
+const path = require("path");
 
 const chooseTestDirectory = async () => {
   await Promisify.changeDir(process.cwd());
 
   const names = fs.readdirSync("./", "utf-8");
-  const excludedNames = ["node_modules", "package.json", "package-lock.json"];
+  const excludedNames = [
+    "node_modules",
+    "package.json",
+    "package-lock.json",
+    ".git",
+  ];
   const targetNames = names.filter((name) => {
     return !excludedNames.includes(name);
   });
@@ -27,16 +33,17 @@ const chooseTestDirectory = async () => {
     },
   ]);
 
-  return responses;
+  return responses.dirName;
 };
 
 const uploadTestScript = async (dirName) => {
+  await Promisify.changeDir(process.cwd()); // monsoon_test
   const params = {};
   const response = await s3.listBuckets(params).promise();
   const bucketName = response.Buckets.filter((bucket) => {
     return bucket.Name.toLowerCase().includes("monsoon-monsoonloadtesting");
   })[0].Name;
-  await Promisify.changeDir(process.cwd() + `/${dirName}`);
+  await Promisify.changeDir(path.join(process.cwd(), dirName));
   const filenames = fs.readdirSync("./", "utf-8");
   const customTestFilename = filenames.find((filename) => {
     return (

@@ -34,7 +34,7 @@ const setAWSCredentials = async (existGlobalDir = false) => {
   // Write AWS_PROFILE to package .env file
   fs.writeFileSync(
     path.join(__dirname, "../../.env"),
-    `AWS_PROFILE=${AWS_PROFILE}\nAWS_REGION=us-east-1`
+    `AWS_PROFILE=${AWS_PROFILE}\nAWS_REGION=us-east-1\nDATABASE_NAME=monsoonDB\n`
   );
   spinner.succeed("Your AWS credentials saved to monsoon environment\n");
 };

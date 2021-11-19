@@ -30,9 +30,9 @@ Features
 - monsoon update: update the parameters if they want to change it (optional - strech goal)
 - monsoon teardown: A command to tear-down infrastructure (except timestream) DONE
     - will be the same logic as deploy
-- monsoon weather-channel -on: A command to spin up the dashboard
+- monsoon weather-channel-on: A command to spin up the dashboard
     - wait for the dashboard -> a local express app -> a shell to run `npm start`
-- monsoon weather-channel -off: A command to stop the dashboard
+- monsoon weather-channel-off: A command to stop the dashboard
 - monsoon destroy:
     - delete all things related to monsoon (.monsoon dir (including .monsoon .env)) DONE
     - anything also related the monsoon dashboard

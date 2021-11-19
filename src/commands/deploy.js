@@ -34,6 +34,8 @@ class DeployCommand extends Command {
   }
 }
 
-DeployCommand.description = `This is deploy command`;
+DeployCommand.description = `Deploy the infrastructure on your AWS account
+---
+`;
 
 module.exports = DeployCommand;

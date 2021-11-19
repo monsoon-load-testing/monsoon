@@ -46,7 +46,6 @@ class InitCommand extends Command {
     } else {
       await setAWSCredentials();
     }
-
     await cloneStartHereRepo();
   }
 }
