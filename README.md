@@ -6,18 +6,16 @@
 [![License](https://img.shields.io/npm/l/monsoon.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
 
 <!-- toc -->
-
-- [monsoon](#monsoon)
-- [Usage](#usage)
-- [Getting Started](#getting-started)
-- [FAQ](#faq)
-- [Commands](#commands)
+* [monsoon](#monsoon)
+* [Usage](#usage)
+* [Getting Started](#getting-started)
+* [FAQ](#faq)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
@@ -29,7 +27,6 @@ USAGE
   $ monsoon COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Getting Started
@@ -65,6 +62,8 @@ To read the help text for each command, type `monsoon <command> --help`. This wi
   - AWS_SECRET_KEY
   - AWS_PROFILE
 
+- type `monsoon config` if you need to edit AWS credentials for `Monsoon`.
+
 - Once inside `monsoon_tests`, type `monsoon new-test` to create a new test folder that will include a `test_script.js` template and a default `test_config.json` file that you can update to set the parameters for your current test.
 
 - type `monsoon list` to see all current test directories.
@@ -95,21 +94,34 @@ To uninstall / remove the `Monsoon` cli tool, run `npm uninstall -g monsoon-load
 
 ### I ran `monsoon destroy` and now cannot run `monsoon teardown` -- is there a way to tear down the infrastructure?
 
+- `monsoon destory` deletes your Monsoon `.env` file. Make sure to run `monsoon config` again with correct information, then you can run `monsoon teardown`.
+
 <!-- faqstop -->
 
 # Commands
 
 <!-- commands -->
+* [`monsoon config`](#monsoon-config)
+* [`monsoon deploy`](#monsoon-deploy)
+* [`monsoon destroy`](#monsoon-destroy)
+* [`monsoon help [COMMAND]`](#monsoon-help-command)
+* [`monsoon init`](#monsoon-init)
+* [`monsoon list`](#monsoon-list)
+* [`monsoon new-test`](#monsoon-new-test)
+* [`monsoon start`](#monsoon-start)
+* [`monsoon teardown`](#monsoon-teardown)
+* [`monsoon weather-channel`](#monsoon-weather-channel)
 
-- [`monsoon deploy`](#monsoon-deploy)
-- [`monsoon destroy`](#monsoon-destroy)
-- [`monsoon help [COMMAND]`](#monsoon-help-command)
-- [`monsoon init`](#monsoon-init)
-- [`monsoon list`](#monsoon-list)
-- [`monsoon new-test`](#monsoon-new-test)
-- [`monsoon start`](#monsoon-start)
-- [`monsoon teardown`](#monsoon-teardown)
-- [`monsoon weather-channel`](#monsoon-weather-channel)
+## `monsoon config`
+
+This is config command description
+
+```
+USAGE
+  $ monsoon config
+```
+
+_See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/config.ts)_
 
 ## `monsoon deploy`
 
@@ -148,7 +160,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.5/src/commands/help.ts)_
 
 ## `monsoon init`
 
@@ -215,5 +227,4 @@ USAGE
 ```
 
 _See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/weather-channel.ts)_
-
 <!-- commandsstop -->
