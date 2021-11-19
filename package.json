@@ -31,6 +31,7 @@
     "/src/aws/lib/aws-stack.ts",
     "/src/aws/lib/metronome-lambda.ts",
     "/src/aws/lib/starting_lambda.ts",
+    "/src/aws/lib/ecs-spinning-up-lambda.ts",
     "/src/aws/lib/timestream.ts",
     "/src/aws/lib/vpc.ts"
   ],
