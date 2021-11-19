@@ -8,6 +8,8 @@
 <!-- toc -->
 * [monsoon](#monsoon)
 * [Usage](#usage)
+* [Getting Started](#getting-started)
+* [FAQ](#faq)
 * [Commands](#commands)
 <!-- tocstop -->
 
@@ -15,11 +17,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g monsoon-end-to-end
+$ npm install -g monsoon-load-testing
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-end-to-end/1.0.0 linux-x64 node-v16.13.0
+monsoon-load-testing/1.0.0 linux-x64 node-v16.13.0
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
@@ -27,9 +29,79 @@ USAGE
 ```
 <!-- usagestop -->
 
+# Getting Started
+
+<!-- gettingstarted -->
+
+### Prerequisites
+
+- [an AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html?nc2=h_ct&src=default&tag=soumet-20)
+- `npm` is [installed](https://www.npmjs.com/get-npm)
+- the AWS CLI is [installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html?tag=soumet-20) and configured
+- an [AWS named profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+- the AWS CDK command-line tool is [installed](https://docs.aws.amazon.com/cdk/latest/guide/cli.html?tag=soumet-20)
+
+### Installation
+
+- run `npm install -g monsoon-load-testing` (to install [TODO: UPDATE NPM PACKAGE LINK])
+- type `monsoon --help` to see all the available commands
+
+### First Time Usage
+
+The `monsoon` command is run by inputting subcommands after the initial `monsoon` command, e.g. `monsoon <subcommand>`.
+
+To read the help text for each command, type `monsoon <command> --help`. This will output a short explanation of what the command does and how to use it.
+
+- `cd` to the folder in which you would like to initialize your Monsoon directory
+
+- type `monsoon init`. You will be prompted for your AWS credentials, including the name of your CLI profile. A new `monsoon_tests` subdirectory will be created inside your current working directory. You will need to `cd` into `monsoon_tests` and be sure to execute all of the other `monsoon` CLI subcommands from `monsoon_tests`.
+
+- Your Monsoon infrastructure information can be found in `~/.monsoon/.env`:
+
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_KEY
+  - AWS_PROFILE
+
+- type `monsoon config` if you need to edit AWS credentials for `Monsoon`.
+
+- Once inside `monsoon_tests`, type `monsoon new-test` to create a new test folder that will include a `test_script.js` template and a default `test_config.json` file that you can update to set the parameters for your current test.
+
+- type `monsoon list` to see all current test directories.
+
+- type `monsoon deploy` to deploy the infrastructure.
+
+- `monsoon start` will prompt you to select the test directory that contains the test you want `Monsoon` to run.
+
+- type `monsoon weather-channel` to start the local server that serves the results dashboard. To view this dashboard, visit localhost:5000.
+
+### Removing Monsoon
+
+To remove `Monsoon` infrastructure from AWS, run `monsoon teardown`.
+
+To remove `Monsoon` global directory, run `monsoon destroy`. Be sure to run `monsoon teardown` first or else the `monsoon teardown` cannot use your AWS credentials to tear down the infrastructure.
+
+To uninstall / remove the `Monsoon` cli tool, run `npm uninstall -g monsoon-load-testing`.
+
+<!-- gettingstartedstop -->
+
+# FAQ
+
+<!-- faq -->
+
+### I quit `monsoon deploy` in the middle of deploying the infrastructure -- is there a way to tear down the infrastructure?
+
+- To remove this infrastructure (that AWS will continue to set up even if you interrupt the Monsoon cli command, visit the [AWS console](https://aws.amazon.com/console?tag=soumet-20), navigate to the CloudFormation section and you can individually delete the `monsoon` stack. Note that the infrastructure deployment must be completed _before_ AWS will allow you to delete the stack.
+
+### I ran `monsoon destroy` and now cannot run `monsoon teardown` -- is there a way to tear down the infrastructure?
+
+- `monsoon destory` deletes your Monsoon `.env` file. Make sure to run `monsoon config` again with correct information, then you can run `monsoon teardown`.
+
+<!-- faqstop -->
+
 # Commands
 
 <!-- commands -->
+* [`monsoon config`](#monsoon-config)
 * [`monsoon deploy`](#monsoon-deploy)
 * [`monsoon destroy`](#monsoon-destroy)
 * [`monsoon help [COMMAND]`](#monsoon-help-command)
@@ -39,6 +111,17 @@ USAGE
 * [`monsoon start`](#monsoon-start)
 * [`monsoon teardown`](#monsoon-teardown)
 * [`monsoon weather-channel`](#monsoon-weather-channel)
+
+## `monsoon config`
+
+This is config command description
+
+```
+USAGE
+  $ monsoon config
+```
+
+_See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/config.ts)_
 
 ## `monsoon deploy`
 
@@ -77,7 +160,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.5/src/commands/help.ts)_
 
 ## `monsoon init`
 
