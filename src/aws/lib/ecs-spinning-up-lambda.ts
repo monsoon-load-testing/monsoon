@@ -48,7 +48,7 @@ export class ECSSpinningUpLambda extends cdk.Construct {
         bucketName: props.bucketName,
       },
       role: lambdaRole,
-      timeout: Duration.seconds(10),
+      timeout: Duration.seconds(180),
     });
   }
 }

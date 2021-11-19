@@ -105,15 +105,32 @@ exports.handler = async (event, context) => {
   const iterationTaskCountLimit = currentTasksCount + tasksIncrementPerMin;
   const taskPromises = [];
 
-  const waitTime =
-    currentTime < originTimestamp ? originTimestamp - currentTime : 0;
+  // const waitTime =
+  //   currentTime < originTimestamp ? originTimestamp - currentTime : 0;
 
-  if (currentTasksCount > 0) {
-    await sleep(waitTime);
+  console.log(
+    "nbrOfUsers, desiredTaskCount, rampUpLengthInMin, tasksIncrementPerMin:",
+    nbrOfUsers,
+    desiredTaskCount,
+    rampUpLengthInMin,
+    tasksIncrementPerMin
+  );
+  console.log(
+    "currentTasksCount, iterationTaskCountLimit:",
+    currentTasksCount,
+    iterationTaskCountLimit
+  );
+
+  if (currentTasksCount > 0 && currentTime < originTimestamp) {
+    // console.log("waiting:", waitTime);
+    // await sleep(waitTime);
+    return "not yet!";
   }
 
   // Retrieve subnetIds
   const [subnet1, subnet2] = await retrieveSubnets(vpcId);
+  console.log("subnets:", subnet1, subnet2);
+  console.log("clusterName", clusterName);
   const paramsTasks = {
     cluster: clusterName,
     taskDefinition: "monsoon-task",
@@ -134,7 +151,7 @@ exports.handler = async (event, context) => {
     currentTasksCount++;
   }
   await Promise.allSettled(taskPromises);
-
+  console.log("currentTasksCount AFTER:", currentTasksCount);
   if (currentTasksCount === desiredTaskCount) {
     await removeECSSpinningUpPermissions(functionName);
     await removeTarget();

@@ -61,8 +61,6 @@ const stopTasks = async (taskArns) => {
   // Promise.allSettled(promises);
 };
 
-
-
 const handler = async (event, context) => {
   const functionName = context.functionName;
   console.log(
@@ -90,9 +88,12 @@ const handler = async (event, context) => {
   const { timestamps, stepNames, tableName } = JSON.parse(timestampsFile.Body);
   if (timestamps.length === 0) {
     // disable metronome-lambda because all timestamps have been handled
-
-    // const taskArns = await listTasks();
-    // await stopTasks(taskArns);
+    try {
+      const taskArns = await listTasks();
+      await stopTasks(taskArns);
+    } catch (e) {
+      console.log("tasks were already stoppped");
+    }
     await removeMetronomePermissions(functionName);
     await removeTarget();
     await deleteRule();
