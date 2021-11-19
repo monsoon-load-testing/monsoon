@@ -76,7 +76,8 @@ const kickoffStartingLambda = async (dirName) => {
 
   let testConfig = fs.readFileSync(`./test_config.json`, "utf-8");
   testConfig = JSON.parse(testConfig);
-  const { testLengthInMinutes, numberOfUsers } = testConfig;
+  const { testLengthInMinutes, numberOfUsers, rampUpLengthInMinutes } =
+    testConfig;
   const testName = dirName;
 
   const startingLambdaParams = {
