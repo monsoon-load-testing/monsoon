@@ -1,5 +1,5 @@
 {
-  "name": "monsoon-load-testing",
+  "name": "monsoon-end-to-end",
   "version": "1.0.0",
   "author": "monsoon-load-testing",
   "bin": {
@@ -25,7 +25,6 @@
     "/bin",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    ".env",
     "/src",
     "/src/aws/bin/aws.ts",
     "/src/aws/lib/aggregating-lambda.ts",

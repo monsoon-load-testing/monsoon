@@ -6,7 +6,12 @@ class ListCommand extends Command {
   async run() {
     await Promisify.changeDir(process.cwd());
     const names = fs.readdirSync("./", "utf-8");
-    const excludedNames = ["node_modules", "package.json", "package-lock.json"];
+    const excludedNames = [
+      "node_modules",
+      "package.json",
+      "package-lock.json",
+      ".git",
+    ];
     const targetNames = names.filter((name) => {
       return !excludedNames.includes(name);
     });
