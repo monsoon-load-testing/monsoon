@@ -58,12 +58,12 @@
     "cdk": "cd src/aws && cdk synth"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.132.0",
-    "@aws-cdk/aws-ecs": "^1.132.0",
-    "@aws-cdk/aws-iam": "^1.132.0",
-    "@aws-cdk/aws-lambda": "^1.132.0",
-    "@aws-cdk/aws-s3": "^1.132.0",
-    "@aws-cdk/aws-timestream": "^1.132.0",
+    "@aws-cdk/aws-ec2": "1.132.0",
+    "@aws-cdk/aws-ecs": "1.132.0",
+    "@aws-cdk/aws-iam": "1.132.0",
+    "@aws-cdk/aws-lambda": "1.132.0",
+    "@aws-cdk/aws-s3": "1.132.0",
+    "@aws-cdk/aws-timestream": "1.132.0",
     "@aws-cdk/core": "1.132.0",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
