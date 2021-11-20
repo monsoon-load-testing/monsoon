@@ -9,9 +9,10 @@ const s3 = new AWS.S3();
 // *****************************************************
 // EVENTBRIDGE SETUP
 // *****************************************************
-const ruleName = "invoke-metronome-lambda-rule"; // make it an env variable
-
+const ruleName = "invoke-metronome-lambda-rule"; // make it an env variable and rename to ruleNameMetronome
+const ruleNameECS = "invoke-ECS-spinning-up-lambda-rule";
 const addTarget = async () => {
+  //rename to addTargetMetronome
   const params = {
     Rule: ruleName,
     Targets: [
@@ -26,6 +27,7 @@ const addTarget = async () => {
 };
 
 const createRule = async () => {
+  // rename to createRuleMetronomeLambda
   const params = {
     Name: ruleName,
     Description: "Invokes the Metronome Lambda every 1 minute", // make it an env variable
@@ -38,7 +40,7 @@ const createRule = async () => {
   await addTarget();
 };
 
-const extractArn = async () => {
+const extractArn = async (ruleName) => {
   const response = await EventBridge.listRules({
     NamePrefix: ruleName,
   }).promise();
@@ -47,7 +49,7 @@ const extractArn = async () => {
 };
 
 const setMetronomeLambdaPermissions = async () => {
-  const sourceArn = await extractArn();
+  const sourceArn = await extractArn(ruleName);
   const params = {
     Action: "lambda:InvokeFunction",
     FunctionName: process.env.metronomeLambdaName,
@@ -57,6 +59,47 @@ const setMetronomeLambdaPermissions = async () => {
   };
 
   await lambda.addPermission(params).promise();
+};
+
+const createECSSpinningUpRule = async () => {
+  // rename to createRuleMetronomeLambda
+  const params = {
+    Name: ruleNameECS,
+    Description: "Invokes the ECS Spinning up lambda every 1 minute", // make it an env variable
+    ScheduleExpression: "rate(1 minute)",
+    State: "ENABLED",
+  };
+
+  await EventBridge.putRule(params).promise();
+  await setECSSpinningUpLambdaPermissions();
+  await addTargetECSSpinningUp();
+};
+
+const setECSSpinningUpLambdaPermissions = async () => {
+  const sourceArn = await extractArn(ruleNameECS);
+  const params = {
+    Action: "lambda:InvokeFunction",
+    FunctionName: process.env.ecsSpinningUpLambdaName,
+    Principal: "events.amazonaws.com",
+    StatementId: process.env.permissionStatementIdECS,
+    SourceArn: sourceArn,
+  };
+
+  await lambda.addPermission(params).promise();
+};
+
+const addTargetECSSpinningUp = async () => {
+  const params = {
+    Rule: ruleNameECS,
+    Targets: [
+      {
+        Arn: process.env.functionArnECSSpinningUp,
+        Id: "ECSSPinningUpLambdaTriggeredByEventBridgeRule",
+      },
+    ],
+  };
+
+  await EventBridge.putTargets(params).promise();
 };
 
 // *****************************************************
@@ -98,25 +141,36 @@ const extractStepNames = async (fileName) => {
   return matches;
 };
 
+
+// const configObj = {
+//   TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
+//   TEST_UNIT: "milliseconds",
+//   TIME_WINDOW: Number(process.env.timeWindow) * 1000,
+//   ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
+//   NUMBER_OF_USERS: 10, // received through event
+//   STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
+//   RAMP_UP_LENGTH: 1 * 5 * 60 * 1000, // received through event
+// };
+
 // *****************************************************
 // ECS
 // *****************************************************
 
-const vpcId = process.env.vpcId;
+// const vpcId = process.env.vpcId;
 
-const retrieveSubnets = async (vpcId) => {
-  const params = {
-    Filters: [
-      {
-        Name: "vpc-id",
-        Values: [vpcId],
-      },
-    ],
-  };
-  const response = await ec2.describeSubnets(params).promise();
-  const subnets = response.Subnets.map((subnet) => subnet.SubnetId);
-  return [subnets[0], subnets[1]];
-};
+// const retrieveSubnets = async (vpcId) => {
+//   const params = {
+//     Filters: [
+//       {
+//         Name: "vpc-id",
+//         Values: [vpcId],
+//       },
+//     ],
+//   };
+//   const response = await ec2.describeSubnets(params).promise();
+//   const subnets = response.Subnets.map((subnet) => subnet.SubnetId);
+//   return [subnets[0], subnets[1]];
+// };
 
 const createTaskDefinition = async (event) => {
   const params = {
@@ -148,27 +202,9 @@ const createTaskDefinition = async (event) => {
   await ecs.registerTaskDefinition(params).promise();
 };
 
-const runTasks = async (event, subnet1, subnet2) => {
-  const desiredCount = Number(event.numberOfUsers) / 5;
-  const params = {
-    cluster: process.env.clusterName,
-    taskDefinition: "monsoon-task",
-    launchType: "FARGATE",
-    networkConfiguration: {
-      awsvpcConfiguration: {
-        subnets: [subnet1, subnet2],
-        assignPublicIp: "ENABLED",
-      },
-    },
-  };
-  for (let i = 0; i < desiredCount; i++) {
-    await ecs.runTask(params).promise();
-  }
-};
-
 // calling lambda handler
 exports.handler = async (event) => {
-  await createRule();
+  await createRule(); //createMetronomeRule
   const configObj = {
     TEST_LENGTH: 1 * Number(event.testLengthInMinutes) * 60 * 1000,
     TEST_UNIT: "milliseconds",
@@ -176,7 +212,9 @@ exports.handler = async (event) => {
     ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
     NUMBER_OF_USERS: Number(event.numberOfUsers),
     STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
+    RAMP_UP_LENGTH: 1 * Number(event.rampUpLengthInMinutes) * 60 * 1000
   };
+
   const stepNames = await extractStepNames("test_script.js");
   const timestamps = initializeTimestamps(
     configObj.TIME_WINDOW,
@@ -208,12 +246,8 @@ exports.handler = async (event) => {
   await s3.upload(configParams).promise();
   await s3.upload(timestampsParams).promise();
 
-  // Retrieve subnetIds
-  const [subnet1, subnet2] = await retrieveSubnets(vpcId);
-
   // Create task definition
   await createTaskDefinition(event);
 
-  // Create a service
-  await runTasks(event, subnet1, subnet2);
+  await createECSSpinningUpRule();
 };

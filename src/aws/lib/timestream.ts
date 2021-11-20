@@ -1,4 +1,4 @@
-import { Construct } from "@aws-cdk/core";
+import { Construct, RemovalPolicy } from "@aws-cdk/core";
 import { CfnDatabase, CfnTable } from "@aws-cdk/aws-timestream";
 
 export interface TimestreamConstructProps {
@@ -15,5 +15,6 @@ export class TimestreamConstruct extends Construct {
     this.database = new CfnDatabase(this, "TimeStreamDatabase", {
       databaseName: props.databaseName,
     });
+    this.database.applyRemovalPolicy(RemovalPolicy.RETAIN);
   }
 }

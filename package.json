@@ -1,6 +1,7 @@
 {
   "name": "monsoon-load-testing",
-  "version": "1.0.1",
+  "version": "1.1.7",
+
   "author": "monsoon-load-testing",
   "bin": {
     "monsoon": "./bin/run"
@@ -31,6 +32,7 @@
     "/src/aws/lib/aws-stack.ts",
     "/src/aws/lib/metronome-lambda.ts",
     "/src/aws/lib/starting_lambda.ts",
+    "/src/aws/lib/ecs-spinning-up-lambda.ts",
     "/src/aws/lib/timestream.ts",
     "/src/aws/lib/vpc.ts"
   ],

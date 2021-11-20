@@ -20,8 +20,9 @@ async function testScript(browser, page, userId) {
 }`;
 
 const testConfig = {
-  testLengthInMinutes: "10",
-  numberOfUsers: "10",
+  testLengthInMinutes: 10,
+  numberOfUsers: 10,
+  rampUpLengthInMinutes: 2,
 };
 
 module.exports = { testTemplate, testConfig };

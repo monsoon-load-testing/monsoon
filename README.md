@@ -6,30 +6,29 @@
 [![License](https://img.shields.io/npm/l/monsoon.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
 
 <!-- toc -->
-
-- [monsoon](#monsoon)
-- [Usage](#usage)
-- [Getting Started](#getting-started)
-- [FAQ](#faq)
-- [Commands](#commands)
+* [monsoon](#monsoon)
+* [Usage](#usage)
+* [Getting Started](#getting-started)
+* [FAQ](#faq)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
 running command...
 $ monsoon (-v|--version|version)
-monsoon-load-testing/1.0.0 linux-x64 node-v16.3.0
+
+monsoon-load-testing/1.1.7 darwin-arm64 node-v16.13.0
+
 $ monsoon --help [COMMAND]
 USAGE
   $ monsoon COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Getting Started
@@ -104,17 +103,16 @@ To uninstall / remove the Monsoon CLI tool, run `npm uninstall -g monsoon-load-t
 # Commands
 
 <!-- commands -->
-
-- [`monsoon config`](#monsoon-config)
-- [`monsoon deploy`](#monsoon-deploy)
-- [`monsoon destroy`](#monsoon-destroy)
-- [`monsoon help [COMMAND]`](#monsoon-help-command)
-- [`monsoon init`](#monsoon-init)
-- [`monsoon list`](#monsoon-list)
-- [`monsoon new-test`](#monsoon-new-test)
-- [`monsoon start`](#monsoon-start)
-- [`monsoon teardown`](#monsoon-teardown)
-- [`monsoon weather-channel`](#monsoon-weather-channel)
+* [`monsoon config`](#monsoon-config)
+* [`monsoon deploy`](#monsoon-deploy)
+* [`monsoon destroy`](#monsoon-destroy)
+* [`monsoon help [COMMAND]`](#monsoon-help-command)
+* [`monsoon init`](#monsoon-init)
+* [`monsoon list`](#monsoon-list)
+* [`monsoon new-test`](#monsoon-new-test)
+* [`monsoon start`](#monsoon-start)
+* [`monsoon teardown`](#monsoon-teardown)
+* [`monsoon weather-channel`](#monsoon-weather-channel)
 
 ## `monsoon config`
 
@@ -134,7 +132,9 @@ DESCRIPTION
      - your AWS profile name
 ```
 
-_See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/config.ts)_
+
+_See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/config.ts)_
+
 
 ## `monsoon deploy`
 
@@ -145,7 +145,7 @@ USAGE
   $ monsoon deploy
 ```
 
-_See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/deploy.ts)_
+_See code: [src/commands/deploy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/deploy.ts)_
 
 ## `monsoon destroy`
 
@@ -156,7 +156,7 @@ USAGE
   $ monsoon destroy
 ```
 
-_See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/destroy.ts)_
+_See code: [src/commands/destroy.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/destroy.ts)_
 
 ## `monsoon help [COMMAND]`
 
@@ -188,7 +188,7 @@ DESCRIPTION
   The .env file inside contains your AWS credentials and AWS profile name Monsoon needs to interact with your infrastructure.
 ```
 
-_See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/init.ts)_
 
 ## `monsoon list`
 
@@ -199,7 +199,7 @@ USAGE
   $ monsoon list
 ```
 
-_See code: [src/commands/list.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/list.ts)_
 
 ## `monsoon new-test`
 
@@ -210,7 +210,7 @@ USAGE
   $ monsoon new-test
 ```
 
-_See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/new-test.ts)_
+_See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/new-test.ts)_
 
 ## `monsoon start`
 
@@ -224,7 +224,7 @@ DESCRIPTION
   Allows you to choose the directory containing the test script you want to run and begins running that test.
 ```
 
-_See code: [src/commands/start.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/start.ts)_
 
 ## `monsoon teardown`
 
@@ -238,7 +238,7 @@ DESCRIPTION
   This command should be run BEFORE running the "monsoon destroy" command
 ```
 
-_See code: [src/commands/teardown.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/teardown.ts)_
+_See code: [src/commands/teardown.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/teardown.ts)_
 
 ## `monsoon weather-channel`
 
@@ -252,6 +252,5 @@ DESCRIPTION
   Starts a local server that serves the test results dashboard. To view this dashboard, visit localhost:5000 in your browser.
 ```
 
-_See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/weather-channel.ts)_
-
+_See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/weather-channel.ts)_
 <!-- commandsstop -->
