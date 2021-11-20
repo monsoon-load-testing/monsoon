@@ -33,6 +33,6 @@ class NewTestCommand extends Command {
   }
 }
 
-NewTestCommand.description = `This is new-test command.`;
+NewTestCommand.description = `Creates a new test directory pre-populated with a template test script and a test_config.json file`;
 
 module.exports = NewTestCommand;

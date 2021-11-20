@@ -19,10 +19,12 @@ class TeardownCommand extends Command {
 
     spinner.start(`Currently tearing down the infrastructure.`);
     await Promisify.execute(`cdk destroy --force --profile=${AWS_PROFILE}`);
-    spinner.succeed(`Successfully teared-down.`);
+    spinner.succeed(`Successfully torn down.`);
   }
 }
 
-TeardownCommand.description = `This is teardown command`;
+TeardownCommand.description = `Tears down your AWS infrastructure
+---
+This command should be run BEFORE running the "monsoon destroy" command`;
 
 module.exports = TeardownCommand;

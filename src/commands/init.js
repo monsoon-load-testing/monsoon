@@ -45,11 +45,15 @@ class InitCommand extends Command {
       }
     } else {
       await setAWSCredentials();
+      await cloneStartHereRepo();
     }
-    await cloneStartHereRepo();
   }
 }
 
-InitCommand.description = `This is init command description`;
+InitCommand.description = `Creates global .monsoon directory and .env file
+---
+Creates the Monsoon directory at ~/.monsoon.
+The .env file inside contains your AWS credentials and AWS profile name Monsoon needs to interact with your infrastructure.
+`;
 
 module.exports = InitCommand;

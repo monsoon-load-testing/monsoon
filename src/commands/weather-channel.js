@@ -12,6 +12,8 @@ class WeatherChannelCommand extends Command {
   }
 }
 
-WeatherChannelCommand.description = `This is list command.`;
+WeatherChannelCommand.description = `Displays your test results dashboard on localhost:5000
+---
+Starts a local server that serves the test results dashboard. To view this dashboard, visit localhost:5000 in your browser.`;
 
 module.exports = WeatherChannelCommand;

@@ -1,6 +1,7 @@
 {
   "name": "monsoon-load-testing",
   "version": "1.1.7",
+
   "author": "monsoon-load-testing",
   "bin": {
     "monsoon": "./bin/run"

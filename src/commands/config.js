@@ -16,9 +16,7 @@ class ConfigCommand extends Command {
   }
 }
 
-ConfigCommand.description = `Update AWS credentials
-...
-If you want to change your AWS credentials for Monsoon infrastructure.
+ConfigCommand.description = `Allows you to change the AWS credentials associated with your Monsoon infrastructure
 
 You will need:
   - your AWS access key

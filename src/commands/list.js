@@ -20,6 +20,6 @@ class ListCommand extends Command {
   }
 }
 
-ListCommand.description = `This is list command.`;
+ListCommand.description = `Lists all current test directories in the monsoon_tests folder`;
 
 module.exports = ListCommand;

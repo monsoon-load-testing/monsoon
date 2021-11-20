@@ -22,6 +22,9 @@ class StartCommand extends Command {
   }
 }
 
-StartCommand.description = `This is start command.`;
+StartCommand.description = `Starts the load test
+---
+Allows you to choose the directory containing the test script you want to run and begins running that test.
+`;
 
 module.exports = StartCommand;
