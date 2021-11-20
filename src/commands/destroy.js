@@ -15,8 +15,6 @@ class DestroyCommand extends Command {
   }
 }
 
-DestroyCommand.description = `Delete the .monsoon directory from the user's local machine
----
-`;
+DestroyCommand.description = `Delete the .monsoon directory from the user's local machine`;
 
 module.exports = DestroyCommand;
