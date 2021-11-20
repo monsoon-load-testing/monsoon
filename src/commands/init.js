@@ -50,10 +50,10 @@ class InitCommand extends Command {
   }
 }
 
-InitCommand.description = `Create global .monsoon directory and .env file
+InitCommand.description = `Creates global .monsoon directory and .env file
 ---
-The Monsoon directory is located at home directory ~/.monsoon.
-The .env file inside contains your AWS credentials and AWS profile name for Monsoon to work with the infranstructure.
+Creates the Monsoon directory at ~/.monsoon.
+The .env file inside contains your AWS credentials and AWS profile name Monsoon needs to interact with your infrastructure.
 `;
 
 module.exports = InitCommand;

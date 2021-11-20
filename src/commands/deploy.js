@@ -34,6 +34,6 @@ class DeployCommand extends Command {
   }
 }
 
-DeployCommand.description = `Deploy the infrastructure on your AWS account`;
+DeployCommand.description = `Deploys Monsoon infrastructure inside your AWS account`;
 
 module.exports = DeployCommand;
