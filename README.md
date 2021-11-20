@@ -214,33 +214,42 @@ _See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/mo
 
 ## `monsoon start`
 
-This is start command.
+Starts the load test
 
 ```
 USAGE
   $ monsoon start
+
+DESCRIPTION
+  Allows you to choose the directory containing the test script you want to run and begins running that test.
 ```
 
 _See code: [src/commands/start.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/start.ts)_
 
 ## `monsoon teardown`
 
-This is teardown command
+Tears down your AWS infrastructure
 
 ```
 USAGE
   $ monsoon teardown
+
+DESCRIPTION
+  This command should be run BEFORE running the "monsoon destroy" command
 ```
 
 _See code: [src/commands/teardown.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/teardown.ts)_
 
 ## `monsoon weather-channel`
 
-This is list command.
+Displays your test results dashboard on localhost:5000
 
 ```
 USAGE
   $ monsoon weather-channel
+
+DESCRIPTION
+  Starts a local server that serves the test results dashboard. To view this dashboard, visit localhost:5000 in your browser.
 ```
 
 _See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.0.0/src/commands/weather-channel.ts)_
