@@ -1,6 +1,9 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
-// const { nanoid } = require("nanoid");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+const { nanoid } = require("nanoid");
+const id = nanoid(7);
 const { testScript } = require("./petrichor/test_script.js");
 const config = JSON.parse(fs.readFileSync("./petrichor/config.json", "utf-8"));
 
@@ -13,6 +16,21 @@ function promiseMapper(userId, promise) {
     promise.finally(() => resolve(userId));
   });
 }
+
+const writePromiseCounterToS3 = async (counter) => {
+  const BUCKET_NAME = process.env.bucketName;
+  const now = Date.now();
+  const params = {
+    Bucket: BUCKET_NAME,
+    Key: `logs/${now}-${id}.json`, // File name you want to save as in S3
+    Body: JSON.stringify(counter),
+  };
+  try {
+    await s3.upload(params).promise();
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 async function runMultipleTest(numberOfUsers = 5) {
   if (Date.now() >= STOP_TIME) return;
@@ -31,14 +49,19 @@ async function runMultipleTest(numberOfUsers = 5) {
     concurrentTestPromisesMap[i] = promiseMapper(i, runTest(browser, i));
     promisesCounter[i] = 0;
   }
+  let logCounter = 0;
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
 
     promisesCounter[userId] += 1;
+    logCounter += 1;
     delete concurrentTestPromisesMap[userId];
 
     console.log("counter:", promisesCounter);
-
+    if (logCounter > 30) {
+      await writePromiseCounterToS3(promisesCounter);
+      logCounter = 0;
+    }
     if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
         userId,
