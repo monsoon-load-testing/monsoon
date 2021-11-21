@@ -69,10 +69,10 @@ const startProcess = (success, error) => {
   //   STEP_GRACE_PERIOD: 30 * 1000,
   //   RAMP_UP_LENGTH: 60000,
   // };
-  fs.writeFileSync(
-    `./load-generation/petrichor/config.json`,
-    JSON.stringify(tempConfig)
-  );
+  // fs.writeFileSync(
+  //   `./load-generation/petrichor/config.json`,
+  //   JSON.stringify(tempConfig)
+  // );
   await fetchFile("config.json");
   await fetchFile("test_script.js");
 
