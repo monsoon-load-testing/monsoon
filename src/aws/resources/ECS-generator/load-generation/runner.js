@@ -6,6 +6,7 @@ const { nanoid } = require("nanoid");
 const id = nanoid(7);
 const { testScript } = require("./petrichor/test_script.js");
 const config = JSON.parse(fs.readFileSync("./petrichor/config.json", "utf-8"));
+const util = require("util");
 
 const TEST_LENGTH = config.TEST_LENGTH;
 const ORIGIN_TIMESTAMP = config.ORIGIN_TIMESTAMP;
@@ -17,7 +18,7 @@ function promiseMapper(userId, promise) {
   });
 }
 
-const writePromiseCounterToS3 = async (counter) => {
+const writePromiseLogToS3 = async (counter) => {
   const BUCKET_NAME = process.env.bucketName;
   const now = Date.now();
   const params = {
@@ -44,23 +45,32 @@ async function runMultipleTest(numberOfUsers = 5) {
   });
 
   const concurrentTestPromisesMap = {};
-  const promisesCounter = {};
+  const promiseStatusLog = {};
   for (let i = 1; i <= numberOfUsers; i++) {
     concurrentTestPromisesMap[i] = promiseMapper(i, runTest(browser, i));
-    promisesCounter[i] = 0;
+    promiseStatusLog[i] = { count: 0, promise: undefined };
   }
   let logCounter = 0;
+
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
 
-    promisesCounter[userId] += 1;
+    promiseStatusLog[userId].count += 1;
+    for (let i = 1; i <= numberOfUsers; i++) {
+      promiseStatusLog[i].promise = util.inspect(concurrentTestPromisesMap[i]);
+    }
     logCounter += 1;
+
     delete concurrentTestPromisesMap[userId];
 
-    console.log("counter:", promisesCounter);
     if (logCounter > 30) {
-      await writePromiseCounterToS3(promisesCounter);
+      try {
+        await writePromiseLogToS3(promiseStatusLog);
+      } catch (e) {
+        console.log(e);
+      }
       logCounter = 0;
+      // console.log(promiseStatusLog);
     }
     if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
