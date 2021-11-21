@@ -13,7 +13,7 @@
     "monsoon-weather-station": "^1.0.0",
     "nanoid": "^3.1.30",
     "pm2": "^5.1.2",
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^10.0.0"
   },
   "devDependencies": {
     "csv-parse": "^4.16.3",

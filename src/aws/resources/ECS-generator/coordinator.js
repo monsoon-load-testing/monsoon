@@ -61,7 +61,7 @@ const startProcess = (success, error) => {
 
 (async () => {
   // const tempConfig = {
-  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
+  //   TEST_LENGTH: 1 * 20 * 60 * 1000,
   //   TEST_UNIT: "milliseconds",
   //   TIME_WINDOW: 15_000,
   //   ORIGIN_TIMESTAMP: Date.now(),
