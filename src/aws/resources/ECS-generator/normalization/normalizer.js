@@ -63,7 +63,7 @@ const writeToS3 = async (finalBucket) => {
   const promisesUpload = [];
   for (let filename in finalBucket) {
     // stepName-normalizedTimestamp
-    // if there is no data in the time window -> normalizedTimestamp
+    // if there is no data in the time window -> normalizedTimestamp.
     let [stepName, normalizedTimestamp] = filename.split("-");
 
     const params = {
