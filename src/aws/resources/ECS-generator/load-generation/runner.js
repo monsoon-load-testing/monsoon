@@ -35,26 +35,45 @@ async function runMultipleTest(numberOfUsers = 5) {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
 
     promisesCounter[userId] += 1;
+    delete concurrentTestPromisesMap[userId];
+
     console.log("counter:", promisesCounter);
 
-    delete concurrentTestPromisesMap[userId];
     if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
         userId,
         runTest(browser, userId)
       );
+
+      if (Object.values(concurrentTestPromisesMap).length < numberOfUsers) {
+        console.log(
+          `The number of users is less than ${numberOfUsers}. Restarting...`
+        );
+        await browser.close();
+        return;
+      }
     }
   }
   await browser.close();
 }
 
 async function runTest(browser, userId) {
-  const incognito = await browser.createIncognitoBrowserContext();
-  const page = await incognito.newPage();
-  await page.setDefaultTimeout(10_000);
-  await testScript(incognito, page, userId);
-  await page.close();
-  await incognito.close();
+  try {
+    const incognito = await browser.createIncognitoBrowserContext();
+    const page = await incognito.newPage();
+    await page.setDefaultTimeout(10_000);
+    await testScript(incognito, page, userId);
+    await page.close();
+    await incognito.close();
+  } catch (error) {
+    console.log("something went wrong. closing incognito context");
+    try {
+      await incognito.close();
+      console.log("incognito context closed successfully");
+    } catch (error) {
+      console.log("context was already closed. success");
+    }
+  }
 }
 
 runMultipleTest();

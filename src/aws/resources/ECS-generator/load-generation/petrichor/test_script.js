@@ -19,7 +19,6 @@ async function testScript(browser, page, userId) {
     },
     [1000, 3000]
   );
-
   await weatherStation.measure(
     "Go to bin",
     async () => {

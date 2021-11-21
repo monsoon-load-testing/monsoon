@@ -37,7 +37,7 @@ class WeatherStation {
         this.writePointToFS();
         this.resetMeasures();
         if (delay) {
-            if (typeof delay === 'number') {
+            if (typeof delay === "number") {
                 await this.sleep(delay);
             }
             else {
@@ -49,7 +49,9 @@ class WeatherStation {
         await this.startStep(stepName);
         const timeout = 10000;
         const scriptPromise = new Promise((resolve, reject) => {
-            script().then((data) => resolve("passed")).catch((err) => reject(err));
+            script()
+                .then((data) => resolve("passed"))
+                .catch((err) => reject(err));
         });
         const timeoutPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -75,7 +77,7 @@ class WeatherStation {
             stepStartTime: this.stepStartTime,
             metrics: {
                 responseTime: this.metrics.responseTime,
-                passed: this.metrics.passed
+                passed: this.metrics.passed,
             },
         });
         const fileName = `${this.userId}-${this.stepName}-${this.stepStartTime}.json`;
