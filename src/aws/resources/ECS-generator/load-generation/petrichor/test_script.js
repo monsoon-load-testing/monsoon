@@ -19,6 +19,9 @@ async function testScript(browser, page, userId) {
     },
     [1000, 3000]
   );
+  // if (Number(userId) === 1) {
+  //   await sleep(90_000);
+  // }
   await weatherStation.measure(
     "Go to bin",
     async () => {

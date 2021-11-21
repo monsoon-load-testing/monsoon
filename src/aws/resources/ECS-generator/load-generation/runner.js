@@ -18,18 +18,42 @@ function promiseMapper(userId, promise) {
   });
 }
 
-const writePromiseLogToS3 = async (counter) => {
+const writePromiseLogToS3 = async (promiseStatusLog) => {
   const BUCKET_NAME = process.env.bucketName;
   const now = Date.now();
   const params = {
     Bucket: BUCKET_NAME,
     Key: `logs/${now}-${id}.json`, // File name you want to save as in S3
-    Body: JSON.stringify(counter),
+    Body: JSON.stringify(promiseStatusLog),
   };
   try {
     await s3.upload(params).promise();
   } catch (e) {
     console.log(e);
+  }
+};
+
+const promiseStatusLog = { logCounter: 0 };
+const updatePromiseStatusLog = (
+  userId,
+  numberOfUsers,
+  concurrentTestPromisesMap
+) => {
+  promiseStatusLog[userId].count += 1;
+  for (let i = 1; i <= numberOfUsers; i++) {
+    promiseStatusLog[i].promise = util.inspect(concurrentTestPromisesMap[i]);
+  }
+  promiseStatusLog.logCounter += 1;
+};
+
+const writePromiseLogToS3IfCounter = async () => {
+  if (promiseStatusLog.logCounter > 200) {
+    try {
+      await writePromiseLogToS3(promiseStatusLog);
+    } catch (e) {
+      console.log(e);
+    }
+    promiseStatusLog.logCounter = 0;
   }
 };
 
@@ -45,33 +69,19 @@ async function runMultipleTest(numberOfUsers = 5) {
   });
 
   const concurrentTestPromisesMap = {};
-  const promiseStatusLog = {};
   for (let i = 1; i <= numberOfUsers; i++) {
     concurrentTestPromisesMap[i] = promiseMapper(i, runTest(browser, i));
     promiseStatusLog[i] = { count: 0, promise: undefined };
   }
-  let logCounter = 0;
 
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
 
-    promiseStatusLog[userId].count += 1;
-    for (let i = 1; i <= numberOfUsers; i++) {
-      promiseStatusLog[i].promise = util.inspect(concurrentTestPromisesMap[i]);
-    }
-    logCounter += 1;
+    // updatePromiseStatusLog(userId, numberOfUsers, concurrentTestPromisesMap);
+    // await writePromiseLogToS3IfCounter();
 
     delete concurrentTestPromisesMap[userId];
 
-    if (logCounter > 30) {
-      try {
-        await writePromiseLogToS3(promiseStatusLog);
-      } catch (e) {
-        console.log(e);
-      }
-      logCounter = 0;
-      // console.log(promiseStatusLog);
-    }
     if (Date.now() < STOP_TIME) {
       concurrentTestPromisesMap[userId] = promiseMapper(
         userId,
@@ -91,13 +101,12 @@ async function runMultipleTest(numberOfUsers = 5) {
 }
 
 async function runTest(browser, userId) {
+  const incognito = await browser.createIncognitoBrowserContext();
   try {
-    const incognito = await browser.createIncognitoBrowserContext();
-    const page = await incognito.newPage();
-    await page.setDefaultTimeout(10_000);
-    await testScript(incognito, page, userId);
-    await page.close();
-    await incognito.close();
+    const resolvedValue = await Promise.race([
+      promiseRunTest(incognito, userId),
+      promiseTimeout(),
+    ]);
   } catch (error) {
     console.log("something went wrong. closing incognito context");
     try {
@@ -107,6 +116,33 @@ async function runTest(browser, userId) {
       console.log("context was already closed. success");
     }
   }
+}
+
+function promiseRunTest(incognito, userId) {
+  const test = async () => {
+    const page = await incognito.newPage();
+    await page.setDefaultTimeout(10_000);
+    await testScript(incognito, page, userId);
+    await page.close();
+    await incognito.close();
+  };
+
+  return new Promise((resolve, reject) => {
+    test()
+      .then((data) => resolve("passed"))
+      .catch((err) => reject(err));
+  });
+}
+
+function promiseTimeout() {
+  const TEST_TIMEOUT = 50_000;
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(
+        new Error(`The test is taking too much time. Closing incognito context`)
+      );
+    }, TEST_TIMEOUT);
+  });
 }
 
 runMultipleTest();
