@@ -25,14 +25,14 @@ const databaseName = process.env.DATABASE_NAME;
 
 const aggregateAllContents = async (event) => {
   // repeatedly calling AWS list objects because it only returns 1000 objects
-  // averageTransactionRate: same as averageResponseTime
+  // totalTransactionRate: same as averageResponseTime
   // passRatio:
   // 1) sum number of passes and fails
   // 2) passSum / (passSum + failSum) * 100
   const accumulator = {
     responseTimeSumProd: 0,
     countUsers: 0,
-    transactionRateSumProd: 0,
+    transactionRateSum: 0,
     passSum: 0,
     failSum: 0,
   };
@@ -40,7 +40,7 @@ const aggregateAllContents = async (event) => {
   const results = {
     averageResponseTime: 0,
     concurrentUsers: 0,
-    averageTransactionRate: 0,
+    totalTransactionRate: 0,
     passRatio: 0,
   };
 
@@ -78,9 +78,9 @@ const aggregateAllContents = async (event) => {
 
         if (passCount > 0) {
           accumulator.responseTimeSumProd += normalizedResponseTime * passCount;
-          accumulator.transactionRateSumProd += transactionRate * passCount;
         }
         accumulator.countUsers += 1;
+        accumulator.transactionRateSum += transactionRate;
         accumulator.passSum += passCount;
         accumulator.failSum += failCount;
       });
@@ -101,9 +101,7 @@ const aggregateAllContents = async (event) => {
 
   results.concurrentUsers = accumulator.countUsers;
 
-  results.averageTransactionRate = Math.round(
-    accumulator.transactionRateSumProd / accumulator.passSum
-  );
+  results.totalTransactionRate = Math.round(accumulator.transactionRateSum);
 
   results.passRatio =
     (100 * accumulator.passSum) / (accumulator.passSum + accumulator.failSum);
@@ -160,7 +158,7 @@ const aggregateAllContents = async (event) => {
   const transactionRate = {
     Dimensions: dimensions,
     MeasureName: "transaction_rate",
-    MeasureValue: results.averageTransactionRate.toString(),
+    MeasureValue: results.totalTransactionRate.toString(),
     MeasureValueType: "DOUBLE",
     Time: normalizedTimestamp,
   };
