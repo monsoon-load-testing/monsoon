@@ -179,7 +179,7 @@ const createTaskDefinition = async (event) => {
     containerDefinitions: [
       {
         name: "monsoon-container",
-        image: "public.ecr.aws/q9a3w3h6/users_fix:latest",
+        image: "public.ecr.aws/q9a3w3h6/monsoon-load-testing",
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
