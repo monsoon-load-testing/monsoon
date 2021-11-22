@@ -34,7 +34,7 @@ const startProcess = (success, error) => {
         cwd: `${cwd()}/load-generation`,
         script: "runner.js",
         autorestart: true,
-        max_memory_restart: "250M",
+        max_memory_restart: "500M",
       },
       (err, apps) => {
         if (err) {
@@ -48,7 +48,7 @@ const startProcess = (success, error) => {
         cwd: `${cwd()}/normalization`,
         script: "normalizer.js",
         autorestart: true,
-        max_memory_restart: "250M",
+        max_memory_restart: "500M",
       },
       (err, apps) => {
         if (err) {
@@ -61,12 +61,13 @@ const startProcess = (success, error) => {
 
 (async () => {
   // const tempConfig = {
-  //   TEST_LENGTH: 1 * 3 * 60 * 1000,
+  //   TEST_LENGTH: 1 * 20 * 60 * 1000,
   //   TEST_UNIT: "milliseconds",
   //   TIME_WINDOW: 15_000,
   //   ORIGIN_TIMESTAMP: Date.now(),
   //   NUMBER_OF_USERS: 10,
-  //   STEP_GRACE_PERIOD: 240 * 1000,
+  //   STEP_GRACE_PERIOD: 30 * 1000,
+  //   RAMP_UP_LENGTH: 60000,
   // };
   // fs.writeFileSync(
   //   `./load-generation/petrichor/config.json`,

@@ -60,9 +60,10 @@ const writeToS3 = async (finalBucket) => {
   const BUCKET_NAME = process.env.bucketName;
 
   const s3 = new AWS.S3();
+  const promisesUpload = [];
   for (let filename in finalBucket) {
     // stepName-normalizedTimestamp
-    // if there is no data in the time window -> normalizedTimestamp
+    // if there is no data in the time window -> normalizedTimestamp.
     let [stepName, normalizedTimestamp] = filename.split("-");
 
     const params = {
@@ -70,7 +71,12 @@ const writeToS3 = async (finalBucket) => {
       Key: `${normalizedTimestamp}/${stepName}/${nanoid(7)}.json`, // File name you want to save as in S3
       Body: JSON.stringify(finalBucket[filename]),
     };
-    await s3.upload(params).promise();
+    promisesUpload.push(s3.upload(params).promise());
+  }
+  try {
+    await Promise.allSettled(promisesUpload);
+  } catch (e) {
+    console.log(e);
   }
 };
 
@@ -237,7 +243,7 @@ async function doNormalization() {
         // build finalBucket -> just the nromalizedTiemstamps[0] batch
         finalBucket = buildFinalBucket(filteredBucket);
         // send to S3 bucket
-        writeToS3(finalBucket);
+        await writeToS3(finalBucket);
         // await writeToLocal(finalBucket);
         normalizedTimestamps.shift();
       } else {
@@ -256,7 +262,7 @@ async function doNormalization() {
           // build finalBucket -> just the nromalizedTiemstamps[0] batch
           finalBucket = buildFinalBucket(filteredBucket);
           // send to S3 bucket
-          writeToS3(finalBucket);
+          await writeToS3(finalBucket);
           // await writeToLocal(finalBucket);
           normalizedTimestamps.shift();
         } else {
@@ -287,7 +293,7 @@ async function doNormalization() {
   // build finalBucket -> just the nromalizedTiemstamps[0] batch
   finalBucket = buildFinalBucket(filteredBucket);
   // // send to S3 bucket
-  writeToS3(finalBucket);
+  await writeToS3(finalBucket);
   // await writeToLocal(finalBucket);
   normalizedTimestamps.shift();
 }

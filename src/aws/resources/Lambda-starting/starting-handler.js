@@ -141,7 +141,6 @@ const extractStepNames = async (fileName) => {
   return matches;
 };
 
-
 // const configObj = {
 //   TEST_LENGTH: 1 * 10 * 60 * 1000, // received through event
 //   TEST_UNIT: "milliseconds",
@@ -180,7 +179,7 @@ const createTaskDefinition = async (event) => {
     containerDefinitions: [
       {
         name: "monsoon-container",
-        image: "public.ecr.aws/q9a3w3h6/monsoon-load-testing:latest",
+        image: "public.ecr.aws/q9a3w3h6/monsoon-load-testing",
         environment: [
           {
             name: "AWS_ACCESS_KEY_ID",
@@ -212,7 +211,7 @@ exports.handler = async (event) => {
     ORIGIN_TIMESTAMP: Date.now() + 3 * 60 * 1000, // 3 mins in the future for the containers to spin up
     NUMBER_OF_USERS: Number(event.numberOfUsers),
     STEP_GRACE_PERIOD: 2 * 60 * 1000, // grace period for the normalizer to finish the final batch
-    RAMP_UP_LENGTH: 1 * Number(event.rampUpLengthInMinutes) * 60 * 1000
+    RAMP_UP_LENGTH: 1 * Number(event.rampUpLengthInMinutes) * 60 * 1000,
   };
 
   const stepNames = await extractStepNames("test_script.js");
