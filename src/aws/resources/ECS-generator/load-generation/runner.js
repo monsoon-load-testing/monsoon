@@ -12,6 +12,10 @@ const TEST_LENGTH = config.TEST_LENGTH;
 const ORIGIN_TIMESTAMP = config.ORIGIN_TIMESTAMP;
 const STOP_TIME = ORIGIN_TIMESTAMP + TEST_LENGTH;
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 function promiseMapper(userId, promise) {
   return new Promise((resolve) => {
     promise.finally(() => resolve(userId));
@@ -70,6 +74,7 @@ async function runMultipleTest(numberOfUsers = 5) {
 
   const concurrentTestPromisesMap = {};
   for (let i = 1; i <= numberOfUsers; i++) {
+    await sleep(300);
     concurrentTestPromisesMap[i] = promiseMapper(i, runTest(browser, i));
     promiseStatusLog[i] = { count: 0, promise: undefined };
   }
