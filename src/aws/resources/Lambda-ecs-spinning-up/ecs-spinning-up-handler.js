@@ -94,7 +94,8 @@ exports.handler = async (event, context) => {
   const nbrOfUsers = config.NUMBER_OF_USERS;
   const rampUpLengthInMin = config.RAMP_UP_LENGTH / 1000 / 60;
 
-  const desiredTaskCount = nbrOfUsers / 5;
+  const usersPerContainer = 20;
+  const desiredTaskCount = nbrOfUsers / usersPerContainer;
   let tasksIncrementPerMin =
     desiredTaskCount / rampUpLengthInMin !== Infinity
       ? Math.round(desiredTaskCount / rampUpLengthInMin)

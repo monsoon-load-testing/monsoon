@@ -173,8 +173,8 @@ const extractStepNames = async (fileName) => {
 
 const createTaskDefinition = async (event) => {
   const params = {
-    memory: "4GB",
-    cpu: "2 vCPU",
+    memory: "8GB",
+    cpu: "4 vCPU",
     networkMode: "awsvpc",
     containerDefinitions: [
       {

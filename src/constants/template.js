@@ -15,13 +15,13 @@ async function testScript(browser, page, userId) {
     async () => {
       await page.goto(\`\${your_home_page}\`);
     },
-    0
+    [1000, 3000] // optional randomized delay after step between lowerBound (e.g. 1000ms) and upperBound (e.g. 3000ms)
   );
 }`;
 
 const testConfig = {
   testLengthInMinutes: 10,
-  numberOfUsers: 10,
+  numberOfUsers: 40,
   rampUpLengthInMinutes: 2,
 };
 

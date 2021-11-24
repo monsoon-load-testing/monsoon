@@ -150,4 +150,4 @@ function promiseTimeout() {
   });
 }
 
-runMultipleTest();
+runMultipleTest(20);
