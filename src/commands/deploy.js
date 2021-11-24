@@ -12,6 +12,7 @@ const generateDatabaseName = () => `monsoonDB-${Date.now()}`;
 
 const writeDatabaseNameInEnvFile = async () => {
   const DATABASE_NAME = generateDatabaseName();
+  process.env.DATABASE_NAME = DATABASE_NAME;
   const envPath = path.join(__dirname, "../../.env"); // the current file path
   const envVariables = await fs.promises.readFile(envPath, "utf-8");
   const updatedEnvVariables = envVariables
