@@ -7,11 +7,17 @@ import { AggregatingLambda } from "./aggregating-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
 import { TimestreamConstruct } from "./timestream";
 import { nanoid } from "nanoid";
+import { config } from "dotenv";
+import * as path from "path";
+config({
+  path: path.join(__dirname, "../../.env"),
+});
 
 export class AwsStack extends cdk.Stack {
   constructor(scope: any, id: any, props?: any) {
     super(scope, id, props);
-    const databaseName = "monsoonDB";
+    // const databaseName = "monsoonDB";
+    const databaseName = process.env.DATABASE_NAME || "monsoonDB";
     const permissionStatementId = nanoid(); // rename to permissionStatementIdMetronome
     const permissionStatementIdECS = nanoid();
     const customVpc = new VPC(this, "custom-vpc");
@@ -58,7 +64,7 @@ export class AwsStack extends cdk.Stack {
       ecsSpinningUpLambdaName: ecsSpinningUpLambda.handler.functionName,
       functionArnECSSpinningUp: ecsSpinningUpLambda.handler.functionArn,
       permissionStatementIdECS,
-      permissionStatementId,  // rename to  permissionStatementIdMetronome
+      permissionStatementId, // rename to  permissionStatementIdMetronome
     });
     bucket.grantReadWrite(startingLambda.handler);
 
