@@ -6,6 +6,7 @@ const s3 = new AWS.S3();
 const lambda = new AWS.Lambda();
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
 const path = require("path");
+const chalkAnimation = require("chalk-animation");
 
 const chooseTestDirectory = async () => {
   await Promisify.changeDir(process.cwd());
@@ -16,6 +17,7 @@ const chooseTestDirectory = async () => {
     "package.json",
     "package-lock.json",
     ".git",
+    ".DS_Store",
   ];
   const targetNames = names.filter((name) => {
     return !excludedNames.includes(name);
@@ -94,8 +96,42 @@ const kickoffStartingLambda = async (dirName) => {
   await lambda.invoke(startingLambdaParams).promise();
 };
 
+async function printLines() {
+  const lines = [
+    "Today it's a beautiful, sunny afternoon on the beach.",
+    "The sea breeze is refreshing.",
+    "But that sea breeze is picking up....",
+    "Gusts of wind now....",
+    "The waves crash violently...",
+    "A storm approaches...",
+    "But not just any storm....",
+    "A monsoon approaches!",
+    "☔ MONSOON WARNING!! MONSOON WARNING!! ☔ Seek shelter immediately.",
+    "The storm will hit your servers in 3 minutes!",
+    "Turn on the Weather Channel to see the storm's progress",
+    "Perhaps you can save yourself, but your app must press on.",
+    "Wish your app well as it endures the monsoon.",
+    "Or succumbs...",
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const animatedLine =
+      i === 8
+        ? chalkAnimation.pulse(lines[i], 0.9)
+        : chalkAnimation.neon(lines[i], 0.9);
+    const promise = new Promise((resolve) => {
+      setTimeout(() => {
+        animatedLine.stop();
+        resolve();
+      }, 2000);
+    });
+    await promise;
+  }
+}
+
 module.exports = {
   chooseTestDirectory,
   uploadTestScript,
   kickoffStartingLambda,
+  printLines,
 };
