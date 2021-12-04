@@ -6,7 +6,7 @@ const s3 = new AWS.S3();
 const lambda = new AWS.Lambda();
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
 const path = require("path");
-const chalkAnimation = require("chalk-animation");
+const chalk = require("chalk");
 
 const chooseTestDirectory = async () => {
   await Promisify.changeDir(process.cwd());
@@ -108,22 +108,19 @@ async function printLines() {
     "A monsoon approaches!",
     "☔ MONSOON WARNING!! MONSOON WARNING!! ☔ Seek shelter immediately.",
     "The storm will hit your servers in 3 minutes!",
-    "Turn on the Weather Channel to see the storm's progress",
+    "Turn on the Weather Channel to see the storm's progress.",
     "Perhaps you can save yourself, but your app must press on.",
     "Wish your app well as it endures the monsoon.",
     "Or succumbs...",
   ];
 
   for (let i = 0; i < lines.length; i++) {
-    const animatedLine =
-      i === 8
-        ? chalkAnimation.pulse(lines[i], 0.9)
-        : chalkAnimation.neon(lines[i], 0.9);
+    const line =
+      i === 8 ? chalk.hex("#f00")(lines[i]) : chalk.hex("#fff")(lines[i]);
+    console.log(line);
+
     const promise = new Promise((resolve) => {
-      setTimeout(() => {
-        animatedLine.stop();
-        resolve();
-      }, 2000);
+      setTimeout(resolve, 2000);
     });
     await promise;
   }
