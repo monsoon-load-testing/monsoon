@@ -15,11 +15,11 @@ const {
 
 class StartCommand extends Command {
   async run() {
-    const dirName = await chooseTestDirectory();
-    await uploadTestScript(dirName);
-    await kickoffStartingLambda(dirName);
+    // const dirName = await chooseTestDirectory();
+    // await uploadTestScript(dirName);
+    // await kickoffStartingLambda(dirName);
     await printLines();
-    // spinner.succeed("Monsoon has started the test.");
+    spinner.succeed("Monsoon has started the test.");
   }
 }
 

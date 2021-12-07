@@ -7,6 +7,8 @@ const lambda = new AWS.Lambda();
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
 const path = require("path");
 const chalk = require("chalk");
+const { logo } = require("../constants/logo");
+const gradient = require("gradient-string");
 
 const chooseTestDirectory = async () => {
   await Promisify.changeDir(process.cwd());
@@ -97,7 +99,9 @@ const kickoffStartingLambda = async (dirName) => {
 };
 
 async function printLines() {
+  const monsoonGradient = gradient(["#916cbf", "#649cd9", "#ffffff"]);
   const lines = [
+    monsoonGradient.multiline(logo),
     "Today it's a beautiful, sunny afternoon on the beach.",
     "The sea breeze is refreshing.",
     "But that sea breeze is picking up....",
@@ -116,7 +120,7 @@ async function printLines() {
 
   for (let i = 0; i < lines.length; i++) {
     const line =
-      i === 8 ? chalk.hex("#f00")(lines[i]) : chalk.hex("#fff")(lines[i]);
+      i === 9 ? chalk.hex("#f00")(lines[i]) : chalk.hex("#fff")(lines[i]);
     console.log(line);
 
     const promise = new Promise((resolve) => {
