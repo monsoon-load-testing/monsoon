@@ -123,8 +123,8 @@ const aggregateAllContents = async (event) => {
       DatabaseName: databaseName,
       TableName: tableName,
       RetentionProperties: {
-        MemoryStoreRetentionPeriodInHours: (24 * 7).toString(10),
-        MagneticStoreRetentionPeriodInDays: (7).toString(10),
+        MemoryStoreRetentionPeriodInHours: (24 * 30).toString(10),
+        MagneticStoreRetentionPeriodInDays: (365).toString(10),
       },
     };
 
