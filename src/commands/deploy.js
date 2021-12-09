@@ -41,17 +41,17 @@ class DeployCommand extends Command {
 
     spinner.start(`Currently compiling your CloudFormation.`);
     await Promisify.execute(`cdk synth --profile=${AWS_PROFILE}`);
-    spinner.succeed(`Successfully compiled.`);
+    spinner.succeed(`☔ Successfully compiled.`);
 
     spinner.start(`Currently bootstraping the infrastructure.`);
     await Promisify.execute(`cdk bootstrap --profile=${AWS_PROFILE}`);
-    spinner.succeed(`Successfully bootstraped.`);
+    spinner.succeed(`☔ Successfully bootstraped.`);
 
     spinner.start(`Currently deploying the infrastructure.`);
     await Promisify.execute(
       `cdk deploy --require-approval never --profile=${AWS_PROFILE}`
     );
-    spinner.succeed(`Successfully deployed.`);
+    spinner.succeed(`🌧️  Successfully deployed.`);
   }
 }
 

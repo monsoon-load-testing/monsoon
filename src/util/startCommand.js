@@ -6,6 +6,9 @@ const s3 = new AWS.S3();
 const lambda = new AWS.Lambda();
 const { MONSOON_ENV_FILE_PATH } = require("../constants/paths");
 const path = require("path");
+const chalk = require("chalk");
+const { logo } = require("../constants/logo");
+const gradient = require("gradient-string");
 
 const chooseTestDirectory = async () => {
   await Promisify.changeDir(process.cwd());
@@ -16,6 +19,7 @@ const chooseTestDirectory = async () => {
     "package.json",
     "package-lock.json",
     ".git",
+    ".DS_Store",
   ];
   const targetNames = names.filter((name) => {
     return !excludedNames.includes(name);
@@ -94,8 +98,41 @@ const kickoffStartingLambda = async (dirName) => {
   await lambda.invoke(startingLambdaParams).promise();
 };
 
+async function printLines() {
+  const monsoonGradient = gradient(["#916cbf", "#649cd9", "#ffffff"]);
+  const lines = [
+    monsoonGradient.multiline(logo),
+    "Today it's a beautiful, sunny afternoon on the beach.",
+    "The sea breeze is refreshing.",
+    "But that sea breeze is picking up....",
+    "Gusts of wind now....",
+    "The waves crash violently...",
+    "A storm approaches...",
+    "But not just any storm....",
+    "A monsoon approaches!",
+    "☔ MONSOON WARNING!! MONSOON WARNING!! ☔ Seek shelter immediately.",
+    "The storm will hit your servers in 3 minutes!",
+    "Turn on the Weather Channel to see the storm's progress.",
+    "Perhaps you can save yourself, but your app must press on.",
+    "Wish your app well as it endures the monsoon.",
+    "Or succumbs...",
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line =
+      i === 9 ? chalk.hex("#f00")(lines[i]) : chalk.hex("#fff")(lines[i]);
+    console.log(line);
+
+    const promise = new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
+    await promise;
+  }
+}
+
 module.exports = {
   chooseTestDirectory,
   uploadTestScript,
   kickoffStartingLambda,
+  printLines,
 };
