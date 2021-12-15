@@ -82,8 +82,8 @@ async function runMultipleTest(numberOfUsers = 5) {
   while (JSON.stringify(concurrentTestPromisesMap) !== "{}") {
     const userId = await Promise.race(Object.values(concurrentTestPromisesMap));
 
-    // updatePromiseStatusLog(userId, numberOfUsers, concurrentTestPromisesMap);
-    // await writePromiseLogToS3IfCounter();
+    updatePromiseStatusLog(userId, numberOfUsers, concurrentTestPromisesMap);
+    await writePromiseLogToS3IfCounter();
 
     delete concurrentTestPromisesMap[userId];
 

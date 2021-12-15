@@ -130,12 +130,12 @@ const buildFinalBucket = (filteredBucket) => {
     filteredBucket[key].forEach((dataPoint) => {
       if (dataPoint.metrics.passed) {
         passCount += 1;
-        sum += dataPoint.metrics.responseTime;
+        sum += dataPoint.metrics.responseTime; // it probably makes more sense to sum it with timeout 10s too
       } else {
         failCount += 1;
       }
     });
-    const normalizedResponseTime = Math.round(sum / filteredBucket[key].length);
+    const normalizedResponseTime = Math.round(sum / filteredBucket[key].length); // should be divided by the number points that contribute to response time
     const sampleCount = filteredBucket[key].length;
     const transactionRate = Math.round(
       (sampleCount / (timeWindow / 1000)) * 60
@@ -211,7 +211,7 @@ async function doNormalization() {
     ];
 
     try {
-      const filenames = await fs.promises.readdir("../load-generation/results");
+      let filenames = await fs.promises.readdir("../load-generation/results");
       // check if there is a file existing in the next time window
       for (let filename of filenames) {
         let fileContents = await fs.promises.readFile(
@@ -226,6 +226,9 @@ async function doNormalization() {
       }
 
       if (shouldProcess) {
+        await sleep(11_000); // wait 11s so all tests within timestamp finish
+        filenames = await fs.promises.readdir("../load-generation/results");
+        // load filenames again to ensure all tests within timestamp are processed
         let buckets = {};
         let filteredBucket = {};
         let finalBucket = {};
@@ -248,6 +251,9 @@ async function doNormalization() {
         normalizedTimestamps.shift();
       } else {
         if (noNextDataPoint) {
+          await sleep(11_000); // wait 11s so all tests within timestamp finish
+          filenames = await fs.promises.readdir("../load-generation/results");
+          // load filenames again to ensure all tests within timestamp are processed
           let buckets = {};
           let filteredBucket = {};
           let finalBucket = {};

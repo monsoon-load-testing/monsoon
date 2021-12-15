@@ -1,4 +1,5 @@
-FROM amd64/alpine
+FROM amd64/alpine:3.14
+# version 3.14 needed to work with mac m1. add if needed
 
 # Installs latest Chromium (92) package.
 RUN apk add --no-cache \
@@ -17,15 +18,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Puppeteer v10.0.0 works with Chromium 92.
-
-# Add user so we don't need --no-sandbox.
-# RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
-#     && mkdir -p /home/pptruser/Downloads /app \
-#     && chown -R pptruser:pptruser /home/pptruser \
-#     && chown -R pptruser:pptruser /app
-
-# # Run everything after as non-privileged user.
-# USER pptruser
 
 WORKDIR /home/app
 COPY . .
