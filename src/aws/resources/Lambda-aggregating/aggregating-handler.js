@@ -68,6 +68,9 @@ const aggregateAllContents = async (event) => {
 
     finishedPromises.forEach((item) => {
       const obj = JSON.parse(item.value.Body);
+      accumulator.countUsers += obj.usersPerContainer;
+      delete obj.usersPerContainer;
+
       Object.values(obj).forEach((user) => {
         const {
           normalizedResponseTime,
@@ -79,7 +82,7 @@ const aggregateAllContents = async (event) => {
         if (passCount > 0) {
           accumulator.responseTimeSumProd += normalizedResponseTime * passCount;
         }
-        accumulator.countUsers += 1;
+        // accumulator.countUsers += 1;
         accumulator.transactionRateSum += transactionRate;
         accumulator.passSum += passCount;
         accumulator.failSum += failCount;
