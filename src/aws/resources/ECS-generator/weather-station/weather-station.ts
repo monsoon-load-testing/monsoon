@@ -16,6 +16,9 @@ class WeatherStation {
     responseTime: number | null;
     passed: boolean;
   };
+
+  static timeout = 10_000;
+
   constructor(browser: browser, page: page, userId: string) {
     this.browser = browser;
     this.page = page;
@@ -36,24 +39,24 @@ class WeatherStation {
     );
   }
   private async endStep(delay: delay, error?: Error) {
-    if (!error) {
-      const stepEndTime = Math.round(
-        await this.page.evaluate(() => {
-          const relativeTimeStamp = window.performance.now();
-          const timeOrigin = window.performance.timeOrigin;
-          return timeOrigin + relativeTimeStamp;
-        })
-      );
+    const stepEndTime = Math.round(
+      await this.page.evaluate(() => {
+        const relativeTimeStamp = window.performance.now();
+        const timeOrigin = window.performance.timeOrigin;
+        return timeOrigin + relativeTimeStamp;
+      })
+    );
 
-      this.metrics.responseTime = stepEndTime - this.stepStartTime;
-      this.metrics.passed = true;
-    } else {
-      this.metrics.responseTime = null;
-      this.metrics.passed = false;
-    }
+    this.metrics.responseTime = Math.min(
+      stepEndTime - this.stepStartTime,
+      WeatherStation.timeout
+    );
+
+    this.metrics.passed = !error;
 
     this.writePointToFS();
     this.resetMeasures();
+
     if (delay) {
       if (typeof delay === "number") {
         await this.sleep(delay);
@@ -66,7 +69,8 @@ class WeatherStation {
   public async measure(stepName: string, script: script, delay: delay = 0) {
     await this.startStep(stepName);
 
-    const timeout = 10_000;
+    const timeout = WeatherStation.timeout;
+
     const scriptPromise = new Promise((resolve, reject) => {
       script()
         .then((data) => resolve("passed"))
@@ -79,6 +83,7 @@ class WeatherStation {
         );
       }, timeout);
     });
+
     try {
       const resolvedValue = await Promise.race([scriptPromise, timeoutPromise]);
       await this.endStep(delay);

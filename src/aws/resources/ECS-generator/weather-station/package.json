@@ -1,8 +1,9 @@
 {
-  "name": "weather-station",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "monsoon-weather-station",
+  "version": "1.1.0",
+  "description": "A library for writing test scripts for the Monsoon load testing platform",
+  "main": "dist/weather-station.js",
+  "types": "dist/weather-station.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

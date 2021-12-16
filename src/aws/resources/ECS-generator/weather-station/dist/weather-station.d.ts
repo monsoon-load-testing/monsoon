@@ -13,6 +13,7 @@ declare class WeatherStation {
         responseTime: number | null;
         passed: boolean;
     };
+    static timeout: number;
     constructor(browser: browser, page: page, userId: string);
     private startStep;
     private endStep;
