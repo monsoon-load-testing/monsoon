@@ -199,8 +199,8 @@ const normalizeData = async (timestamp, lowerBound, upperBound) => {
 
   filteredBucket = filterBucket(buckets[timestamp]);
   finalBucket = buildFinalBucket(filteredBucket);
-  // await writeToS3(finalBucket);
-  await writeToLocal(finalBucket);
+  await writeToS3(finalBucket);
+  // await writeToLocal(finalBucket);
   console.log(timestamp, "after normalization");
 };
 
@@ -276,30 +276,6 @@ async function doNormalization() {
       await fs.promises.writeFile(`./log/error.json`, JSON.stringify(err));
     }
   }
-
-  // await sleep(60_000); // sleep for 1 min before processing the last batch
-  // const filenames = await fs.promises.readdir("../load-generation/results");
-  // const [lowerBound, upperBound] = [
-  //   normalizedTimestamps[0] - timeWindow / 2,
-  //   normalizedTimestamps[0] + timeWindow / 2,
-  // ];
-  // let buckets = {};
-  // let filteredBucket = {};
-  // let finalBucket = {};
-  // buckets[normalizedTimestamps[0]] = await groupByCurrentNormalizedTimestamp(
-  //   filenames,
-  //   lowerBound,
-  //   upperBound
-  // );
-  // // filteredBucket -> just the normalizedTimestamps[0] batch
-  // filteredBucket = filterBucket(buckets[normalizedTimestamps[0]]);
-  // // build finalBucket -> just the nromalizedTiemstamps[0] batch
-  // finalBucket = buildFinalBucket(filteredBucket);
-  // // // send to S3 bucket
-  // await writeToS3(finalBucket);
-  // console.log("last batch", normalizedTimestamps[0]);
-  // // await writeToLocal(finalBucket);
-  // normalizedTimestamps.shift();
 }
 
 (async () => {
