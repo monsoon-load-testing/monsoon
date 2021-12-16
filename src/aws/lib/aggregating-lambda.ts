@@ -42,6 +42,7 @@ export class AggregatingLambda extends cdk.Construct {
       },
       role: lambdaRole,
       timeout: Duration.seconds(15 * 60),
+      memorySize: 275,
     });
   }
 }

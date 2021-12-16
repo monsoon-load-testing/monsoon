@@ -79,10 +79,9 @@ const aggregateAllContents = async (event) => {
           failCount,
         } = user.metrics;
 
-        if (passCount > 0) {
-          accumulator.responseTimeSumProd += normalizedResponseTime * passCount;
-        }
-        // accumulator.countUsers += 1;
+        accumulator.responseTimeSumProd +=
+          normalizedResponseTime * (passCount + failCount);
+
         accumulator.transactionRateSum += transactionRate;
         accumulator.passSum += passCount;
         accumulator.failSum += failCount;
@@ -98,20 +97,19 @@ const aggregateAllContents = async (event) => {
   }
 
   // calculate results
+  const passAndFailSum = accumulator.passSum + accumulator.failSum;
   results.averageResponseTime = Math.round(
-    accumulator.responseTimeSumProd / accumulator.passSum
+    accumulator.responseTimeSumProd / passAndFailSum
   );
 
   results.concurrentUsers = accumulator.countUsers;
 
   results.totalTransactionRate = Math.round(accumulator.transactionRateSum);
 
-  results.passRatio =
-    (100 * accumulator.passSum) / (accumulator.passSum + accumulator.failSum);
+  results.passRatio = (100 * accumulator.passSum) / passAndFailSum;
 
   // write to db
   const tableName = event.tableName;
-  // const tableName = "test2"; // delete
 
   const paramsListTables = {
     DatabaseName: databaseName,
