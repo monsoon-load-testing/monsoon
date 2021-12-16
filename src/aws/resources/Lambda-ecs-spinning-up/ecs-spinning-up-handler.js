@@ -101,9 +101,12 @@ exports.handler = async (event, context) => {
       ? Math.round(desiredTaskCount / rampUpLengthInMin)
       : desiredTaskCount;
 
-  const currentTasks = await listTasks();
+  let currentTasks = await listTasks();
   let currentTasksCount = currentTasks.length;
-  const iterationTaskCountLimit = currentTasksCount + tasksIncrementPerMin;
+  let failedTasksCount =
+    tasksIncrementPerMin - (currentTasksCount % tasksIncrementPerMin);
+  const iterationTaskCountLimit =
+    currentTasksCount + tasksIncrementPerMin + failedTasksCount;
   const taskPromises = [];
 
   // const waitTime =
@@ -123,9 +126,21 @@ exports.handler = async (event, context) => {
   );
 
   if (currentTasksCount > 0 && currentTime < originTimestamp) {
-    // console.log("waiting:", waitTime);
-    // await sleep(waitTime);
-    return "not yet!";
+    console.log("not yet!");
+    return;
+  }
+
+  if (currentTasksCount === desiredTaskCount) {
+    await sleep(2 * 60 * 1000);
+    currentTasks = await listTasks();
+    currentTasksCount = currentTasks.length;
+
+    if (currentTasksCount === desiredTaskCount) {
+      await removeECSSpinningUpPermissions(functionName);
+      await removeTarget();
+      await deleteRule();
+      return;
+    }
   }
 
   // Retrieve subnetIds
@@ -153,9 +168,4 @@ exports.handler = async (event, context) => {
   }
   await Promise.allSettled(taskPromises);
   console.log("currentTasksCount AFTER:", currentTasksCount);
-  if (currentTasksCount === desiredTaskCount) {
-    await removeECSSpinningUpPermissions(functionName);
-    await removeTarget();
-    await deleteRule();
-  }
 };

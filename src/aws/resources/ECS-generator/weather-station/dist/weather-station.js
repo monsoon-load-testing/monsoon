@@ -21,19 +21,13 @@ class WeatherStation {
         }));
     }
     async endStep(delay, error) {
-        if (!error) {
-            const stepEndTime = Math.round(await this.page.evaluate(() => {
-                const relativeTimeStamp = window.performance.now();
-                const timeOrigin = window.performance.timeOrigin;
-                return timeOrigin + relativeTimeStamp;
-            }));
-            this.metrics.responseTime = stepEndTime - this.stepStartTime;
-            this.metrics.passed = true;
-        }
-        else {
-            this.metrics.responseTime = null;
-            this.metrics.passed = false;
-        }
+        const stepEndTime = Math.round(await this.page.evaluate(() => {
+            const relativeTimeStamp = window.performance.now();
+            const timeOrigin = window.performance.timeOrigin;
+            return timeOrigin + relativeTimeStamp;
+        }));
+        this.metrics.responseTime = Math.min(stepEndTime - this.stepStartTime, WeatherStation.timeout);
+        this.metrics.passed = !error;
         this.writePointToFS();
         this.resetMeasures();
         if (delay) {
@@ -47,7 +41,7 @@ class WeatherStation {
     }
     async measure(stepName, script, delay = 0) {
         await this.startStep(stepName);
-        const timeout = 10000;
+        const timeout = WeatherStation.timeout;
         const scriptPromise = new Promise((resolve, reject) => {
             script()
                 .then((data) => resolve("passed"))
@@ -95,4 +89,5 @@ class WeatherStation {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }
+WeatherStation.timeout = 10000;
 module.exports = WeatherStation;
