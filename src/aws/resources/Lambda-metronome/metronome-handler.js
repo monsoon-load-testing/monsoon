@@ -75,7 +75,7 @@ const handler = async (event, context) => {
     aggregatingLambdaName
   ); // delete
 
-  const EXPIRATION_TIME = 2 * 60_000;
+  const EXPIRATION_TIME = 3 * 60_000;
   const currentTime = Date.now();
   const expirationTimestamp = currentTime - EXPIRATION_TIME;
 

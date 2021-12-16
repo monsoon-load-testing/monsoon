@@ -2,6 +2,8 @@ import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import * as path from "path";
+import { Duration } from "@aws-cdk/core";
+
 export class AggregatingLambda extends cdk.Construct {
   scope: cdk.Construct;
   id: string;
@@ -39,6 +41,7 @@ export class AggregatingLambda extends cdk.Construct {
         DATABASE_NAME: props.databaseName,
       },
       role: lambdaRole,
+      timeout: Duration.seconds(15 * 60),
     });
   }
 }

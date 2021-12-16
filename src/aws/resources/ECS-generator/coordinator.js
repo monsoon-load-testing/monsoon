@@ -61,12 +61,12 @@ const startProcess = (success, error) => {
 
 (async () => {
   // const tempConfig = {
-  //   TEST_LENGTH: 1 * 20 * 60 * 1000,
+  //   TEST_LENGTH: 1 * 2 * 60 * 1000,
   //   TEST_UNIT: "milliseconds",
   //   TIME_WINDOW: 15_000,
   //   ORIGIN_TIMESTAMP: Date.now(),
-  //   NUMBER_OF_USERS: 10,
-  //   STEP_GRACE_PERIOD: 30 * 1000,
+  //   NUMBER_OF_USERS: 20,
+  //   STEP_GRACE_PERIOD: 3 * 60 * 1000,
   //   RAMP_UP_LENGTH: 60000,
   // };
   // fs.writeFileSync(
