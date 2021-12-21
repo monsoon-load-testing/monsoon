@@ -1,4 +1,4 @@
-# monsoon
+![Monsoon logo](https://raw.githubusercontent.com/monsoon-load-testing/monsoon-load-testing.github.io/main/assets/images/monsoon_logo_color.png)
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/monsoon.svg)](https://npmjs.org/package/monsoon)
