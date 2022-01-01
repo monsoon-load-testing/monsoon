@@ -45,7 +45,7 @@ USAGE
 
 ### Installation
 
-- run `npm install -g monsoon-load-testing
+- run `npm install -g monsoon-load-testing`
 - type `monsoon --help` to see all the available commands
 
 ### First Time Usage
