@@ -263,8 +263,9 @@ _See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-tes
 
 # Scripting
 
-Monsoon users can write their test with the npm library `monsoon-weather-station`. Weather Station makes use of methods from the Performance API built into browsers and gives engineers a way to write code to measure how long individual user actions take.​
+Monsoon users can write their test with the npm library `monsoon-weather-station`. Weather Station makes use of methods from the Performance API built into browsers and gives engineers a way to write code to measure how long individual user actions take.
 
+Monsoon users can use the method `measure` to define the actions of their test.
 ```typescript
 await weatherStation.measure(actionName, script, delay?)
 ```
