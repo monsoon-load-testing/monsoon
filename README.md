@@ -1,4 +1,4 @@
-# monsoon
+![Monsoon logo](https://raw.githubusercontent.com/monsoon-load-testing/monsoon-load-testing.github.io/main/assets/images/monsoon_logo_color.png)
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/monsoon-load-testing.svg)](https://www.npmjs.com/package/monsoon-load-testing)
@@ -49,7 +49,7 @@ USAGE
 
 ### Installation
 
-- run `npm install -g monsoon-load-testing` [TODO: UPDATE NPM PACKAGE LINK]
+- run `npm install -g monsoon-load-testing`
 - type `monsoon --help` to see all the available commands
 
 ### First Time Usage
