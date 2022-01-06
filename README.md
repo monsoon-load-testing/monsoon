@@ -1,21 +1,24 @@
 # monsoon
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/monsoon.svg)](https://npmjs.org/package/monsoon)
-[![Downloads/week](https://img.shields.io/npm/dw/monsoon.svg)](https://npmjs.org/package/monsoon)
-[![License](https://img.shields.io/npm/l/monsoon.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/monsoon-load-testing.svg)](https://www.npmjs.com/package/monsoon-load-testing)
+[![Downloads/week](https://img.shields.io/npm/dw/monsoon-load-testing.svg)](https://npmjs.org/package/monsoon)
+[![License](https://img.shields.io/npm/l/monsoon-load-testing.svg)](https://github.com/minhphanhvu/monsoon/blob/master/package.json)
 
 <!-- toc -->
-* [monsoon](#monsoon)
-* [Usage](#usage)
-* [Getting Started](#getting-started)
-* [FAQ](#faq)
-* [Commands](#commands)
+
+- [monsoon](#monsoon)
+- [Usage](#usage)
+- [Getting Started](#getting-started)
+- [FAQ](#faq)
+- [Commands](#commands)
+- [Scripting](#scripting)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g monsoon-load-testing
 $ monsoon COMMAND
@@ -29,6 +32,7 @@ USAGE
   $ monsoon COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Getting Started
@@ -103,16 +107,17 @@ To uninstall / remove the Monsoon CLI tool, run `npm uninstall -g monsoon-load-t
 # Commands
 
 <!-- commands -->
-* [`monsoon config`](#monsoon-config)
-* [`monsoon deploy`](#monsoon-deploy)
-* [`monsoon destroy`](#monsoon-destroy)
-* [`monsoon help [COMMAND]`](#monsoon-help-command)
-* [`monsoon init`](#monsoon-init)
-* [`monsoon list`](#monsoon-list)
-* [`monsoon new-test`](#monsoon-new-test)
-* [`monsoon start`](#monsoon-start)
-* [`monsoon teardown`](#monsoon-teardown)
-* [`monsoon weather-channel`](#monsoon-weather-channel)
+
+- [`monsoon config`](#monsoon-config)
+- [`monsoon deploy`](#monsoon-deploy)
+- [`monsoon destroy`](#monsoon-destroy)
+- [`monsoon help [COMMAND]`](#monsoon-help-command)
+- [`monsoon init`](#monsoon-init)
+- [`monsoon list`](#monsoon-list)
+- [`monsoon new-test`](#monsoon-new-test)
+- [`monsoon start`](#monsoon-start)
+- [`monsoon teardown`](#monsoon-teardown)
+- [`monsoon weather-channel`](#monsoon-weather-channel)
 
 ## `monsoon config`
 
@@ -132,9 +137,7 @@ DESCRIPTION
      - your AWS profile name
 ```
 
-
 _See code: [src/commands/config.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/config.ts)_
-
 
 ## `monsoon deploy`
 
@@ -210,7 +213,9 @@ USAGE
   $ monsoon new-test
 ```
 
-_See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/new-test.ts)_
+To see an example of a test script refer to the Scripting section.
+
+_See code: [src/commands/new-test.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/new-test.js)_
 
 ## `monsoon start`
 
@@ -253,4 +258,63 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/weather-channel.ts](https://github.com/monsoon-load-testing/monsoon/blob/v1.1.7/src/commands/weather-channel.ts)_
+
 <!-- commandsstop -->
+
+# Scripting
+
+Monsoon users can write their test with the npm library `monsoon-weather-station`. Weather Station makes use of methods from the Performance API built into browsers and gives engineers a way to write code to measure how long individual user actions take.​
+
+```typescript
+await weatherStation.measure(actionName, script, delay?)
+```
+
+`actionName` (string): The name you want to give to the action.
+
+`script` (callback): The Puppeteer script that defines the action.
+
+`delay` (number || array): Specifies the time (in milliseconds) to wait after the execution of the action. The delay can be a fixed value (e.g. 1500) or an interval to generate random delays (e.g. [1000, 3000]).
+
+For example, let's say we wanted to load test the following workflow for a ecommerce web app:
+
+1. Go to the Boost Health Main Page
+2. View the Brain Boost product details
+3. Add Brain Boost to the cart
+
+The script would look like this:
+
+```javascript
+const puppeteer = require("puppeteer");
+const WeatherStation = require("monsoon-weather-station");
+
+async function testScript(browser, page, userId) {
+  const weatherStation = new WeatherStation(browser, page, userId);
+  await weatherStation.measure(
+    "1) Go to Boost Health Main Page", // actionName
+    async () => {
+      await page.goto("https://boosthealth.com"); // Puppeteer script
+    },
+    [1000, 3000] // delay interval
+  );
+  await weatherStation.measure(
+    "2) View Brain Boost product details",
+    async () => {
+      await Promise.all([
+        page.waitForNavigation(),
+        page.click("#brain-boost-button"),
+      ]);
+    },
+    2000 // fixed delay of 2000 ms
+  );
+  await weatherStation.measure(
+    "3) Add Brain Boost to Cart",
+    async () => {
+      await Promise.all([
+        page.waitForNavigation(),
+        page.click("button .submit"),
+      ]);
+    },
+    [1000, 3000]
+  );
+}
+```
